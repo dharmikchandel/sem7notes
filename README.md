@@ -32,7 +32,7 @@ Reference images of the official syllabuses are provided below to help map the s
 
 ### Digital Marketing (DiM)
 
-![DiM Syllabus](syllabus/DiM%2026-27%Syllabus.png)
+![DiM Syllabus](syllabus/DiM%26-27%Syllabus.png)
 
 <!-- ### Software Testing and Quality Assurance (STQA)      clickable image instead of embedded
 
