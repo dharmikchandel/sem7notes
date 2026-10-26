@@ -1,0 +1,1126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>STQA Module 1: Testing Methodology</title>
+<style>
+:root{
+  --paper:#f2f5f9; --sheet:#ffffff; --ink:#0f1a35; --ink2:#47536d; --rule:#d2d9e5; --tint:#e8edf6;
+  --blue:#2146c7; --blue-t:#e3e9fc;
+  --crit:#b81f33; --crit-t:#fbe5e8;
+  --major:#9a5a05; --major-t:#fcefd8;
+  --minor:#4f5d75; --minor-t:#e6eaf1;
+  --pass:#17784f; --pass-t:#dcf2e6;
+  --answer:#ffffff; --lines:#d3e2f6; --margin:#e58b93;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Noto Serif",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0d1322; --sheet:#141b2f; --ink:#e8edf9; --ink2:#a5b0c8; --rule:#29334f; --tint:#1b2441;
+    --blue:#94abff; --blue-t:#1c2a58;
+    --crit:#ff8b9a; --crit-t:#3a1a24;
+    --major:#f0b45c; --major-t:#3a2c12;
+    --minor:#a9b4c9; --minor-t:#222b43;
+    --pass:#5fd49a; --pass-t:#143427;
+    --answer:#1a2238; --lines:#29345a; --margin:#a8545e;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 var(--sans)}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:3px}
+.shell{display:grid;grid-template-columns:292px minmax(0,1fr);min-height:100vh}
+
+/* ---------- outline sidebar ---------- */
+.outline{position:sticky;top:0;height:100vh;overflow:auto;padding:26px 20px 40px;background:var(--sheet);border-right:1px solid var(--rule);font-size:.92rem;line-height:1.35}
+.outline .brand{font:700 1.05rem/1.25 var(--serif);margin:0 0 4px}
+.outline .sub{color:var(--ink2);margin:0 0 18px}
+.outline .bar{height:6px;background:var(--tint);border-radius:3px;overflow:hidden}
+.outline .bar i{display:block;height:100%;width:0;background:var(--pass);transition:width .25s}
+.outline .count{margin:6px 0 20px;color:var(--ink2);font-size:.85rem}
+.outline h6{margin:20px 0 6px;font:650 .85rem/1.3 var(--sans);color:var(--ink2)}
+.outline ol{list-style:none;margin:0;padding:0}
+.outline li a{display:grid;grid-template-columns:22px 1fr;gap:6px;padding:7px 8px;margin:0 -8px;border-radius:6px;color:var(--ink);text-decoration:none}
+.outline li a:hover{background:var(--tint)}
+.outline li a.on{background:var(--blue-t);font-weight:600}
+.outline li a .n{color:var(--ink2);font-variant-numeric:tabular-nums}
+.outline li a.done .t::after{content:"  ✓";color:var(--pass);font-weight:700}
+.outline .other{margin-top:26px;padding-top:16px;border-top:1px solid var(--rule)}
+.topbar{display:none}
+
+/* ---------- main ---------- */
+main{padding:56px clamp(20px,5vw,72px) 140px}
+.col{max-width:700px}
+h1{font:700 clamp(2rem,5vw,3.1rem)/1.1 var(--serif);letter-spacing:-.015em;margin:0 0 10px}
+.lede{font-size:1.15rem;color:var(--ink2);margin:0 0 28px;max-width:46ch}
+h2{font:700 clamp(1.55rem,3.4vw,2rem)/1.2 var(--serif);letter-spacing:-.01em;margin:0}
+h3{font:650 1.15rem/1.35 var(--sans);margin:34px 0 6px}
+h4{font:650 1rem/1.4 var(--sans);margin:22px 0 4px}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:1.3em}
+li{margin:0 0 5px}
+li>ul,li>ol{margin-top:5px}
+code{font:.88em var(--mono);background:var(--tint);padding:1px 5px;border-radius:4px}
+pre{font:.88rem/1.5 var(--mono);background:var(--tint);padding:14px 16px;border-radius:8px;overflow:auto;margin:0 0 16px}
+pre code{background:none;padding:0}
+hr.sec{border:0;border-top:1px solid var(--rule);margin:72px 0 0}
+sup,sub{line-height:0}
+
+/* lesson head */
+.lesson{padding-top:56px;scroll-margin-top:8px}
+.lh{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:start;margin-bottom:22px}
+.lh .no{font:700 2.6rem/1 var(--serif);color:var(--ink2);opacity:.55;min-width:1.3ch;text-align:right}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;font-size:.88rem;color:var(--ink2)}
+.sev{font-weight:700;padding:1px 9px;border-radius:99px;font-size:.84rem}
+.sev.crit{background:var(--crit-t);color:var(--crit)}
+.sev.major{background:var(--major-t);color:var(--major)}
+.sev.minor{background:var(--minor-t);color:var(--minor)}
+
+/* callouts */
+.note{margin:18px 0;padding:12px 16px 4px;border-left:4px solid var(--blue);background:var(--blue-t);border-radius:0 8px 8px 0}
+.note>b:first-child{display:block;margin-bottom:3px}
+.note.tip{border-color:var(--pass);background:var(--pass-t)}
+.note.warn{border-color:var(--crit);background:var(--crit-t)}
+.note.src{border-color:var(--major);background:var(--major-t)}
+.note.plain{border-color:var(--minor);background:var(--minor-t)}
+
+/* tables */
+.scroll{overflow-x:auto;margin:14px 0 20px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet)}
+table{border-collapse:collapse;width:100%;font-size:.93rem;line-height:1.45}
+th,td{padding:8px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+th{background:var(--tint);font-weight:650}
+tr:last-child td{border-bottom:0}
+td.c,th.c{text-align:center}
+.num{font-variant-numeric:tabular-nums}
+tr.bad td{color:var(--crit)}
+td.ok{color:var(--pass);font-weight:600}
+td.no{color:var(--crit);font-weight:600}
+
+/* figures */
+figure.fig{margin:22px 0;padding:14px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px}
+figure.fig svg{display:block;width:100%;height:auto;max-width:100%}
+figure.fig figcaption{margin-top:8px;font-size:.86rem;color:var(--ink2)}
+.dg .b{fill:var(--sheet);stroke:var(--ink2);stroke-width:1.4}
+.dg .b.hl{fill:var(--blue-t);stroke:var(--blue)}
+.dg .b.ok{fill:var(--pass-t);stroke:var(--pass)}
+.dg .b.bad{fill:var(--crit-t);stroke:var(--crit)}
+.dg .b.mid{fill:var(--major-t);stroke:var(--major)}
+.dg .t{fill:var(--ink);font:13px var(--sans)}
+.dg .t.s{font-size:11.5px;fill:var(--ink2)}
+.dg .t.h{font-weight:700}
+.dg .t.m{text-anchor:middle}
+.dg .a{fill:none;stroke:var(--ink2);stroke-width:1.5;marker-end:url(#arr)}
+.dg .a.d{stroke-dasharray:5 4}
+.dg .a.r{stroke:var(--crit);marker-end:url(#arrr)}
+.dg .l{fill:none;stroke:var(--ink2);stroke-width:1.4}
+.dg .l.d{stroke-dasharray:4 4;opacity:.7}
+.mk-a{fill:var(--ink2)} .mk-r{fill:var(--crit)}
+
+/* problem + reveal */
+.prob{margin:18px 0 10px;padding:14px 18px 2px;background:var(--sheet);border:1px solid var(--rule);border-left:4px solid var(--blue);border-radius:0 8px 8px 0}
+.prob>b:first-child{display:block;margin-bottom:4px}
+details.try{margin:0 0 24px;border:1px dashed var(--ink2);border-radius:10px;background:transparent}
+details.try>summary{cursor:pointer;padding:11px 16px;font-weight:650;list-style:none;display:flex;align-items:center;gap:10px}
+details.try>summary::-webkit-details-marker{display:none}
+details.try>summary::before{content:"+";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--blue);color:var(--sheet);font-weight:700;line-height:1}
+details.try[open]>summary::before{content:"–"}
+details.try>.in{padding:2px 18px 6px;border-top:1px dashed var(--rule)}
+
+/* answer sheet */
+details.sheet{margin:26px 0 30px}
+details.sheet>summary{cursor:pointer;list-style:none;padding:12px 16px;background:var(--ink);color:var(--paper);border-radius:8px;font-weight:650;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+details.sheet>summary::-webkit-details-marker{display:none}
+details.sheet>summary small{font-weight:400;opacity:.8}
+details.sheet[open]>summary{border-radius:8px 8px 0 0}
+.sbody{--ln:28px;position:relative;padding:var(--ln) 22px 14px 66px;background-color:var(--answer);background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ln) - 1px),var(--lines) calc(var(--ln) - 1px),var(--lines) var(--ln));border:1px solid var(--rule);border-top:0;border-radius:0 0 8px 8px;font:16.5px/var(--ln) var(--serif)}
+.sbody::before{content:"";position:absolute;top:0;bottom:0;left:50px;width:2px;background:var(--margin)}
+.sbody h4{margin:0;font:700 16.5px/var(--ln) var(--serif)}
+.sbody p{margin:0 0 var(--ln);line-height:var(--ln)}
+.sbody ul,.sbody ol{margin:0 0 var(--ln);padding-left:1.25em}
+.sbody li{margin:0;line-height:var(--ln)}
+.sbody li>ul,.sbody li>ol{margin:0}
+.sbody code{line-height:1;font-size:.85em}
+.sbody .draw{color:var(--blue);font-style:italic}
+.sbody b{font-weight:700}
+
+/* quiz */
+.quiz{margin:26px 0 0;padding-top:6px}
+.quiz>h3{margin-top:0}
+.mcq{margin:0 0 20px}
+.mcq .q{font-weight:600;margin:0 0 8px}
+.mcq .opts{display:grid;gap:6px}
+.mcq button{all:unset;box-sizing:border-box;cursor:pointer;display:block;padding:8px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet);font-size:.96rem;line-height:1.45}
+.mcq button:hover{border-color:var(--blue)}
+.mcq button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.mcq.done button{cursor:default}
+.mcq.done button:hover{border-color:var(--rule)}
+.mcq button.right{background:var(--pass-t);border-color:var(--pass)}
+.mcq button.wrong{background:var(--crit-t);border-color:var(--crit)}
+.mcq .why{margin:8px 0 0;font-size:.93rem;color:var(--ink2)}
+.score{margin:6px 0 0;font-size:.92rem;color:var(--ink2)}
+
+/* done button */
+.donebar{margin:34px 0 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.donebtn{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 16px;border-radius:8px;border:1px solid var(--blue);color:var(--blue);font-weight:650;font-size:.95rem}
+.donebtn:hover{background:var(--blue-t)}
+.donebtn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.donebtn[aria-pressed="true"]{background:var(--pass);border-color:var(--pass);color:var(--sheet)}
+
+/* generic helpers */
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--rule);border-radius:10px;background:var(--sheet);overflow:hidden;margin:16px 0 22px}
+.grid3>div{padding:14px 16px 6px;border-right:1px solid var(--rule)}
+.grid3>div:last-child{border-right:0}
+.grid3 h4{margin:0 0 6px}
+.grid3 ul{padding-left:1.1em;margin-bottom:8px;font-size:.95rem}
+.steps{counter-reset:s;list-style:none;padding:0;margin:14px 0 20px}
+.steps li{counter-increment:s;position:relative;padding:2px 0 12px 46px;margin:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:700 .9rem var(--sans)}
+.steps li::after{content:"";position:absolute;left:14px;top:32px;bottom:2px;width:2px;background:var(--rule)}
+.steps li:last-child::after{display:none}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:12px 0 18px}
+.kv dt{font-weight:650}.kv dd{margin:0}
+.pill{display:inline-block;padding:0 8px;border-radius:99px;background:var(--tint);font-size:.86rem;font-weight:600;white-space:nowrap}
+.ok{color:var(--pass)} .no{color:var(--crit)}
+.plan td:first-child{white-space:nowrap}
+
+/* generator (module 2) */
+.gen{margin:18px 0 24px;padding:16px 18px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px}
+.gen .row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end;margin-bottom:10px}
+.gen label{display:grid;gap:3px;font-size:.85rem;color:var(--ink2);font-weight:600}
+.gen input,.gen select{font:inherit;font-size:.95rem;padding:6px 8px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);width:96px}
+.gen select{width:auto}
+.gen .out{margin-top:10px}
+.gen .count{font-weight:650;margin:0 0 8px}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .shell{display:block}
+  .topbar{display:flex;position:sticky;top:0;z-index:20;align-items:center;gap:12px;padding:10px 16px;background:var(--sheet);border-bottom:1px solid var(--rule)}
+  .topbar button{all:unset;cursor:pointer;padding:6px 12px;border:1px solid var(--rule);border-radius:8px;font-weight:650;font-size:.92rem}
+  .topbar button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  .topbar span{font:700 .98rem var(--serif);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .outline{position:fixed;z-index:30;left:0;top:0;bottom:0;width:min(86vw,320px);height:auto;transform:translateX(-102%);transition:transform .2s;box-shadow:0 0 0 100vmax transparent}
+  body.menu .outline{transform:none;box-shadow:0 0 0 100vmax rgba(8,12,24,.5)}
+  main{padding:28px 16px 100px}
+  .lesson{padding-top:44px}
+  .grid3{grid-template-columns:1fr}
+  .grid3>div{border-right:0;border-bottom:1px solid var(--rule)}
+  .grid3>div:last-child{border-bottom:0}
+  .sbody{padding-left:50px;padding-right:14px}
+  .sbody::before{left:36px}
+  .lh .no{font-size:2rem}
+}
+@media print{
+  .outline,.topbar,.donebar{display:none!important}
+  .shell{display:block} body{background:#fff;color:#000;font-size:12pt}
+  main{padding:0} .lesson{break-inside:auto}
+  .sbody{background-image:none}
+}
+
+.gen button.pill{all:unset;box-sizing:border-box;cursor:pointer;padding:5px 12px;border:1px solid var(--blue);color:var(--blue);border-radius:99px;font-size:.88rem;font-weight:600;background:var(--sheet)}
+.gen button.pill:hover{background:var(--blue-t)}
+.gen button.pill:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+@media (max-width:640px){.kv{grid-template-columns:1fr;gap:2px}.kv dt{margin-top:10px}.kv dd{margin-bottom:2px}}
+
+@media (max-width:960px){.lesson{scroll-margin-top:64px}}
+
+.plan td:first-child,.plan th:first-child{width:1%;white-space:nowrap}
+
+.lesson{margin-top:56px;border-top:1px solid var(--rule)}
+.intro{margin-top:8px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-a" d="M0 0L10 5L0 10z"/></marker>
+<marker id="arrr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-r" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="topbar"><button type="button" id="menubtn" aria-label="Open the lesson outline">Outline</button><span>Module 1: Testing Methodology</span></div>
+<div class="shell">
+<nav class="outline" id="outline" aria-label="Course outline"></nav>
+<main><div class="col">
+<h1>Module 1: Testing Methodology</h1>
+<p class="lede">Software Testing and Quality Assurance, syllabus units 1.1 to 1.3. Built from your five past papers and your Chapter 1 slides.</p>
+
+<section class="intro" id="plan">
+<h3>What your past papers actually ask</h3>
+<p>Every paper has three questions of 10 marks in 1 hr 15 min, so about 22 minutes per question. The first question has been Module 1 theory every single time. Each row below is a full 10-mark question that has already been set.</p>
+<div class="scroll"><table class="plan">
+<thead><tr><th>Paper</th><th>Module 1 questions asked</th></tr></thead>
+<tbody>
+<tr><td>Oct 2022</td><td>Draw and explain the STLC. Option: unit testing with a suitable example.</td></tr>
+<tr><td>Sep 2023</td><td>Categorize and explain the goals of testing, or the types of testing under validation.</td></tr>
+<tr><td>Sep 2024</td><td>Define failure, fault, error, test case, test oracle with examples, or the life cycle of a bug with its states.</td></tr>
+<tr><td>Sep 2025</td><td>Any two of: testing goals, verification of high-level design, pair-wise integration testing with example.</td></tr>
+<tr><td>Oct 2025 (re-exam)</td><td>Software testing as a process, with diagram. Option: the V testing life cycle model with diagram.</td></tr>
+</tbody></table></div>
+
+<h3>How the labels work</h3>
+<p>The labels borrow the bug-severity idea from Lesson 2.</p>
+<ul>
+<li><span class="sev crit">Critical</span> has already appeared as a 10-mark question in your papers. Learn these first.</li>
+<li><span class="sev major">Major</span> is in the syllabus and has never been asked yet. Read once, quickly.</li>
+<li><span class="sev minor">Minor</span> is slide filler. One minute is enough.</li>
+</ul>
+
+<h3>How to study each lesson</h3>
+<ol>
+<li>Read the lesson once. Don't memorise yet.</li>
+<li>Open the answer sheet only after you have tried to write the answer from memory on paper.</li>
+<li>Compare, fix the gaps, then take the short quiz.</li>
+</ol>
+<div class="note tip"><b>Plan for about 3½ hours</b><p>The seven Critical lessons take roughly 3½ hours. If you run short, finish all Critical lessons before touching anything else. Lessons 8 and 9 are optional.</p></div>
+<div class="note src"><b>Two things to know about your slides</b><p>Unit, integration, function, system and acceptance testing (syllabus 1.3) are only listed in Chapter 1. The actual slides for them sit at the end of your Chapter 2 PDF, pages 105 to 116. Lesson 7 covers them here, so you don't have to hunt for them.</p></div>
+</section>
+
+<!-- ============ LESSON 1 ============ -->
+<section class="lesson" id="terms" data-tier="1">
+<header class="lh"><span class="no">1</span><div><h2>Error, fault, failure and friends</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2024</span><span>About 20 min</span><span>Syllabus 1.1</span></p></div></header>
+
+<p>These words describe one chain of events. A person slips, the slip sits in the product, and a run exposes it.</p>
+
+<figure class="fig"><svg class="dg" viewBox="0 0 760 130" role="img" aria-labelledby="f1t"><title id="f1t">Chain from error to fault to failure to incident</title>
+<rect class="b mid" x="10" y="24" width="150" height="54" rx="8"/><text class="t h m" x="85" y="56">Error</text>
+<rect class="b hl" x="205" y="24" width="150" height="54" rx="8"/><text class="t h m" x="280" y="56">Fault / bug / defect</text>
+<rect class="b bad" x="400" y="24" width="150" height="54" rx="8"/><text class="t h m" x="475" y="56">Failure</text>
+<rect class="b" x="595" y="24" width="150" height="54" rx="8"/><text class="t h m" x="670" y="56">Incident</text>
+<path class="a" d="M160 51H203"/><path class="a" d="M355 51H398"/><path class="a" d="M550 51H593"/>
+<text class="t s m" x="85" y="102">human mistake</text>
+<text class="t s m" x="280" y="102">sits in the product</text>
+<text class="t s m" x="475" y="102">wrong behaviour when run</text>
+<text class="t s m" x="670" y="102">symptom the user notices</text>
+</svg><figcaption>One chain, four names. Each step needs the one before it.</figcaption></figure>
+
+<div class="scroll"><table>
+<thead><tr><th>Term</th><th>Meaning (from your slides)</th></tr></thead>
+<tbody>
+<tr><td><b>Error</b></td><td>A mistake made by a team member in any SDLC phase: a typo, a misread specification, a misunderstanding of what a subroutine does. The general word for human mistakes.</td></tr>
+<tr><td><b>Fault / defect / bug</b></td><td>A condition that actually causes the system to produce a failure.</td></tr>
+<tr><td><b>Failure</b></td><td>The inability of a system or component to perform a required function according to its specification.</td></tr>
+<tr><td><b>Test case</b></td><td>A well-documented procedure to test a feature. It has an identity, a set of inputs and the corresponding expected outputs. Its purpose is to find errors.</td></tr>
+<tr><td><b>Test oracle</b></td><td>The means to judge whether a test passed or failed, that is, to judge the correctness of the system for that test.</td></tr>
+<tr><td><b>Testware</b></td><td>Documents produced during testing: test plans, specifications, test case designs, reports.</td></tr>
+<tr><td><b>Incident</b></td><td>The symptom(s) of a failure that alert the user that a failure has happened.</td></tr>
+</tbody></table></div>
+
+<h3>One example that covers all of them</h3>
+<p>Requirement: <code>add(a, b)</code> must return <code>a + b</code>. The programmer types <code>return a - b;</code>.</p>
+<dl class="kv">
+<dt>Error</dt><dd>The programmer's slip: typing <code>-</code> instead of <code>+</code>.</dd>
+<dt>Fault</dt><dd>The statement <code>return a - b;</code> sitting in the code.</dd>
+<dt>Failure</dt><dd><code>add(3, 2)</code> returns 1 when the specification says 5.</dd>
+<dt>Test case</dt><dd>TC-01: input a = 3, b = 2; expected output 5.</dd>
+<dt>Test oracle</dt><dd>The specification "a + b" (or a calculator). It says 5, the program gave 1, so the test fails.</dd>
+<dt>Incident</dt><dd>The user or tester sees a wrong total on screen.</dd>
+</dl>
+<div class="note warn"><b>A fault can hide</b><p><code>add(0, 0)</code> returns 0 with the bug and without it. The fault exists but no failure appears. This is why test cases must be chosen carefully, and it leads straight into Module 2.</p></div>
+
+<h3>What a test case looks like on paper</h3>
+<p>Your slide shows a template with these fields: test scenario ID, test case ID, description, priority, pre-requisite, post-requisite, then one row per step with action, inputs, expected output, actual output, test result (pass or fail) and comments.</p>
+
+<details class="sheet"><summary>Answer sheet: define failure, fault, error, test case, test oracle with an example <small>10 marks, about 2 per term</small></summary>
+<div class="sbody">
+<h4>Software testing terminology</h4>
+<p>Example used throughout: add(a, b) must return a + b, but the code says a - b.</p>
+<ul>
+<li><b>Error:</b> a mistake made by a developer in any phase of SDLC. Here, typing - instead of +.</li>
+<li><b>Fault (bug, defect):</b> the condition in the product that causes a failure. Here, the statement return a - b.</li>
+<li><b>Failure:</b> inability of the system to perform a required function per its specification. Here, add(3,2) gives 1 instead of 5.</li>
+<li><b>Test case:</b> a documented procedure with an ID, inputs and expected outputs, used to find errors. Here, TC-01: a=3, b=2, expected 5.</li>
+<li><b>Test oracle:</b> the means to judge the success or failure of a test. Here, the specification a + b: expected 5, actual 1, so FAIL.</li>
+</ul>
+<p>Chain: error leads to fault, fault leads to failure.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">The wrong operator that is sitting in the source code is a:</p><div class="opts"><button type="button" data-k="a">Error</button><button type="button" data-k="b">Fault</button><button type="button" data-k="c">Failure</button><button type="button" data-k="d">Test oracle</button></div><p class="why" hidden>The code defect is the fault. The error is the human slip that put it there.</p></div>
+<div class="mcq" data-a="d"><p class="q">Which one decides whether the actual output of a test is correct?</p><div class="opts"><button type="button" data-k="a">Test case ID</button><button type="button" data-k="b">Incident</button><button type="button" data-k="c">Testware</button><button type="button" data-k="d">Test oracle</button></div><p class="why" hidden>The oracle is the means of judging pass or fail, such as the specification or a known correct answer.</p></div>
+<div class="mcq" data-a="a"><p class="q">A program contains a fault but the tester never sees a wrong output. Why?</p><div class="opts"><button type="button" data-k="a">The inputs used never made the faulty statement misbehave</button><button type="button" data-k="b">A fault cannot exist without a failure</button><button type="button" data-k="c">Faults are only created by testers</button><button type="button" data-k="d">The oracle was too strict</button></div><p class="why" hidden>A failure needs the faulty code to run with an input that exposes it.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 2 ============ -->
+<section class="lesson" id="bug" data-tier="1">
+<header class="lh"><span class="no">2</span><div><h2>Life cycle of a bug</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2024</span><span>About 25 min</span><span>Syllabus 1.1</span></p></div></header>
+
+<p>Your slides show this twice: once as two phases (bugs in, bugs out) and once as a list of states. The question usually wants both: "block diagram" and "list the states".</p>
+
+<h3>View 1: bugs in, bugs out</h3>
+<figure class="fig"><svg class="dg" viewBox="0 0 760 330" role="img" aria-labelledby="f2t"><title id="f2t">Bugs-in phase and bugs-out phase</title>
+<rect class="l" x="8" y="14" width="560" height="140" rx="10"/><text class="t s" x="18" y="32">Bugs-in phase</text>
+<rect class="b" x="28" y="66" width="140" height="56" rx="8"/><text class="t m" x="98" y="90">Requirement</text><text class="t m" x="98" y="107">gathering</text>
+<rect class="b" x="230" y="66" width="120" height="56" rx="8"/><text class="t m" x="290" y="99">Design</text>
+<rect class="b" x="412" y="66" width="120" height="56" rx="8"/><text class="t m" x="472" y="99">Coding</text>
+<path class="a r" d="M98 38V64"/><path class="a r" d="M290 38V64"/><path class="a r" d="M472 38V64"/>
+<text class="t s" x="106" y="54">Error</text><text class="t s" x="298" y="54">Error</text><text class="t s" x="480" y="54">Error</text>
+<path class="a" d="M168 94H228"/><path class="a" d="M350 94H410"/>
+<text class="t s m" x="198" y="86">Bug</text><text class="t s m" x="380" y="86">Bug</text>
+<rect class="b hl" x="620" y="14" width="124" height="300" rx="10"/><text class="t h m" x="682" y="170">Testing</text>
+<path class="a" d="M532 94H618"/><text class="t s m" x="594" y="86">Bug</text>
+<rect class="l" x="8" y="176" width="560" height="140" rx="10"/><text class="t s" x="18" y="194">Bugs-out phase</text>
+<rect class="b" x="28" y="226" width="140" height="56" rx="8"/><text class="t m" x="98" y="249">Resolve</text><text class="t m" x="98" y="266">the bug</text>
+<rect class="b" x="230" y="226" width="120" height="56" rx="8"/><text class="t m" x="290" y="249">Isolate</text><text class="t m" x="290" y="266">the bug</text>
+<rect class="b" x="412" y="226" width="120" height="56" rx="8"/><text class="t m" x="472" y="249">Classify</text><text class="t m" x="472" y="266">the bug</text>
+<path class="a" d="M618 254H534"/><text class="t s m" x="576" y="246">Failure</text>
+<path class="a" d="M410 254H352"/><text class="t s m" x="381" y="246">Incident</text>
+<path class="a" d="M228 254H170"/>
+</svg><figcaption>Errors made in requirements, design and coding turn into bugs. Testing exposes them as failures. Then they are classified, isolated and resolved.</figcaption></figure>
+<ul>
+<li><b>Bugs-in phase:</b> a human error in any development phase puts a bug into the product, and the bug travels to the next phase if nobody catches it.</li>
+<li><b>Bugs-out phase:</b> once testing shows a failure, the team <b>classifies</b> the bug (how serious, which kind), <b>isolates</b> it (which module or line), and <b>resolves</b> it (fix and retest).</li>
+</ul>
+<h4>Why bugs occur</h4>
+<ul>
+<li>To err is human.</li>
+<li>Bugs from earlier stages go undetected and propagate into later ones.</li>
+<li>The cost of debugging rises the longer a bug survives, which is the economic argument for testing early.</li>
+</ul>
+<p>Classification by criticality: <b>critical</b> (system unusable or data loss), <b>major</b> (key feature broken), <b>medium</b>, <b>minor</b> (cosmetic).</p>
+
+<h3>View 2: the states</h3>
+<figure class="fig"><svg class="dg" viewBox="0 0 760 330" role="img" aria-labelledby="f2b"><title id="f2b">State diagram of a bug</title>
+<rect class="b hl" x="10" y="115" width="90" height="46" rx="23"/><text class="t h m" x="55" y="143">New</text>
+<rect class="b" x="135" y="115" width="90" height="46" rx="23"/><text class="t h m" x="180" y="143">Open</text>
+<rect class="b" x="260" y="115" width="90" height="46" rx="23"/><text class="t h m" x="305" y="143">Assign</text>
+<rect class="b" x="385" y="115" width="90" height="46" rx="23"/><text class="t h m" x="430" y="143">Test</text>
+<rect class="b ok" x="510" y="115" width="100" height="46" rx="23"/><text class="t h m" x="560" y="143">Verified</text>
+<rect class="b ok" x="645" y="115" width="100" height="46" rx="23"/><text class="t h m" x="695" y="143">Closed</text>
+<rect class="b mid" x="135" y="18" width="90" height="46" rx="23"/><text class="t h m" x="180" y="46">Deferred</text>
+<rect class="b bad" x="55" y="250" width="100" height="46" rx="23"/><text class="t h m" x="105" y="278">Rejected</text>
+<rect class="b bad" x="385" y="250" width="100" height="46" rx="23"/><text class="t h m" x="435" y="278">Reopened</text>
+<path class="a" d="M100 138H133"/><path class="a" d="M225 138H258"/><path class="a" d="M350 138H383"/><path class="a" d="M475 138H508"/><path class="a" d="M610 138H643"/>
+<path class="a" d="M180 113V66"/><text class="t s" x="188" y="92">fix postponed</text>
+<path class="a d" d="M225 52C262 52 290 80 300 113"/><text class="t s" x="268" y="46">next release</text>
+<path class="a" d="M62 161L90 248"/><text class="t s" x="22" y="212">not a bug</text>
+<path class="a r" d="M430 163V248"/><text class="t s" x="440" y="212">fails retest</text>
+<path class="a r" d="M395 252C350 230 322 200 312 165"/>
+<text class="t s" x="395" y="108">fixed, retest</text>
+</svg><figcaption>Normal path along the top row. Deferred, Rejected and Reopened are the side exits.</figcaption></figure>
+
+<div class="scroll"><table>
+<thead><tr><th>State</th><th>What it means</th></tr></thead>
+<tbody>
+<tr><td><b>New</b></td><td>A tester has just reported the bug. Nobody has confirmed it yet.</td></tr>
+<tr><td><b>Open</b></td><td>The bug is confirmed as genuine.</td></tr>
+<tr><td><b>Assign</b></td><td>The bug is given to a developer or team to fix.</td></tr>
+<tr><td><b>Deferred</b></td><td>The bug is real, but the fix is postponed to a later release (low priority or no time).</td></tr>
+<tr><td><b>Rejected</b></td><td>Not a genuine bug: invalid, duplicate, or cannot be reproduced.</td></tr>
+<tr><td><b>Test</b></td><td>The developer has fixed it and handed it back to the tester for retesting.</td></tr>
+<tr><td><b>Verified / Fixed</b></td><td>The tester retested and the fix works.</td></tr>
+<tr><td><b>Reopened</b></td><td>The bug still appears after the fix, so it goes back to the developer. Your slide lists this state as "Responded".</td></tr>
+<tr><td><b>Closed</b></td><td>The bug is verified as fixed and the report is closed.</td></tr>
+</tbody></table></div>
+<div class="note src"><b>Name check</b><p>The standard life cycle calls the "fails retest" state <i>Reopened</i>. Your slide says <i>Responded</i>. In the exam write "Reopened (Responded)" and you match both.</p></div>
+
+<details class="sheet"><summary>Answer sheet: life cycle of a bug with block diagram, and its states <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Life cycle of a bug</h4>
+<p>The life cycle covers a bug from the moment it is introduced to the moment it is resolved. It has two phases.</p>
+<p class="draw">Draw the bugs-in / bugs-out diagram here (View 1).</p>
+<ul>
+<li><b>Bugs-in:</b> errors in requirements, design and coding create bugs that pass along to testing.</li>
+<li><b>Bugs-out:</b> testing exposes a failure; the bug is classified, isolated, then resolved.</li>
+</ul>
+<h4>States of a bug</h4>
+<p class="draw">Draw the state diagram here (View 2).</p>
+<ul>
+<li>New, Open, Assign, Deferred, Rejected, Test, Verified/Fixed, Reopened, Closed.</li>
+<li>One line each, from the table above.</li>
+</ul>
+<p>Conclusion: tracking the state of each bug shows what is fixed, what is pending and what was rejected.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">A tester retests a fixed bug and it still happens. The new state is:</p><div class="opts"><button type="button" data-k="a">Deferred</button><button type="button" data-k="b">Closed</button><button type="button" data-k="c">Reopened</button><button type="button" data-k="d">Rejected</button></div><p class="why" hidden>The bug goes back to the developer. Your slide labels this "Responded".</p></div>
+<div class="mcq" data-a="b"><p class="q">The bug is genuine but the team agrees to fix it in the next release. State?</p><div class="opts"><button type="button" data-k="a">Rejected</button><button type="button" data-k="b">Deferred</button><button type="button" data-k="c">Test</button><button type="button" data-k="d">New</button></div><p class="why" hidden>Deferred means valid but postponed.</p></div>
+<div class="mcq" data-a="d"><p class="q">Which are the three steps of the bugs-out phase?</p><div class="opts"><button type="button" data-k="a">Plan, design, execute</button><button type="button" data-k="b">Error, fault, failure</button><button type="button" data-k="c">Open, assign, close</button><button type="button" data-k="d">Classify, isolate, resolve</button></div><p class="why" hidden>After a failure appears: classify the bug, isolate it, resolve it.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 3 ============ -->
+<section class="lesson" id="goals" data-tier="1">
+<header class="lh"><span class="no">3</span><div><h2>Goals of software testing</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2023, Sep 2025</span><span>About 25 min</span><span>Syllabus 1.1</span></p></div></header>
+
+<p>Start from the definition, because every goal flows from it: testing is the process of executing a program <b>with the intent of finding errors</b>. A successful test is one that uncovers an as-yet-undiscovered error. Testing can show the presence of bugs but never their absence.</p>
+
+<h3>The three groups of goals</h3>
+<div class="grid3">
+<div><h4>Immediate goals</h4><ul><li><b>Bug discovery:</b> find errors at every stage of development.</li><li><b>Bug prevention:</b> learn from the bugs found so the same mistakes are not repeated.</li></ul></div>
+<div><h4>Long-term goals</h4><ul><li><b>Reliability:</b> confidence that the software runs without failure.</li><li><b>Quality:</b> testing produces reliability and quality.</li><li><b>Customer satisfaction:</b> quality leads to satisfied customers.</li><li><b>Risk management:</b> reduce the risk of failures reaching users.</li></ul></div>
+<div><h4>Post-implementation goals</h4><ul><li><b>Reduced maintenance cost:</b> bugs caught before release are cheaper than bugs fixed after.</li><li><b>Improved testing process:</b> lessons from this project make the next test process better.</li></ul></div>
+</div>
+<div class="note tip"><b>Remember</b><p>Immediate: find and prevent. Long-term: reliability, quality, customers, risk. Post-implementation: cheaper upkeep, better testing next time.</p></div>
+
+<h3>Why not test everything?</h3>
+<p>Complete testing is impossible, so the aim is <b>effective</b> testing rather than <b>exhaustive</b> testing.</p>
+<ul>
+<li><b>Too many inputs.</b> Valid inputs, invalid inputs (out-of-range numbers, letters mixed with digits, control characters, any other key), edited inputs, and race-condition inputs.</li>
+<li><b>Too many paths.</b> Loops and branches multiply the number of paths through even a small program.</li>
+<li><b>So:</b> choose the subset of the domain that matters most for the project's priorities, so the chance of failure in the real environment is as small as possible.</li>
+</ul>
+<div class="note warn"><b>Psychology trap</b><p>"Testing demonstrates that there are no errors" is the wrong mindset. Your slide contrasts it with the right one: testing is executing the program with the intent of finding errors.</p></div>
+
+<details class="sheet"><summary>Answer sheet: categorize and explain the goals of software testing <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Goals of software testing</h4>
+<p>Testing is executing a program with the intent of finding errors. Its goals fall into three categories.</p>
+<p class="draw">Draw the tree: Software testing with three branches.</p>
+<ul>
+<li><b>Immediate goals:</b> bug discovery (find errors at each stage), bug prevention (use what was found to avoid repeating mistakes).</li>
+<li><b>Long-term goals:</b> reliability, quality, customer satisfaction, risk management. Two lines on each.</li>
+<li><b>Post-implementation goals:</b> reduced maintenance cost, improved testing process.</li>
+</ul>
+<p>Closing: exhaustive testing is impossible because inputs and paths are too many, so testing must be effective and priority-driven.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">Bug discovery is a ______ goal of software testing.</p><div class="opts"><button type="button" data-k="a">Long-term</button><button type="button" data-k="b">Immediate (short-term)</button><button type="button" data-k="c">Post-implementation</button><button type="button" data-k="d">None of these</button></div><p class="why" hidden>Bug discovery and bug prevention are the immediate goals.</p></div>
+<div class="mcq" data-a="a"><p class="q">Customer satisfaction and risk management are ______ goals.</p><div class="opts"><button type="button" data-k="a">Long-term</button><button type="button" data-k="b">Immediate</button><button type="button" data-k="c">Post-implementation</button><button type="button" data-k="d">All of these</button></div><p class="why" hidden>Reliability, quality, customer satisfaction and risk management are long-term goals.</p></div>
+<div class="mcq" data-a="c"><p class="q">Reduced maintenance cost is a ______ goal.</p><div class="opts"><button type="button" data-k="a">Immediate</button><button type="button" data-k="b">Long-term</button><button type="button" data-k="c">Post-implementation</button><button type="button" data-k="d">Unrelated to testing</button></div><p class="why" hidden>It, and improved testing process, make up the post-implementation goals.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 4 ============ -->
+<section class="lesson" id="stlc" data-tier="1">
+<header class="lh"><span class="no">4</span><div><h2>Testing as a process, and the STLC</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022 (STLC), Oct 2025 (process)</span><span>About 35 min</span><span>Syllabus 1.1</span></p></div></header>
+
+<p>Two questions, one lesson. "Explain software testing as a process" is the big picture. "Draw the STLC" is the four-phase cycle inside it. Learn the process view first and the STLC becomes its detail.</p>
+
+<h3>How testing grew up</h3>
+<ul>
+<li><b>Testing 1.0:</b> a single phase done after coding.</li>
+<li><b>Testing 2.0:</b> testing gains importance in the SDLC and the idea of early testing starts.</li>
+<li><b>Testing 3.0:</b> testing becomes a process built on strategic effort, with a roadmap, driven by quality goals so it can be controlled and monitored.</li>
+</ul>
+
+<h3>What makes testing a process</h3>
+<p>The testing process emerged out of development and runs in parallel to it. Its properties:</p>
+<ul>
+<li>It is organised so that important and critical features get enough time.</li>
+<li>Techniques are chosen so they detect the maximum number of bugs.</li>
+<li>Quality factors are quantified, so the process can be monitored and measured.</li>
+<li>Procedures and steps are defined and documented.</li>
+<li>There is scope for continuous process improvement.</li>
+</ul>
+
+<h3>The model behind it</h3>
+<figure class="fig"><svg class="dg" viewBox="0 0 760 290" role="img" aria-labelledby="f4a"><title id="f4a">Model for software testing</title>
+<rect class="b" x="10" y="20" width="120" height="44" rx="8"/><text class="t h m" x="70" y="47">System</text>
+<rect class="b" x="10" y="104" width="120" height="44" rx="8"/><text class="t h m" x="70" y="131">Developer</text>
+<rect class="b hl" x="190" y="20" width="120" height="44" rx="8"/><text class="t h m" x="250" y="47">Software</text>
+<rect class="b" x="190" y="104" width="120" height="44" rx="8"/><text class="t h m" x="250" y="131">Tester</text>
+<rect class="b" x="370" y="104" width="140" height="44" rx="8"/><text class="t h m" x="440" y="124">Testing</text><text class="t h m" x="440" y="140">methodology</text>
+<rect class="b" x="370" y="196" width="140" height="44" rx="8"/><text class="t h m" x="440" y="223">Bug model</text>
+<rect class="b" x="560" y="104" width="90" height="44" rx="8"/><text class="t h m" x="605" y="131">Testing</text>
+<path class="l" d="M700 96L730 122L700 148L670 122Z" style="fill:var(--sheet)"/><text class="t s m" x="700" y="126">Results</text>
+<rect class="b bad" x="560" y="20" width="190" height="44" rx="8"/><text class="t h m" x="655" y="47">Unexpected results</text>
+<rect class="b ok" x="580" y="200" width="170" height="44" rx="8"/><text class="t h m" x="665" y="227">Expected results</text>
+<path class="a" d="M130 42H188"/><path class="a" d="M130 112L190 62"/><path class="a" d="M250 102V66"/><text class="t s" x="258" y="90">tests</text>
+<path class="a" d="M310 126H368"/><path class="a" d="M510 126H558"/><path class="a" d="M650 126H668"/>
+<path class="a" d="M440 194V150"/>
+<path class="a" d="M700 94V66"/><path class="a" d="M700 150V198"/>
+<path class="a r d" d="M558 42H312"/><text class="t s m" x="435" y="34">bug found: feedback, fix the software</text>
+<text class="t s" x="370" y="262">nature of bugs and psychology of testing</text>
+</svg><figcaption>The developer turns the system's needs into software. The tester, using a bug model and a testing methodology, tests it. Expected results are fine; unexpected results are bugs that go back as feedback.</figcaption></figure>
+
+<h3>The STLC: four phases</h3>
+<figure class="fig"><svg class="dg" viewBox="-24 0 784 230" role="img" aria-labelledby="f4b"><title id="f4b">Software testing life cycle</title>
+<rect class="b hl" x="10" y="20" width="160" height="54" rx="8"/><text class="t h m" x="90" y="43">Test planning</text><text class="t s m" x="90" y="60">phase 1</text>
+<rect class="b hl" x="205" y="20" width="160" height="54" rx="8"/><text class="t h m" x="285" y="43">Test design</text><text class="t s m" x="285" y="60">phase 2</text>
+<rect class="b hl" x="400" y="20" width="160" height="54" rx="8"/><text class="t h m" x="480" y="43">Test execution</text><text class="t s m" x="480" y="60">phase 3</text>
+<rect class="b hl" x="595" y="20" width="155" height="54" rx="8"/><text class="t h m" x="672" y="43">Post-execution /</text><text class="t h m" x="672" y="60">test review</text>
+<path class="a" d="M170 47H203"/><path class="a" d="M365 47H398"/><path class="a" d="M560 47H593"/>
+<text class="t s m" x="90" y="98">Test strategy, size of</text><text class="t s m" x="90" y="113">test cases, duration,</text><text class="t s m" x="90" y="128">cost, risk, responsibilities</text>
+<text class="t s m" x="285" y="98">Test cases and procedures</text>
+<text class="t s m" x="480" y="98">Bug reports and metrics</text>
+<path class="a d" d="M672 76V176H-12V47H8"/><text class="t s m" x="330" y="196">Feedback: lessons go back into planning and design</text>
+</svg><figcaption>Each phase hands its output to the next. Post-execution feeds back to the start.</figcaption></figure>
+
+<h4>1. Test planning</h4>
+<ul>
+<li>Define the test strategy. Estimate the number of test cases, their duration and cost.</li>
+<li>Plan resources: people, tools, documents. Identify risks and set completion criteria.</li>
+<li>Choose methodologies, techniques and tools. Define reporting, bug classification and severity levels, project metrics.</li>
+<li>Decide the test case format, which cases to automate, priorities, stress and performance areas, and the test cycles for regression.</li>
+</ul>
+<h4>2. Test design</h4>
+<ul>
+<li>Set test objectives and priorities. List the items to be tested.</li>
+<li>Map items to test cases: find the major scenarios, remove redundant cases, add cases for objectives that have none.</li>
+<li>Select design techniques, create test cases and data, set up the test environment and tools, write the test procedure specification.</li>
+<li>Rule: cover all features, but do not create too many test cases.</li>
+</ul>
+<div class="note"><b>A good test case</b><p>Is designed around critical, high-risk requirements. Has a high chance of finding an error. Does not overlap other cases. Is simple, reusable and recombinable. Is most likely to find an as-yet-undiscovered error.</p></div>
+<h4>3. Test execution</h4>
+<p>Run the cases and produce three documents: the <b>test incident report</b>, the <b>test log</b> and the <b>test summary report</b>. Who executes depends on the level:</p>
+<div class="scroll"><table><thead><tr><th>Level</th><th>Person responsible</th></tr></thead><tbody>
+<tr><td>Unit</td><td>Developer of the module</td></tr>
+<tr><td>Integration</td><td>Testers and developers</td></tr>
+<tr><td>System</td><td>Testers, developers, end-users</td></tr>
+<tr><td>Acceptance</td><td>Testers, end-users</td></tr></tbody></table></div>
+<h4>4. Post-execution / test review</h4>
+<p>When the developer gets the bug report: understand the bug, reproduce it, analyse its nature and cause, then do reliability analysis, coverage analysis and an overall defect analysis. The findings feed back into the next planning round.</p>
+
+<details class="sheet"><summary>Answer sheet: draw the STLC and explain briefly <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Software testing life cycle (STLC)</h4>
+<p>The STLC is the sequence of testing activities carried out in a defined order alongside development.</p>
+<p class="draw">Draw the four boxes with the feedback arrow.</p>
+<ul>
+<li><b>Test planning:</b> strategy, number and cost of test cases, resources, risks, completion criteria.</li>
+<li><b>Test design:</b> objectives, items to test, mapping items to test cases, techniques, test data, environment.</li>
+<li><b>Test execution:</b> run cases; produce incident report, test log, summary report.</li>
+<li><b>Post-execution:</b> reproduce and analyse bugs; reliability, coverage and defect analysis.</li>
+</ul>
+<p>Outputs: strategy and plan, test cases and procedures, bug reports and metrics. Feedback improves the next cycle.</p>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: explain software testing as a process, with diagram <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Software testing as a process</h4>
+<p>Testing has moved from a single phase after coding (1.0), to early testing inside the SDLC (2.0), to a process driven by quality goals (3.0).</p>
+<p class="draw">Draw the testing model: System, Developer, Software, Tester, Bug model, Methodology, Results.</p>
+<ul>
+<li>The testing process runs in parallel with the development process.</li>
+<li>Time is organised so critical features are tested enough.</li>
+<li>Techniques are picked to detect the maximum number of bugs.</li>
+<li>Quality goals are quantified so the process can be monitored and measured.</li>
+<li>Procedures are defined and documented. There is continuous improvement.</li>
+</ul>
+<p>Process steps: the four STLC phases, one line each, with feedback.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">Which STLC phase produces the test incident report, test log and test summary report?</p><div class="opts"><button type="button" data-k="a">Test planning</button><button type="button" data-k="b">Test design</button><button type="button" data-k="c">Test execution</button><button type="button" data-k="d">Post-execution</button></div><p class="why" hidden>Those three documents are the outputs of execution.</p></div>
+<div class="mcq" data-a="a"><p class="q">"Testing is a single phase performed after coding" describes:</p><div class="opts"><button type="button" data-k="a">Software Testing 1.0</button><button type="button" data-k="b">Software Testing 2.0</button><button type="button" data-k="c">Software Testing 3.0</button><button type="button" data-k="d">The V-model</button></div><p class="why" hidden>2.0 introduced early testing and 3.0 made it a process.</p></div>
+<div class="mcq" data-a="d"><p class="q">At the acceptance level, who is responsible for test execution?</p><div class="opts"><button type="button" data-k="a">The module developer only</button><button type="button" data-k="b">Developers only</button><button type="button" data-k="c">Testers and developers</button><button type="button" data-k="d">Testers and end-users</button></div><p class="why" hidden>Unit: developer. Integration: testers and developers. System: testers, developers and end-users. Acceptance: testers and end-users.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 5 ============ -->
+<section class="lesson" id="vv" data-tier="1">
+<header class="lh"><span class="no">5</span><div><h2>Verification and validation</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2025 (verification of high-level design)</span><span>About 30 min</span><span>Syllabus 1.2</span></p></div></header>
+
+<p>A test strategy has to start at the component level and finish at the whole system. That gives two ideas which are the basis of all testing: verification, while building, and validation, once there is something to run.</p>
+
+<div class="scroll"><table>
+<thead><tr><th></th><th>Verification</th><th>Validation</th></tr></thead>
+<tbody>
+<tr><td><b>Question</b></td><td>Are we building the product <i>right</i>?</td><td>Are we building the <i>right</i> product?</td></tr>
+<tr><td><b>Checks</b></td><td>The product against its specification at every development phase.</td><td>The software as a whole against customer expectations and the functional design.</td></tr>
+<tr><td><b>How</b></td><td>Reviewing documents, design and code without running them.</td><td>Executing the software: unit, integration, function, system, acceptance tests.</td></tr>
+<tr><td><b>When</b></td><td>All SDLC stages up to coding. Its scope shrinks as a module nears completion.</td><td>Takes over from verification in the later stages. The last chance to find bugs before release.</td></tr>
+<tr><td><b>Why</b></td><td>Defects are found early and do not propagate.</td><td>Confirms the product satisfies user requirements.</td></tr>
+</tbody></table></div>
+
+<h3>Why verify early</h3>
+<ul>
+<li>Without it, the delivered product can drift away from the required one.</li>
+<li>It exposes more errors, early decreases the cost of fixing them, and raises quality.</li>
+<li>Three principles: everything must be verified; results of verification may not be binary; even implicit qualities must be verified.</li>
+</ul>
+
+<h3>What is verified at each stage</h3>
+<h4>Requirements (the SRS)</h4>
+<p>Each requirement is checked for being correct, unambiguous, consistent, up to date, and traceable.</p>
+<h4>High-level design (HLD)</h4>
+<p>HLD has three parts, and each is verified:</p>
+<ul>
+<li><b>Data design:</b> the data objects, structures and database are described completely, and every data element the SRS needs is present and consistent.</li>
+<li><b>Architectural design:</b> the modules and their relationships cover every requirement, nothing is missing, and the structure is modular.</li>
+<li><b>Interface design:</b> the interfaces between modules and with users, hardware and other systems are fully and consistently defined.</li>
+</ul>
+<div class="note src"><b>Where this comes from</b><p>The three parts of HLD come from your slide. The checks written under each part are the standard textbook checks, added so you have something to write for 10 marks.</p></div>
+<h4>Low-level design (LLD)</h4>
+<p>Verify the SRS and the design document of every module. Data structures, interfaces and algorithms are shown in design notations, so check that every item is consistent with its notation.</p>
+<h4>Code (unit verification)</h4>
+<p>Check the code against these eight points: misunderstood arithmetic precedence, mixed-mode operations, incorrect initialisation, precision inaccuracy, incorrect symbolic representation of an expression, different data types, improper or missing loop termination, failure to exit.</p>
+<p>Verification is done with the static techniques of Module 2: inspections, walkthroughs and technical reviews.</p>
+
+<details class="sheet"><summary>Answer sheet: verification of high-level design <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Verification of high-level design</h4>
+<p>Verification asks "are we building the product right?". It checks work against its specification at each phase so defects are caught early.</p>
+<p>The HLD converts the SRS into a design of the system. It has three parts, each verified:</p>
+<ul>
+<li><b>Data design:</b> data structures and database are complete; all data in the SRS is covered; they are consistent.</li>
+<li><b>Architectural design:</b> modules and relationships cover every requirement; modular, nothing missing.</li>
+<li><b>Interface design:</b> internal and external interfaces are complete and consistent with the SRS.</li>
+</ul>
+<p>Method: inspections, walkthroughs and reviews. The tester also prepares the function and integration test plan at this stage.</p>
+<p>Benefit: a design error found here costs far less than one found after coding.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">"Are we building the right product?" is the question of:</p><div class="opts"><button type="button" data-k="a">Verification</button><button type="button" data-k="b">Validation</button><button type="button" data-k="c">Debugging</button><button type="button" data-k="d">Test planning</button></div><p class="why" hidden>Validation is against customer needs. Verification asks whether we build it right.</p></div>
+<div class="mcq" data-a="c"><p class="q">Which belongs to verification of the high-level design?</p><div class="opts"><button type="button" data-k="a">Alpha testing</button><button type="button" data-k="b">Checking loop termination in code</button><button type="button" data-k="c">Interface design</button><button type="button" data-k="d">Writing the test log</button></div><p class="why" hidden>HLD verification covers data design, architectural design and interface design.</p></div>
+<div class="mcq" data-a="d"><p class="q">As development of a module nears completion, verification:</p><div class="opts"><button type="button" data-k="a">Increases in scope</button><button type="button" data-k="b">Stays the same</button><button type="button" data-k="c">Is replaced by planning</button><button type="button" data-k="d">Decreases, and validation takes over</button></div><p class="why" hidden>Validation starts replacing verification in the later stages.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 6 ============ -->
+<section class="lesson" id="vmodel" data-tier="1">
+<header class="lh"><span class="no">6</span><div><h2>The V testing life cycle model</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2025</span><span>About 25 min</span><span>Syllabus 1.2</span></p></div></header>
+
+<p>The V-model puts verification and validation into one picture. The left arm goes down through development, and at every step the tester builds the test plan that will be used on the right arm. The right arm goes back up, executing those plans.</p>
+
+<figure class="fig"><svg class="dg" viewBox="0 0 760 450" role="img" aria-labelledby="f6t"><title id="f6t">V testing life cycle model</title>
+<text class="t s h" x="10" y="20">Verification: a test plan is built at each step</text>
+<text class="t s h" x="750" y="20" text-anchor="end">Validation: the plans are executed</text>
+<path class="l d" d="M200 63H560"/><path class="l d" d="M250 147H510"/><path class="l d" d="M300 231H460"/><path class="l d" d="M350 315H410"/>
+<rect class="b hl" x="10" y="34" width="190" height="58" rx="8"/><text class="t h m" x="105" y="57">Requirement gathering</text><text class="t s m" x="105" y="77">builds acceptance test plan</text>
+<rect class="b hl" x="60" y="118" width="190" height="58" rx="8"/><text class="t h m" x="155" y="141">Requirement specification</text><text class="t s m" x="155" y="161">builds system test plan</text>
+<rect class="b hl" x="110" y="202" width="190" height="58" rx="8"/><text class="t h m" x="205" y="225">High-level design (HLD)</text><text class="t s m" x="205" y="245">builds function/integration plan</text>
+<rect class="b hl" x="160" y="286" width="190" height="58" rx="8"/><text class="t h m" x="255" y="309">Low-level design (LLD)</text><text class="t s m" x="255" y="329">builds unit test plan</text>
+<rect class="b" x="285" y="370" width="190" height="52" rx="8"/><text class="t h m" x="380" y="401">Coding</text>
+<rect class="b ok" x="560" y="34" width="190" height="58" rx="8"/><text class="t h m" x="655" y="68">Acceptance testing</text>
+<rect class="b ok" x="510" y="118" width="190" height="58" rx="8"/><text class="t h m" x="605" y="152">System testing</text>
+<rect class="b ok" x="460" y="202" width="190" height="58" rx="8"/><text class="t h m" x="555" y="228">Function and</text><text class="t h m" x="555" y="245">integration testing</text>
+<rect class="b ok" x="410" y="286" width="190" height="58" rx="8"/><text class="t h m" x="505" y="320">Unit testing</text>
+<path class="a" d="M105 94L155 116"/><path class="a" d="M155 178L205 200"/><path class="a" d="M205 262L255 284"/><path class="a" d="M255 346L330 368"/>
+<path class="a" d="M430 368L505 346"/><path class="a" d="M505 284L555 262"/><path class="a" d="M555 200L605 178"/><path class="a" d="M605 116L655 94"/>
+</svg><figcaption>Dashed lines pair each development step with the test level that checks it.</figcaption></figure>
+
+<div class="scroll"><table>
+<thead><tr><th>SDLC phase</th><th>Test plan built</th><th>Validation testing that executes it</th></tr></thead>
+<tbody>
+<tr><td>Requirement gathering</td><td>Acceptance test plan</td><td>Acceptance testing</td></tr>
+<tr><td>Requirement specification</td><td>System test plan</td><td>System testing</td></tr>
+<tr><td>Functional design / HLD</td><td>Function and integration test plan</td><td>Function and integration testing</td></tr>
+<tr><td>Internal design / LLD</td><td>Unit test plan</td><td>Unit testing</td></tr>
+</tbody></table></div>
+
+<p>Your slide also shows an <b>expanded V</b> with the same idea in other words: define specifications pairs with check specifications, design with check design, coding with unit test, integrate with integration and system test.</p>
+
+<div class="note tip"><b>The point of the V</b><p>Testing starts as soon as the SRS is prepared, not after coding. The tester performs verification and prepares a test plan during every SDLC phase, so test planning is finished before the code exists.</p></div>
+
+<h3>Advantages and limits</h3>
+<div class="grid3" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+<div><h4>Advantages</h4><ul><li>Test planning starts early, so defects are found early.</li><li>Every development phase has a matching test level, which makes coverage clear.</li><li>Verification and validation are both built in.</li></ul></div>
+<div><h4>Limits</h4><ul><li>Rigid and sequential. Changing requirements are expensive.</li><li>No working software until the coding stage.</li><li>Not a good fit for unclear requirements or iterative projects.</li></ul></div>
+</div>
+<div class="note src"><b>Not in your slides</b><p>The advantages and limits above are standard points added for the 10-mark answer. The diagram and the mapping table come straight from your slides.</p></div>
+
+<details class="sheet"><summary>Answer sheet: explain the V testing life cycle model with diagram <small>10 marks</small></summary>
+<div class="sbody">
+<h4>V testing life cycle model</h4>
+<p>The V-model integrates verification and validation. Testing is not left to the end; a test plan is prepared during each development phase.</p>
+<p class="draw">Draw the V with the four phases on the left arm and four test levels on the right.</p>
+<ul>
+<li><b>Left arm (verification):</b> requirement gathering builds the acceptance test plan; SRS builds the system test plan; HLD builds the function and integration plan; LLD builds the unit test plan.</li>
+<li><b>Bottom:</b> coding.</li>
+<li><b>Right arm (validation):</b> unit, function and integration, system, acceptance testing, executing those plans.</li>
+</ul>
+<p>Advantages: early test planning, clear mapping of phase to test level. Limits: rigid, no early working software.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="a"><p class="q">Which test plan is made during requirement gathering?</p><div class="opts"><button type="button" data-k="a">Acceptance test plan</button><button type="button" data-k="b">System test plan</button><button type="button" data-k="c">Function and integration test plan</button><button type="button" data-k="d">Unit test plan</button></div><p class="why" hidden>Requirement gathering pairs with acceptance. LLD pairs with unit.</p></div>
+<div class="mcq" data-a="c"><p class="q">Which statement is true?</p><div class="opts"><button type="button" data-k="a">Testing is performed only after coding</button><button type="button" data-k="b">Testing is performed only after integration</button><button type="button" data-k="c">Testing starts as soon as the SRS is prepared</button><button type="button" data-k="d">None of the above</button></div><p class="why" hidden>That is the main point of the V-model.</p></div>
+<div class="mcq" data-a="c"><p class="q">The V diagram includes:</p><div class="opts"><button type="button" data-k="a">Verification only</button><button type="button" data-k="b">Validation only</button><button type="button" data-k="c">Both verification and validation</button><button type="button" data-k="d">Neither</button></div><p class="why" hidden>Left arm verification, right arm validation.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 7 ============ -->
+<section class="lesson" id="validation" data-tier="1">
+<header class="lh"><span class="no">7</span><div><h2>Validation testing: unit, integration, function, system, acceptance</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022 (unit), Sep 2023 (types), Sep 2025 (pair-wise)</span><span>About 45 min</span><span>Syllabus 1.3</span></p></div></header>
+
+<p>Validation means running the software. It happens in levels, small to large, and each level matches one test plan from the V-model. Three of your five papers asked something from this lesson, so it is the biggest one in Module 1.</p>
+
+<div class="scroll"><table>
+<thead><tr><th>Level</th><th>What it tests</th><th>Who</th></tr></thead>
+<tbody>
+<tr><td><b>Unit</b></td><td>One module on its own. Needs drivers and stubs.</td><td>Developer</td></tr>
+<tr><td><b>Integration</b></td><td>The interfaces between modules as they are combined.</td><td>Testers and developers</td></tr>
+<tr><td><b>Function</b></td><td>Each business function against the requirements.</td><td>Testers</td></tr>
+<tr><td><b>System</b></td><td>The whole integrated system: stress, performance, security, compatibility, recovery.</td><td>Testers, developers, end-users</td></tr>
+<tr><td><b>Acceptance</b></td><td>Whether the software is fit for the user. Alpha and beta.</td><td>Testers, end-users</td></tr>
+</tbody></table></div>
+
+<h3>Unit testing</h3>
+<p>Unit validation testing checks one module in isolation before it is combined with others. It is done by the developer, who knows the code. The difficulty: a unit usually calls other units that are not ready, and nothing is calling it yet. Drivers and stubs fill those gaps.</p>
+<figure class="fig"><svg class="dg" viewBox="0 0 640 250" role="img" aria-labelledby="f7a"><title id="f7a">Driver, unit under test and stubs</title>
+<text class="t s" x="6" y="82">User input</text><path class="a" d="M6 90H68"/>
+<rect class="b hl" x="70" y="60" width="130" height="56" rx="8"/><text class="t h m" x="135" y="93">Driver module</text>
+<rect class="b mid" x="340" y="60" width="150" height="56" rx="8"/><text class="t h m" x="415" y="82">Unit to be</text><text class="t h m" x="415" y="99">tested</text>
+<path class="a" d="M200 76H338"/><text class="t s m" x="269" y="68">test inputs (call)</text>
+<path class="a" d="M338 102H202"/><text class="t s m" x="269" y="118">returned value</text>
+<path class="a" d="M135 118V176"/><text class="t s" x="143" y="150">output / result</text>
+<rect class="b" x="260" y="180" width="100" height="44" rx="8"/><text class="t h m" x="310" y="207">Stub</text>
+<rect class="b" x="375" y="180" width="100" height="44" rx="8"/><text class="t h m" x="425" y="207">Stub</text>
+<rect class="b" x="490" y="180" width="100" height="44" rx="8"/><text class="t h m" x="540" y="207">Stub</text>
+<path class="a" d="M380 118L320 178"/><path class="a" d="M425 118V178"/><path class="a" d="M450 118L530 178"/>
+</svg><figcaption>The driver plays the caller. The stubs play the units that the module under test calls.</figcaption></figure>
+<dl class="kv">
+<dt>Driver</dt><dd>A module that invokes the module under test: it supplies test inputs, controls and monitors execution, and reports results. In its simplest form it is a line of code that calls a method and passes a value.</dd>
+<dt>Stub</dt><dd>A stand-in for a subordinate unit that the unit under test calls. Much simpler than the real unit: it does nothing of its own, may print a trace message, and returns a constant or null. It can also simulate exceptions.</dd>
+</dl>
+<h4>Worked example from your slides</h4>
+<p><code>main()</code> reads three numbers and calls <code>calsum</code>, <code>caldiff</code> and <code>calmul</code>.</p>
+<pre><code>int calsum(int x, int y, int z) {
+    int d;
+    d = x + y + z;
+    return d;
+}</code></pre>
+<p><b>(a)</b> main() is not ready, but we want to test calsum(). Write a driver that stands in for main():</p>
+<pre><code>main() {
+    int a, b, c, sum;
+    scanf("%d %d %d", &amp;a, &amp;b, &amp;c);
+    sum = calsum(a, b, c);
+    printf("The output from calsum module is %d", sum);
+}</code></pre>
+<p><b>(b)</b> caldiff() and calmul() are not ready when we test main(). Write stubs:</p>
+<pre><code>caldiff(int x, int y, int z) {
+    printf("Difference calculating module");
+    return 0;
+}
+calmul(int x, int y, int z) {
+    printf("Multiplication calculation module");
+    return 0;
+}</code></pre>
+<p>Unit test cases for <code>calsum</code>:</p>
+<div class="scroll"><table><thead><tr><th>Test</th><th>x, y, z</th><th>Expected</th></tr></thead><tbody>
+<tr><td>1</td><td class="num">2, 3, 4</td><td class="num">9</td></tr>
+<tr><td>2</td><td class="num">0, 0, 0</td><td class="num">0</td></tr>
+<tr><td>3</td><td class="num">-5, 5, 0</td><td class="num">0</td></tr></tbody></table></div>
+
+<h3>Integration testing</h3>
+<p>After units pass, modules are combined and the tests look at the <b>interfaces</b> between them: data passed, calls made, results returned. Your slide groups the approaches into three families.</p>
+<h4>Decomposition-based: top-down and bottom-up</h4>
+<p>Modules form a tree by functional decomposition. <b>Top-down</b> starts at the main module and adds lower modules step by step, using stubs for the ones not yet added. <b>Bottom-up</b> starts with the lowest modules and moves up, using drivers for the callers not yet added.</p>
+<div class="scroll"><table>
+<thead><tr><th>Issue</th><th>Top-down</th><th>Bottom-up</th></tr></thead>
+<tbody>
+<tr><td>Architectural design</td><td>Errors in high-level design are found at an early stage.</td><td>High-level design is validated at a later stage.</td></tr>
+<tr><td>System demonstration</td><td>The system grows from top to bottom, so feasibility can be shown to top management early.</td><td>Feasibility may not be demonstrable early, unless some modules are reusable.</td></tr>
+<tr><td>Test implementation</td><td>(nodes &minus; 1) stubs are needed for subordinate modules.</td><td>(nodes &minus; leaves) drivers are needed for super-ordinate modules.</td></tr>
+</tbody></table></div>
+<h4>Call-graph-based: pair-wise and neighbourhood</h4>
+<p>Draw a <b>call graph</b>: each module is a node, each call is an edge. Then integrate along the edges instead of along a tree.</p>
+<ul>
+<li><b>Pair-wise integration:</b> every edge, that is every pair of modules where one calls the other, is tested together as one session. Only those two real units run. Everything else is left out or stubbed. Number of sessions = number of edges.</li>
+<li><b>Neighbourhood integration:</b> one node plus all its immediate callers and callees are tested together.</li>
+</ul>
+<h4>Path-based</h4>
+<p>Tests follow execution paths that cross module boundaries, instead of the structure of the call tree.</p>
+
+<h4>Pair-wise example: an online order system</h4>
+<p>Order calls Cart and Payment. Cart calls Inventory. Payment calls Gateway.</p>
+<figure class="fig"><svg class="dg" viewBox="0 0 620 260" role="img" aria-labelledby="f7b"><title id="f7b">Call graph with four pair-wise sessions</title>
+<rect class="b hl" x="260" y="10" width="100" height="40" rx="8"/><text class="t h m" x="310" y="35">Order</text>
+<rect class="b" x="110" y="100" width="100" height="40" rx="8"/><text class="t h m" x="160" y="125">Cart</text>
+<rect class="b" x="410" y="100" width="100" height="40" rx="8"/><text class="t h m" x="460" y="125">Payment</text>
+<rect class="b" x="110" y="195" width="100" height="40" rx="8"/><text class="t h m" x="160" y="220">Inventory</text>
+<rect class="b" x="410" y="195" width="100" height="40" rx="8"/><text class="t h m" x="460" y="220">Gateway</text>
+<path class="a" d="M285 52L180 98"/><path class="a" d="M335 52L440 98"/><path class="a" d="M160 142V193"/><path class="a" d="M460 142V193"/>
+<text class="t h" x="212" y="64">S1</text><text class="t h" x="395" y="64">S2</text><text class="t h" x="168" y="172">S3</text><text class="t h" x="468" y="172">S4</text>
+</svg><figcaption>Four edges, so four sessions.</figcaption></figure>
+<div class="scroll"><table><thead><tr><th>Session</th><th>Units tested together</th><th>What the test checks</th></tr></thead><tbody>
+<tr><td>S1</td><td>Order + Cart</td><td>Order passes the item and quantity; Cart returns the updated total.</td></tr>
+<tr><td>S2</td><td>Order + Payment</td><td>Order passes the amount; Payment returns success or failure.</td></tr>
+<tr><td>S3</td><td>Cart + Inventory</td><td>Cart asks for stock; Inventory returns available or out of stock.</td></tr>
+<tr><td>S4</td><td>Payment + Gateway</td><td>Payment sends the card request; Gateway returns approved or declined.</td></tr>
+</tbody></table></div>
+<p>Why it is useful: no big scaffolding of stubs and drivers is needed, and a failure points at one pair of modules, so it is quick to isolate. Its cost: more sessions than a top-down or bottom-up pass over a small tree.</p>
+
+<h3>Function testing</h3>
+<p>Measures the quality of the functional (business) components of the system. It checks that the system behaves correctly from the user's or business's point of view, according to the requirements. Each component or business event must:</p>
+<ol>
+<li>perform in accordance with the specifications,</li>
+<li>respond correctly to every condition that incoming events or data can create,</li>
+<li>move data correctly from one business event to the next, including data stores,</li>
+<li>be initiated in the order needed to meet the business objectives.</li>
+</ol>
+
+<h3>Sanity testing</h3>
+<div class="note src"><b>Not in your slides</b><p>Sanity testing is listed in syllabus 1.3 but the slides skip it, so this is the standard definition. A sanity test is a quick, narrow check, done on a new build or after a small fix, that the changed or most important functions work. If it fails, the build goes back to the developers and deeper testing does not start. Its broad, shallow cousin is the <i>smoke test</i>: does the build run at all?</p></div>
+
+<h3>System testing</h3>
+<p>Tests the fully integrated system against the system requirements before it is handed over for acceptance. It includes several kinds of testing:</p>
+<ul>
+<li><b>Stress:</b> push the system beyond its normal load or limits.</li>
+<li><b>Performance:</b> speed, response time, throughput.</li>
+<li><b>Security:</b> protection against unauthorised access.</li>
+<li><b>Compatibility:</b> works across operating systems, browsers, hardware.</li>
+<li><b>Recovery:</b> the system recovers after a crash or failure.</li>
+</ul>
+
+<h3>Acceptance testing</h3>
+<p>Designed to decide whether the software is fit for the user, to make users confident in the product, to check it against the acceptance criteria, and to let the buyer decide whether to accept it.</p>
+<div class="scroll"><table><thead><tr><th></th><th>Alpha testing</th><th>Beta testing</th></tr></thead><tbody>
+<tr><td><b>Where</b></td><td>At the development site</td><td>At the customer's site</td></tr>
+<tr><td><b>Who</b></td><td>End-users</td><td>End-users in their own setting</td></tr>
+<tr><td><b>Environment</b></td><td>Can be controlled somewhat</td><td>Development team has no control</td></tr>
+</tbody></table></div>
+<p>Installation testing is also listed under validation in your slides: it checks that the software installs and works correctly in the target environment.</p>
+
+<details class="sheet"><summary>Answer sheet: explain the different types of testing under validation <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Types of validation testing</h4>
+<p>Validation asks "are we building the right product?". It executes the software in levels, each matching a test plan of the V-model.</p>
+<p class="draw">Draw the levels: unit, integration, function, system, acceptance.</p>
+<ul>
+<li><b>Unit testing:</b> one module in isolation, using drivers and stubs. By the developer.</li>
+<li><b>Integration testing:</b> checks interfaces as modules are combined. Top-down, bottom-up, pair-wise.</li>
+<li><b>Function testing:</b> each business function against the requirements.</li>
+<li><b>System testing:</b> whole system. Stress, performance, security, compatibility, recovery.</li>
+<li><b>Acceptance testing:</b> fit for the user. Alpha at the developer's site, beta at the customer's site.</li>
+</ul>
+<p>Add one line on installation testing if you have space.</p>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: unit testing with a suitable example <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Unit testing</h4>
+<p>Unit validation testing tests the smallest piece of software, one module, in isolation. The developer does it first.</p>
+<ul>
+<li>Problem: the unit calls modules that may not exist yet, and nothing calls it.</li>
+<li><b>Driver:</b> invokes the unit, supplies inputs, reports results.</li>
+<li><b>Stub:</b> stands in for a called module and returns a constant.</li>
+</ul>
+<p class="draw">Draw the driver, unit and stub figure.</p>
+<p>Example: main() calls calsum(), caldiff(), calmul().</p>
+<ul>
+<li>Test calsum() alone: write a driver that reads a, b, c and prints calsum(a,b,c).</li>
+<li>Test main() alone: write stubs for caldiff() and calmul() that print a message and return 0.</li>
+<li>Test cases for calsum: (2,3,4) gives 9; (0,0,0) gives 0; (-5,5,0) gives 0.</li>
+</ul>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: pair-wise integration testing with example <small>about 5 marks of a "describe any two"</small></summary>
+<div class="sbody">
+<h4>Pair-wise integration testing</h4>
+<p>A call-graph-based integration method. Modules are nodes and calls are edges. Each edge, a pair of modules where one calls the other, is tested together as one session.</p>
+<p class="draw">Draw the Order, Cart, Payment, Inventory, Gateway call graph.</p>
+<ul>
+<li>Sessions: Order+Cart, Order+Payment, Cart+Inventory, Payment+Gateway. Four edges give four sessions.</li>
+<li>Each session checks the data passed across the call and the value returned.</li>
+</ul>
+<p>Advantages: little stub and driver scaffolding, and a failure points to one pair, so isolation is easy.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="a"><p class="q">Which module calls the unit under test and supplies its test inputs?</p><div class="opts"><button type="button" data-k="a">Driver</button><button type="button" data-k="b">Stub</button><button type="button" data-k="c">Oracle</button><button type="button" data-k="d">Mutant</button></div><p class="why" hidden>A driver is the caller. A stub is the called module's stand-in.</p></div>
+<div class="mcq" data-a="b"><p class="q">A stub typically:</p><div class="opts"><button type="button" data-k="a">Contains the full logic of the real module</button><button type="button" data-k="b">Returns a constant or null and may print a trace message</button><button type="button" data-k="c">Calls the unit under test</button><button type="button" data-k="d">Replaces the tester</button></div><p class="why" hidden>Stubs are deliberately simple placeholders for subordinate modules.</p></div>
+<div class="mcq" data-a="c"><p class="q">In pair-wise integration testing, one test session covers:</p><div class="opts"><button type="button" data-k="a">A whole subtree of modules</button><button type="button" data-k="b">A single module</button><button type="button" data-k="c">One pair of modules joined by a call, an edge in the call graph</button><button type="button" data-k="d">The complete system</button></div><p class="why" hidden>Sessions equal the number of edges.</p></div>
+<div class="mcq" data-a="d"><p class="q">Beta testing is carried out:</p><div class="opts"><button type="button" data-k="a">At the development site under full control</button><button type="button" data-k="b">By developers only</button><button type="button" data-k="c">Before unit testing</button><button type="button" data-k="d">At the customer's site, with no control by the development team</button></div><p class="why" hidden>Alpha is at the developer's site; beta is at the customer's.</p></div>
+<div class="mcq" data-a="b"><p class="q">Bottom-up integration testing needs:</p><div class="opts"><button type="button" data-k="a">Only stubs</button><button type="button" data-k="b">Drivers for the super-ordinate modules</button><button type="button" data-k="c">No scaffolding at all</button><button type="button" data-k="d">Beta users</button></div><p class="why" hidden>Top-down needs stubs; bottom-up needs drivers.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 8 ============ -->
+<section class="lesson" id="strategy" data-tier="2">
+<header class="lh"><span class="no">8</span><div><h2>Testing principles and test strategy</h2>
+<p class="meta"><span class="sev major">Major</span><span>Never asked yet</span><span>About 15 min</span><span>Syllabus 1.1</span></p></div></header>
+
+<p>Read this once. If a short question on principles or strategy turns up, this is enough.</p>
+
+<h3>Ten principles of testing</h3>
+<ol>
+<li>Effective testing, not exhaustive testing.</li>
+<li>Testing is not a single phase of the SDLC.</li>
+<li>Destructive approach for constructive testing: try to break the software so it can be made better.</li>
+<li>Early testing is the best policy.</li>
+<li>Error clustering: the chance of an error in a section is proportional to the number of errors already found there.</li>
+<li>Start testing at the smallest module and expand towards the whole program.</li>
+<li>Testing should also be done by an independent team.</li>
+<li>Everything must be recorded.</li>
+<li>Invalid inputs and unexpected behaviour have a high chance of finding errors.</li>
+<li>Testers must take part in specification and design reviews.</li>
+</ol>
+
+<h3>Test strategy</h3>
+<p>A test strategy has to continue until the project is implemented, and runs from component level to the whole system. It is organised as a <b>matrix</b> of test factors against test phases. To create one:</p>
+<ol>
+<li>Select and rank the test factors (for example portability, service level).</li>
+<li>Identify the test phases (requirements, design, code, unit test, integration test, system test).</li>
+<li>Identify the risks for each factor in each phase.</li>
+<li>Plan the strategy for every risk found.</li>
+</ol>
+<div class="scroll"><table><thead><tr><th>Factor</th><th>Requirements</th><th>Design</th><th>System test</th></tr></thead><tbody>
+<tr><td>Portability</td><td>Is a portability feature mentioned in the specification for different hardware?</td><td></td><td>Is system testing performed on MIPS and Intel platforms?</td></tr>
+<tr><td>Service level</td><td>Is the time frame for booting mentioned?</td><td>Is the time frame incorporated in the module's design?</td><td></td></tr>
+</tbody></table></div>
+<p>When building the methodology: determine the project risks, determine the type of project, pick test activities for each SDLC phase, then build the test plan. The test plan covers: environment and background, overall objectives, test team, schedule and budget, resources, testing materials, the functions to be tested, and the technique to use in each phase.</p>
+<p>The two families of techniques come next, in Module 2: <b>static</b> (no execution) and <b>dynamic</b> (execution, either black-box or white-box).</p>
+</section>
+
+<!-- ============ LESSON 9 ============ -->
+<section class="lesson" id="skim" data-tier="3">
+<header class="lh"><span class="no">9</span><div><h2>One-minute facts</h2>
+<p class="meta"><span class="sev minor">Minor</span><span>Slide filler</span><span>About 5 min</span><span>Syllabus 1.1</span></p></div></header>
+<ul>
+<li><b>Myths:</b> testing is a single phase; testing is easy; development is worth more than testing; complete testing is possible; testing starts after coding; the purpose is only to check functionality; anyone can be a tester. All false.</li>
+<li><b>Types of input:</b> valid, invalid (out of range, letters with digits, control characters, any other key), edited, race-condition.</li>
+<li><b>Bug classification by SDLC phase:</b> requirements and specification bugs; design bugs (control flow, logic, processing, data flow, error handling, race condition, boundary, user interface); coding bugs; interface and integration bugs; system bugs; testing bugs.</li>
+<li><b>Effective testing is hard</b> because defects are hard to find and it is hard to say when testing is done.</li>
+<li><b>Failure case studies:</b> the slide lists nine. Ariane 5 (June 1996) is the classic: a number conversion error in reused software destroyed the rocket. Mars Climate Orbiter (1999) was lost because one team used metric units and another used imperial.</li>
+</ul>
+</section>
+
+<!-- ============ LESSON 10 ============ -->
+<section class="lesson" id="mock" data-tier="4">
+<header class="lh"><span class="no">10</span><div><h2>Mock paper for Module 1</h2>
+<p class="meta"><span>22 minutes per question</span><span>Paper and pen only</span></p></div></header>
+<p>Set a timer and answer from memory. This mirrors the shape of your papers: three questions of 10 marks, each with a choice. Then check yourself against the points under each question.</p>
+
+<div class="prob"><b>Q1 (10 marks), attempt any one</b><p>A. Draw the Software Testing Life Cycle and explain briefly.<br>B. Define failure, fault, error, test case and test oracle, with an example.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>A:</b> four boxes drawn with feedback; planning, design, execution, post-execution each with 3 to 4 activities; outputs named (strategy, test cases, bug reports). <b>B:</b> five terms, each with a one-line definition and a worked example (add(a,b) works well).</p></div></details>
+
+<div class="prob"><b>Q2 (10 marks), attempt any one</b><p>A. Explain verification of the high-level design.<br>B. Explain the different types of testing that come under validation.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>A:</b> verification versus validation in one line; data, architectural and interface design, each with checks. <b>B:</b> unit, integration, function, system, acceptance; driver and stub mention; alpha versus beta.</p></div></details>
+
+<div class="prob"><b>Q3 (10 marks), attempt any one</b><p>A. Explain the life cycle of a bug with a block diagram and list its states.<br>B. Explain software testing as a process in detail with a diagram.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>A:</b> bugs-in and bugs-out diagram; the nine states, with deferred, rejected and reopened explained. <b>B:</b> 1.0, 2.0, 3.0; five process properties; the model diagram; the four STLC phases.</p></div></details>
+
+<h3>Not asked yet, but fair game</h3>
+<ul>
+<li>Difference between verification and validation.</li>
+<li>Top-down versus bottom-up integration testing.</li>
+<li>Alpha versus beta testing.</li>
+<li>Principles of testing; effective versus exhaustive testing.</li>
+<li>Test case template; test strategy matrix.</li>
+</ul>
+<p>Scores in the quizzes are for you only. They are not saved anywhere.</p>
+<p class="score" id="score">Quiz score so far: no questions answered yet.</p>
+</section>
+
+<!-- ============ LESSON 11 ============ -->
+<section class="lesson" id="cheat" data-tier="4">
+<header class="lh"><span class="no">11</span><div><h2>Last-hour sheet</h2>
+<p class="meta"><span>Read this just before the exam</span></p></div></header>
+<dl class="kv">
+<dt>Chain</dt><dd>Error (human slip) → fault (in the product) → failure (wrong behaviour) → incident (symptom noticed).</dd>
+<dt>Oracle</dt><dd>What decides pass or fail. Test case = ID + inputs + expected output.</dd>
+<dt>Bug states</dt><dd>New, Open, Assign, Deferred, Rejected, Test, Verified/Fixed, Reopened (Responded), Closed. Phases: bugs-in, bugs-out (classify, isolate, resolve).</dd>
+<dt>Goals</dt><dd>Immediate: discovery, prevention. Long-term: reliability, quality, customer satisfaction, risk management. Post-implementation: lower maintenance cost, better testing process.</dd>
+<dt>Process</dt><dd>1.0 single phase after coding; 2.0 early testing; 3.0 strategic process. Five properties: time for critical features, techniques that find most bugs, quantified quality goals, documented procedures, continuous improvement.</dd>
+<dt>STLC</dt><dd>Planning, design, execution, post-execution. Outputs: strategy, test cases, bug reports and metrics. Execution gives incident report, test log, summary report.</dd>
+<dt>V and V</dt><dd>Verification: build it right, static, up to coding. Validation: build the right thing, executes the software.</dd>
+<dt>HLD</dt><dd>Data design, architectural design, interface design.</dd>
+<dt>V-model</dt><dd>Requirements → acceptance plan. SRS → system plan. HLD → function and integration plan. LLD → unit plan. Right arm executes them.</dd>
+<dt>Levels</dt><dd>Unit (driver and stub), integration (top-down needs stubs, bottom-up needs drivers, pair-wise = one edge per session), function, system (stress, performance, security, compatibility, recovery), acceptance (alpha at developer, beta at customer).</dd>
+</dl>
+</section>
+
+</div></main>
+</div>
+<script>window.COURSE={"id": "m1", "title": "Module 1: Testing Methodology", "sub": "Software Testing and Quality Assurance", "tiers": {"1": "Critical: already asked", "2": "Major: in syllabus, not asked yet", "3": "Minor: skim", "4": "Finish line"}, "other": {"href": "STQA_Module2_Testing_Techniques.html", "label": "Open Module 2: Testing Techniques"}};</script>
+<script>
+(function(){
+  var C = window.COURSE || {};
+  var KEY = 'stqa:' + (C.id || 'x') + ':done';
+  var done = {};
+  try { done = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { done = {}; }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(done)); } catch(e) {} }
+
+  var lessons = Array.prototype.slice.call(document.querySelectorAll('section.lesson'));
+
+  /* ---- build outline ---- */
+  var nav = document.getElementById('outline');
+  if (nav) {
+    var html = '<p class="brand">' + C.title + '</p><p class="sub">' + (C.sub || '') + '</p>' +
+      '<div class="bar" aria-hidden="true"><i id="barfill"></i></div><p class="count" id="barcount"></p>';
+    var tiers = C.tiers || {};
+    Object.keys(tiers).forEach(function(t){
+      var inTier = lessons.filter(function(s){ return s.dataset.tier === t; });
+      if (!inTier.length) return;
+      html += '<h6>' + tiers[t] + '</h6><ol>';
+      inTier.forEach(function(s){
+        var n = s.querySelector('.no'), h = s.querySelector('h2');
+        html += '<li><a href="#' + s.id + '" data-id="' + s.id + '"><span class="n">' + (n ? n.textContent : '') +
+                '</span><span class="t">' + h.textContent + '</span></a></li>';
+      });
+      html += '</ol>';
+    });
+    if (C.other) html += '<div class="other"><a href="' + C.other.href + '">' + C.other.label + '</a></div>';
+    nav.innerHTML = html;
+  }
+
+  function refresh(){
+    var n = 0;
+    lessons.forEach(function(s){
+      var d = !!done[s.id]; if (d) n++;
+      var a = document.querySelector('.outline a[data-id="' + s.id + '"]');
+      if (a) a.classList.toggle('done', d);
+      var b = s.querySelector('.donebtn');
+      if (b) { b.setAttribute('aria-pressed', d ? 'true' : 'false'); b.textContent = d ? 'Done. Click to undo' : 'Mark this lesson as done'; }
+    });
+    var f = document.getElementById('barfill'), c = document.getElementById('barcount');
+    if (f) f.style.width = (lessons.length ? Math.round(100 * n / lessons.length) : 0) + '%';
+    if (c) c.textContent = n + ' of ' + lessons.length + ' lessons done';
+  }
+
+  /* ---- done buttons ---- */
+  lessons.forEach(function(s){
+    var bar = document.createElement('div'); bar.className = 'donebar';
+    bar.innerHTML = '<button type="button" class="donebtn" aria-pressed="false"></button>';
+    s.appendChild(bar);
+    bar.firstChild.addEventListener('click', function(){ done[s.id] = !done[s.id]; save(); refresh(); });
+  });
+  refresh();
+
+  /* ---- MCQs ---- */
+  var total = 0, right = 0, answered = 0;
+  var mcqs = Array.prototype.slice.call(document.querySelectorAll('.mcq'));
+  total = mcqs.length;
+  mcqs.forEach(function(q){
+    var ans = q.dataset.a;
+    q.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (q.classList.contains('done')) return;
+        q.classList.add('done'); answered++;
+        var ok = btn.dataset.k === ans;
+        if (ok) right++;
+        btn.classList.add(ok ? 'right' : 'wrong');
+        if (!ok) { var r = q.querySelector('button[data-k="' + ans + '"]'); if (r) r.classList.add('right'); }
+        var w = q.querySelector('.why'); if (w) w.hidden = false;
+        var sc = document.getElementById('score'); if (sc) sc.textContent = 'Quiz score so far: ' + right + ' correct out of ' + answered + ' answered (' + total + ' questions on this page).';
+      });
+    });
+  });
+
+  /* ---- mobile menu ---- */
+  var mb = document.getElementById('menubtn');
+  if (mb) mb.addEventListener('click', function(){ document.body.classList.toggle('menu'); });
+  if (nav) nav.addEventListener('click', function(e){ if (e.target.closest('a')) document.body.classList.remove('menu'); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') document.body.classList.remove('menu'); });
+  document.addEventListener('click', function(e){
+    if (document.body.classList.contains('menu') && !e.target.closest('#outline') && !e.target.closest('#menubtn')) document.body.classList.remove('menu');
+  });
+
+  /* ---- scrollspy ---- */
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if (en.isIntersecting) {
+          document.querySelectorAll('.outline a.on').forEach(function(a){ a.classList.remove('on'); });
+          var a = document.querySelector('.outline a[data-id="' + en.target.id + '"]');
+          if (a) { a.classList.add('on'); }
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    lessons.forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---- print: open every reveal ---- */
+  window.addEventListener('beforeprint', function(){ document.querySelectorAll('details').forEach(function(d){ d.open = true; }); });
+})();
+
+</script>
+
+</body>
+</html>

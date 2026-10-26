@@ -1,0 +1,1471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>STQA Module 2: Testing Techniques</title>
+<style>
+:root{
+  --paper:#f2f5f9; --sheet:#ffffff; --ink:#0f1a35; --ink2:#47536d; --rule:#d2d9e5; --tint:#e8edf6;
+  --blue:#2146c7; --blue-t:#e3e9fc;
+  --crit:#b81f33; --crit-t:#fbe5e8;
+  --major:#9a5a05; --major-t:#fcefd8;
+  --minor:#4f5d75; --minor-t:#e6eaf1;
+  --pass:#17784f; --pass-t:#dcf2e6;
+  --answer:#ffffff; --lines:#d3e2f6; --margin:#e58b93;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Noto Serif",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0d1322; --sheet:#141b2f; --ink:#e8edf9; --ink2:#a5b0c8; --rule:#29334f; --tint:#1b2441;
+    --blue:#94abff; --blue-t:#1c2a58;
+    --crit:#ff8b9a; --crit-t:#3a1a24;
+    --major:#f0b45c; --major-t:#3a2c12;
+    --minor:#a9b4c9; --minor-t:#222b43;
+    --pass:#5fd49a; --pass-t:#143427;
+    --answer:#1a2238; --lines:#29345a; --margin:#a8545e;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 var(--sans)}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:3px}
+.shell{display:grid;grid-template-columns:292px minmax(0,1fr);min-height:100vh}
+
+/* ---------- outline sidebar ---------- */
+.outline{position:sticky;top:0;height:100vh;overflow:auto;padding:26px 20px 40px;background:var(--sheet);border-right:1px solid var(--rule);font-size:.92rem;line-height:1.35}
+.outline .brand{font:700 1.05rem/1.25 var(--serif);margin:0 0 4px}
+.outline .sub{color:var(--ink2);margin:0 0 18px}
+.outline .bar{height:6px;background:var(--tint);border-radius:3px;overflow:hidden}
+.outline .bar i{display:block;height:100%;width:0;background:var(--pass);transition:width .25s}
+.outline .count{margin:6px 0 20px;color:var(--ink2);font-size:.85rem}
+.outline h6{margin:20px 0 6px;font:650 .85rem/1.3 var(--sans);color:var(--ink2)}
+.outline ol{list-style:none;margin:0;padding:0}
+.outline li a{display:grid;grid-template-columns:22px 1fr;gap:6px;padding:7px 8px;margin:0 -8px;border-radius:6px;color:var(--ink);text-decoration:none}
+.outline li a:hover{background:var(--tint)}
+.outline li a.on{background:var(--blue-t);font-weight:600}
+.outline li a .n{color:var(--ink2);font-variant-numeric:tabular-nums}
+.outline li a.done .t::after{content:"  ✓";color:var(--pass);font-weight:700}
+.outline .other{margin-top:26px;padding-top:16px;border-top:1px solid var(--rule)}
+.topbar{display:none}
+
+/* ---------- main ---------- */
+main{padding:56px clamp(20px,5vw,72px) 140px}
+.col{max-width:700px}
+h1{font:700 clamp(2rem,5vw,3.1rem)/1.1 var(--serif);letter-spacing:-.015em;margin:0 0 10px}
+.lede{font-size:1.15rem;color:var(--ink2);margin:0 0 28px;max-width:46ch}
+h2{font:700 clamp(1.55rem,3.4vw,2rem)/1.2 var(--serif);letter-spacing:-.01em;margin:0}
+h3{font:650 1.15rem/1.35 var(--sans);margin:34px 0 6px}
+h4{font:650 1rem/1.4 var(--sans);margin:22px 0 4px}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:1.3em}
+li{margin:0 0 5px}
+li>ul,li>ol{margin-top:5px}
+code{font:.88em var(--mono);background:var(--tint);padding:1px 5px;border-radius:4px}
+pre{font:.88rem/1.5 var(--mono);background:var(--tint);padding:14px 16px;border-radius:8px;overflow:auto;margin:0 0 16px}
+pre code{background:none;padding:0}
+hr.sec{border:0;border-top:1px solid var(--rule);margin:72px 0 0}
+sup,sub{line-height:0}
+
+/* lesson head */
+.lesson{padding-top:56px;scroll-margin-top:8px}
+.lh{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:start;margin-bottom:22px}
+.lh .no{font:700 2.6rem/1 var(--serif);color:var(--ink2);opacity:.55;min-width:1.3ch;text-align:right}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;font-size:.88rem;color:var(--ink2)}
+.sev{font-weight:700;padding:1px 9px;border-radius:99px;font-size:.84rem}
+.sev.crit{background:var(--crit-t);color:var(--crit)}
+.sev.major{background:var(--major-t);color:var(--major)}
+.sev.minor{background:var(--minor-t);color:var(--minor)}
+
+/* callouts */
+.note{margin:18px 0;padding:12px 16px 4px;border-left:4px solid var(--blue);background:var(--blue-t);border-radius:0 8px 8px 0}
+.note>b:first-child{display:block;margin-bottom:3px}
+.note.tip{border-color:var(--pass);background:var(--pass-t)}
+.note.warn{border-color:var(--crit);background:var(--crit-t)}
+.note.src{border-color:var(--major);background:var(--major-t)}
+.note.plain{border-color:var(--minor);background:var(--minor-t)}
+
+/* tables */
+.scroll{overflow-x:auto;margin:14px 0 20px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet)}
+table{border-collapse:collapse;width:100%;font-size:.93rem;line-height:1.45}
+th,td{padding:8px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+th{background:var(--tint);font-weight:650}
+tr:last-child td{border-bottom:0}
+td.c,th.c{text-align:center}
+.num{font-variant-numeric:tabular-nums}
+tr.bad td{color:var(--crit)}
+td.ok{color:var(--pass);font-weight:600}
+td.no{color:var(--crit);font-weight:600}
+
+/* figures */
+figure.fig{margin:22px 0;padding:14px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px}
+figure.fig svg{display:block;width:100%;height:auto;max-width:100%}
+figure.fig figcaption{margin-top:8px;font-size:.86rem;color:var(--ink2)}
+.dg .b{fill:var(--sheet);stroke:var(--ink2);stroke-width:1.4}
+.dg .b.hl{fill:var(--blue-t);stroke:var(--blue)}
+.dg .b.ok{fill:var(--pass-t);stroke:var(--pass)}
+.dg .b.bad{fill:var(--crit-t);stroke:var(--crit)}
+.dg .b.mid{fill:var(--major-t);stroke:var(--major)}
+.dg .t{fill:var(--ink);font:13px var(--sans)}
+.dg .t.s{font-size:11.5px;fill:var(--ink2)}
+.dg .t.h{font-weight:700}
+.dg .t.m{text-anchor:middle}
+.dg .a{fill:none;stroke:var(--ink2);stroke-width:1.5;marker-end:url(#arr)}
+.dg .a.d{stroke-dasharray:5 4}
+.dg .a.r{stroke:var(--crit);marker-end:url(#arrr)}
+.dg .l{fill:none;stroke:var(--ink2);stroke-width:1.4}
+.dg .l.d{stroke-dasharray:4 4;opacity:.7}
+.mk-a{fill:var(--ink2)} .mk-r{fill:var(--crit)}
+
+/* problem + reveal */
+.prob{margin:18px 0 10px;padding:14px 18px 2px;background:var(--sheet);border:1px solid var(--rule);border-left:4px solid var(--blue);border-radius:0 8px 8px 0}
+.prob>b:first-child{display:block;margin-bottom:4px}
+details.try{margin:0 0 24px;border:1px dashed var(--ink2);border-radius:10px;background:transparent}
+details.try>summary{cursor:pointer;padding:11px 16px;font-weight:650;list-style:none;display:flex;align-items:center;gap:10px}
+details.try>summary::-webkit-details-marker{display:none}
+details.try>summary::before{content:"+";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--blue);color:var(--sheet);font-weight:700;line-height:1}
+details.try[open]>summary::before{content:"–"}
+details.try>.in{padding:2px 18px 6px;border-top:1px dashed var(--rule)}
+
+/* answer sheet */
+details.sheet{margin:26px 0 30px}
+details.sheet>summary{cursor:pointer;list-style:none;padding:12px 16px;background:var(--ink);color:var(--paper);border-radius:8px;font-weight:650;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+details.sheet>summary::-webkit-details-marker{display:none}
+details.sheet>summary small{font-weight:400;opacity:.8}
+details.sheet[open]>summary{border-radius:8px 8px 0 0}
+.sbody{--ln:28px;position:relative;padding:var(--ln) 22px 14px 66px;background-color:var(--answer);background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ln) - 1px),var(--lines) calc(var(--ln) - 1px),var(--lines) var(--ln));border:1px solid var(--rule);border-top:0;border-radius:0 0 8px 8px;font:16.5px/var(--ln) var(--serif)}
+.sbody::before{content:"";position:absolute;top:0;bottom:0;left:50px;width:2px;background:var(--margin)}
+.sbody h4{margin:0;font:700 16.5px/var(--ln) var(--serif)}
+.sbody p{margin:0 0 var(--ln);line-height:var(--ln)}
+.sbody ul,.sbody ol{margin:0 0 var(--ln);padding-left:1.25em}
+.sbody li{margin:0;line-height:var(--ln)}
+.sbody li>ul,.sbody li>ol{margin:0}
+.sbody code{line-height:1;font-size:.85em}
+.sbody .draw{color:var(--blue);font-style:italic}
+.sbody b{font-weight:700}
+
+/* quiz */
+.quiz{margin:26px 0 0;padding-top:6px}
+.quiz>h3{margin-top:0}
+.mcq{margin:0 0 20px}
+.mcq .q{font-weight:600;margin:0 0 8px}
+.mcq .opts{display:grid;gap:6px}
+.mcq button{all:unset;box-sizing:border-box;cursor:pointer;display:block;padding:8px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet);font-size:.96rem;line-height:1.45}
+.mcq button:hover{border-color:var(--blue)}
+.mcq button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.mcq.done button{cursor:default}
+.mcq.done button:hover{border-color:var(--rule)}
+.mcq button.right{background:var(--pass-t);border-color:var(--pass)}
+.mcq button.wrong{background:var(--crit-t);border-color:var(--crit)}
+.mcq .why{margin:8px 0 0;font-size:.93rem;color:var(--ink2)}
+.score{margin:6px 0 0;font-size:.92rem;color:var(--ink2)}
+
+/* done button */
+.donebar{margin:34px 0 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.donebtn{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 16px;border-radius:8px;border:1px solid var(--blue);color:var(--blue);font-weight:650;font-size:.95rem}
+.donebtn:hover{background:var(--blue-t)}
+.donebtn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.donebtn[aria-pressed="true"]{background:var(--pass);border-color:var(--pass);color:var(--sheet)}
+
+/* generic helpers */
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--rule);border-radius:10px;background:var(--sheet);overflow:hidden;margin:16px 0 22px}
+.grid3>div{padding:14px 16px 6px;border-right:1px solid var(--rule)}
+.grid3>div:last-child{border-right:0}
+.grid3 h4{margin:0 0 6px}
+.grid3 ul{padding-left:1.1em;margin-bottom:8px;font-size:.95rem}
+.steps{counter-reset:s;list-style:none;padding:0;margin:14px 0 20px}
+.steps li{counter-increment:s;position:relative;padding:2px 0 12px 46px;margin:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:700 .9rem var(--sans)}
+.steps li::after{content:"";position:absolute;left:14px;top:32px;bottom:2px;width:2px;background:var(--rule)}
+.steps li:last-child::after{display:none}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:12px 0 18px}
+.kv dt{font-weight:650}.kv dd{margin:0}
+.pill{display:inline-block;padding:0 8px;border-radius:99px;background:var(--tint);font-size:.86rem;font-weight:600;white-space:nowrap}
+.ok{color:var(--pass)} .no{color:var(--crit)}
+.plan td:first-child{white-space:nowrap}
+
+/* generator (module 2) */
+.gen{margin:18px 0 24px;padding:16px 18px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px}
+.gen .row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end;margin-bottom:10px}
+.gen label{display:grid;gap:3px;font-size:.85rem;color:var(--ink2);font-weight:600}
+.gen input,.gen select{font:inherit;font-size:.95rem;padding:6px 8px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);width:96px}
+.gen select{width:auto}
+.gen .out{margin-top:10px}
+.gen .count{font-weight:650;margin:0 0 8px}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .shell{display:block}
+  .topbar{display:flex;position:sticky;top:0;z-index:20;align-items:center;gap:12px;padding:10px 16px;background:var(--sheet);border-bottom:1px solid var(--rule)}
+  .topbar button{all:unset;cursor:pointer;padding:6px 12px;border:1px solid var(--rule);border-radius:8px;font-weight:650;font-size:.92rem}
+  .topbar button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  .topbar span{font:700 .98rem var(--serif);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .outline{position:fixed;z-index:30;left:0;top:0;bottom:0;width:min(86vw,320px);height:auto;transform:translateX(-102%);transition:transform .2s;box-shadow:0 0 0 100vmax transparent}
+  body.menu .outline{transform:none;box-shadow:0 0 0 100vmax rgba(8,12,24,.5)}
+  main{padding:28px 16px 100px}
+  .lesson{padding-top:44px}
+  .grid3{grid-template-columns:1fr}
+  .grid3>div{border-right:0;border-bottom:1px solid var(--rule)}
+  .grid3>div:last-child{border-bottom:0}
+  .sbody{padding-left:50px;padding-right:14px}
+  .sbody::before{left:36px}
+  .lh .no{font-size:2rem}
+}
+@media print{
+  .outline,.topbar,.donebar{display:none!important}
+  .shell{display:block} body{background:#fff;color:#000;font-size:12pt}
+  main{padding:0} .lesson{break-inside:auto}
+  .sbody{background-image:none}
+}
+
+.gen button.pill{all:unset;box-sizing:border-box;cursor:pointer;padding:5px 12px;border:1px solid var(--blue);color:var(--blue);border-radius:99px;font-size:.88rem;font-weight:600;background:var(--sheet)}
+.gen button.pill:hover{background:var(--blue-t)}
+.gen button.pill:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+@media (max-width:640px){.kv{grid-template-columns:1fr;gap:2px}.kv dt{margin-top:10px}.kv dd{margin-bottom:2px}}
+
+@media (max-width:960px){.lesson{scroll-margin-top:64px}}
+
+.plan td:first-child,.plan th:first-child{width:1%;white-space:nowrap}
+
+.lesson{margin-top:56px;border-top:1px solid var(--rule)}
+.intro{margin-top:8px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-a" d="M0 0L10 5L0 10z"/></marker>
+<marker id="arrr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-r" d="M0 0L10 5L0 10z"/></marker>
+</defs></svg>
+<div class="topbar"><button type="button" id="menubtn" aria-label="Open the lesson outline">Outline</button><span>Module 2: Testing Techniques</span></div>
+<div class="shell">
+<nav class="outline" id="outline" aria-label="Course outline"></nav>
+<main><div class="col">
+<h1>Module 2: Testing Techniques</h1>
+<p class="lede">Software Testing and Quality Assurance, syllabus units 2.1 to 2.3. Built from your five past papers and your Chapter 2 slides.</p>
+
+<section class="intro" id="plan">
+<h3>What your past papers actually ask</h3>
+<div class="scroll"><table class="plan">
+<thead><tr><th>Paper</th><th>Module 2 questions asked (10 marks each)</th></tr></thead>
+<tbody>
+<tr><td>Oct 2022</td><td>a<sup>b</sup> with a in [1,8] and b in [1,4]: boundary value checking, robust and worst-case. Option: usability and accessibility testing.</td></tr>
+<tr><td>Sep 2023</td><td>Three numbers in [1,50], print the largest: boundary value checking, or robust testing. Also: explain equivalence class testing with a valid example.</td></tr>
+<tr><td>Sep 2024</td><td>Valid and invalid equivalence classes (2), then three numbers in [1,20] with equivalence classes (8). Also: static testing, list the techniques, explain any two.</td></tr>
+<tr><td>Sep 2025</td><td>Structured walkthrough; objectives of regression testing and when it is performed. Option: equivalence partitioning for A in 1 to 100 and B in 20 to 40, or a control flow graph and basis path testing for a small if/else program.</td></tr>
+<tr><td>Oct 2025 (re-exam)</td><td>An age field that accepts 18 to 60: test cases by boundary value analysis. Option: usability and accessibility testing.</td></tr>
+</tbody></table></div>
+<div class="note tip"><b>The finding that matters most</b><p>Every one of the five papers had a boundary-value or equivalence-class numerical to choose or to answer. In Sep 2025 it was one of two options, the other being basis path testing. These are 10 marks you can make nearly certain by practising, which is why Lessons 1 and 2 are the longest.</p></div>
+
+<h3>How the labels work</h3>
+<ul>
+<li><span class="sev crit">Critical</span> has already appeared as a question in your papers. Learn these first, in order.</li>
+<li><span class="sev major">Major</span> is in the syllabus (2.2) and never asked yet. Read once.</li>
+<li><span class="sev minor">Minor</span> is in your slides but not in the syllabus. Skip, or read one line.</li>
+</ul>
+<div class="note src"><b>Two gaps in your slides</b><p>Usability and accessibility testing is in the syllabus and was asked in two papers, but it is not in your Chapter 2 slides, so Lesson 5 teaches it from standard references. Unit testing and integration testing are asked often, but their slides are in Chapter 2 (pages 105 to 116), so they live in Module 1, Lesson 7.</p></div>
+<div class="note tip"><b>Plan for about 4½ hours</b><p>The six Critical lessons take roughly 3½ hours. The Major lessons add about 1 hour. Do the practice problems on paper before you open the solutions.</p></div>
+</section>
+
+<!-- ============ LESSON 1 ============ -->
+<section class="lesson" id="bva" data-tier="1">
+<header class="lh"><span class="no">1</span><div><h2>Boundary value analysis</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022, Sep 2023, Oct 2025</span><span>About 45 min</span><span>Syllabus 2.2</span></p></div></header>
+
+<p>Black-box testing treats the software as a box: you choose inputs, look at outputs, and ignore the code inside. Boundary value analysis is its most useful technique, for one reason: programs break at the edges of ranges. A developer writes <code>&lt;</code> where <code>&lt;=</code> was needed, and only the value exactly on the edge shows it.</p>
+
+<h3>Three versions, one idea</h3>
+<p>Take each input variable, pick values at its edges, hold the other variables at a <b>nominal</b> (middle) value, and test.</p>
+<dl class="kv">
+<dt>Boundary value checking (BVC)</dt><dd>For each variable use: <b>min</b>, <b>min+</b> (just above), <b>max&minus;</b> (just below), <b>max</b>. Add one test with every variable nominal. For n variables: <b>4n + 1</b> tests.</dd>
+<dt>Robustness testing</dt><dd>BVC plus values just outside the range: <b>min&minus;</b> and <b>max+</b>. These check how the program handles invalid input. For n variables: <b>6n + 1</b> tests.</dd>
+<dt>Worst-case testing</dt><dd>Let more than one variable sit on a boundary at the same time: try every combination of {min, min+, nominal, max&minus;, max}. For n variables: <b>5<sup>n</sup></b> tests.</dd>
+</dl>
+<div class="scroll"><table><thead><tr><th>Variables</th><th class="c">BVC 4n+1</th><th class="c">Robust 6n+1</th><th class="c">Worst-case 5<sup>n</sup></th></tr></thead><tbody>
+<tr><td>1</td><td class="c num">5</td><td class="c num">7</td><td class="c num">5</td></tr>
+<tr><td>2</td><td class="c num">9</td><td class="c num">13</td><td class="c num">25</td></tr>
+<tr><td>3</td><td class="c num">13</td><td class="c num">19</td><td class="c num">125</td></tr>
+</tbody></table></div>
+<div class="note tip"><b>How to choose the nominal value</b><p>Pick the middle of the range, rounded down: (min + max) / 2. For [1,50] that is 25. Any sensible middle value is accepted, but use the same one every time.</p></div>
+
+<h3>The method, in the order you write it</h3>
+<ol class="steps">
+<li>Write the range of each variable and its nominal value.</li>
+<li>List the boundary values for each variable (min, min+, max&minus;, max, and min&minus;, max+ for robustness).</li>
+<li>Build the table: vary one variable at a time while the others stay nominal, then add the all-nominal row.</li>
+<li>Fill the expected output by working out what the program should print.</li>
+<li>State the count with the formula.</li>
+</ol>
+
+<h3>Practice 1: three numbers in [1, 50]</h3>
+<div class="prob"><b>Asked in Sep 2023 (BVC or robust)</b><p>A program reads three numbers A, B and C within the range [1, 50] and prints the largest number. Design test cases using boundary value checking and then robust testing. Do it on paper first.</p></div>
+<details class="try"><summary>Reveal the worked solution</summary><div class="in">
+<p>Range [1,50], nominal 25 for each variable. Boundary values: 1, 2, 49, 50.</p>
+<h4>(a) BVC: 4n + 1 = 13 test cases</h4>
+<div class="bva-fixed" data-vars="A:1:50;B:1:50;C:1:50" data-mode="bvc" data-prog="largest"></div>
+<h4>(b) Robust testing: 6n + 1 = 19 test cases</h4>
+<p>Same table with 0 and 51 added for each variable. Rows with 0 or 51 expect "Invalid input".</p>
+<div class="bva-fixed" data-vars="A:1:50;B:1:50;C:1:50" data-mode="robust" data-prog="largest"></div>
+<h4>(c) Worst-case: 5<sup>3</sup> = 125 test cases</h4>
+<p>Every combination of {1, 2, 25, 49, 50} for A, B and C. In the exam state the count and write a few rows, for example (1,1,1), (1,1,2), (1,1,25) and so on.</p>
+</div></details>
+
+<h3>Practice 2: a<sup>b</sup>, two variables</h3>
+<div class="prob"><b>Asked in Oct 2022 (all three methods)</b><p>A program computes a<sup>b</sup>, where a lies in [1, 8] and b lies in [1, 4]. Design test cases using boundary value checking, robust testing and worst-case testing.</p></div>
+<details class="try"><summary>Reveal the worked solution</summary><div class="in">
+<p>Nominal: a = 4, b = 2 (middle, rounded down).</p>
+<h4>(a) BVC: 4n + 1 = 9</h4>
+<div class="bva-fixed" data-vars="a:1:8;b:1:4" data-mode="bvc" data-prog="power"></div>
+<h4>(b) Robust: 6n + 1 = 13</h4>
+<div class="bva-fixed" data-vars="a:1:8;b:1:4" data-mode="robust" data-prog="power"></div>
+<h4>(c) Worst-case: 5<sup>2</sup> = 25</h4>
+<div class="bva-fixed" data-vars="a:1:8;b:1:4" data-mode="worst" data-prog="power" data-grid="1"></div>
+<div class="note warn"><b>Why some rows repeat</b><p>The range [1,4] has only four integers, so the nominal value 2 is the same number as min+. The formulas still give 9, 13 and 25, and you should write those. Adding one line, "some rows coincide because the range is tiny", shows you understand why.</p></div>
+</div></details>
+
+<h3>Practice 3: an age field, one variable</h3>
+<div class="prob"><b>Asked in Oct 2025</b><p>A website asks users to enter their age. The valid range is 18 to 60 inclusive. Create test cases using boundary value analysis.</p></div>
+<details class="try"><summary>Reveal the worked solution</summary><div class="in">
+<p>One variable, so BVC gives 4(1) + 1 = 5 cases. Nominal is (18 + 60) / 2 = 39.</p>
+<h4>BVC: 5 test cases</h4>
+<div class="bva-fixed" data-vars="Age:18:60" data-mode="bvc" data-prog="accept"></div>
+<h4>Extended with robustness: 6n + 1 = 7 test cases</h4>
+<div class="bva-fixed" data-vars="Age:18:60" data-mode="robust" data-prog="accept"></div>
+<p>The safest answer: write the five BVC cases, then add 17 and 61 and say they are the invalid values just outside the boundary. That satisfies a marker who wants three values around each edge (17, 18, 19 and 59, 60, 61). Worst-case testing with one variable equals BVC, which is 5.</p>
+</div></details>
+
+<h3>Test-case generator</h3>
+<p>Use it to check your own paper answers or to try a variation the examiner might set. Pick a preset or change the ranges.</p>
+<div class="gen" id="gen">
+<div class="row">
+<button type="button" class="pill" data-preset="p1">Largest of 3, 1 to 50</button>
+<button type="button" class="pill" data-preset="p4">Largest of 3, 1 to 20</button>
+<button type="button" class="pill" data-preset="p2">a to the b</button>
+<button type="button" class="pill" data-preset="p3">Age 18 to 60</button>
+</div>
+<div class="row">
+<label>Variables<select id="gen-n"><option>1</option><option>2</option><option selected>3</option></select></label>
+<label>Method<select id="gen-mode"><option value="bvc">BVC (4n+1)</option><option value="robust">Robust (6n+1)</option><option value="worst">Worst-case (5^n)</option></select></label>
+<label>Program<select id="gen-prog"><option value="largest" selected>Print the largest</option><option value="power">Compute a^b</option><option value="accept">Accept or reject</option><option value="generic">Valid or invalid</option></select></label>
+</div>
+<div id="gen-vars"></div>
+<div class="out" id="gen-out"></div>
+</div>
+
+<h3>Limits worth one line in an answer</h3>
+<p>Boundary value analysis and equivalence class testing look at each input on its own range. They do not consider <b>combinations of input conditions</b>. That gap is what decision tables fill (Lesson 7).</p>
+
+<details class="sheet"><summary>Answer sheet: design test cases for three numbers in [1,50] using BVC <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Boundary value checking</h4>
+<p>Range of each of A, B, C is [1,50]. Nominal value 25. Boundary values: min = 1, min+ = 2, max- = 49, max = 50.</p>
+<p>For 3 variables the number of test cases is 4n + 1 = 13.</p>
+<ul>
+<li>A varies: (1,25,25) (2,25,25) (49,25,25) (50,25,25)</li>
+<li>B varies: (25,1,25) (25,2,25) (25,49,25) (25,50,25)</li>
+<li>C varies: (25,25,1) (25,25,2) (25,25,49) (25,25,50)</li>
+<li>All nominal: (25,25,25)</li>
+</ul>
+<p class="draw">Draw the table: TC, A, B, C, expected output.</p>
+<p>Expected output is the largest value: A is largest for (49,25,25), B and C for (1,25,25), and so on. For robust testing add 0 and 51 for each variable (19 cases, "Invalid input" for 0 and 51).</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="d"><p class="q">How many test cases does BVC give for a module with 5 variables?</p><div class="opts"><button type="button" data-k="a">23</button><button type="button" data-k="b">13</button><button type="button" data-k="c">10</button><button type="button" data-k="d">21</button></div><p class="why" hidden>4n + 1 = 4(5) + 1 = 21.</p></div>
+<div class="mcq" data-a="b"><p class="q">How many test cases does robustness testing give for 5 variables?</p><div class="opts"><button type="button" data-k="a">23</button><button type="button" data-k="b">31</button><button type="button" data-k="c">10</button><button type="button" data-k="d">21</button></div><p class="why" hidden>6n + 1 = 6(5) + 1 = 31.</p></div>
+<div class="mcq" data-a="c"><p class="q">How many test cases does worst-case testing give for 4 variables?</p><div class="opts"><button type="button" data-k="a">623</button><button type="button" data-k="b">513</button><button type="button" data-k="c">625</button><button type="button" data-k="d">521</button></div><p class="why" hidden>5<sup>4</sup> = 625.</p></div>
+<div class="mcq" data-a="a"><p class="q">Boundary value analysis and equivalence class partitioning do not consider:</p><div class="opts"><button type="button" data-k="a">Combinations of input conditions</button><button type="button" data-k="b">Inputs</button><button type="button" data-k="c">Outputs</button><button type="button" data-k="d">Ranges</button></div><p class="why" hidden>Each variable is treated separately. Decision tables handle combinations.</p></div>
+<div class="mcq" data-a="b"><p class="q">An age field accepts 18 to 60. Which pair are the extra values that robustness testing adds?</p><div class="opts"><button type="button" data-k="a">19 and 59</button><button type="button" data-k="b">17 and 61</button><button type="button" data-k="c">18 and 60</button><button type="button" data-k="d">39 and 40</button></div><p class="why" hidden>Min&minus; and max+ are just outside the valid range.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 2 ============ -->
+<section class="lesson" id="ect" data-tier="1">
+<header class="lh"><span class="no">2</span><div><h2>Equivalence class testing</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2023, Sep 2024, Sep 2025</span><span>About 35 min</span><span>Syllabus 2.2</span></p></div></header>
+
+<p>Boundary analysis picks the edges. Equivalence class testing picks <b>one representative from each group</b> of inputs that the program treats the same way. If one value in a group finds a bug, any other value in it would too, so testing them all is wasted effort.</p>
+
+<h3>The idea</h3>
+<ul>
+<li>Split the input domain into <b>equivalence classes</b>. Every member of a class causes the same kind of processing and output.</li>
+<li>Run <b>one test case per class</b>. This keeps the test count small while still touching the whole domain.</li>
+<li>Two goals: <b>completeness</b> (cover the whole domain without running every value) and <b>non-redundancy</b> (do not run two tests from the same class).</li>
+</ul>
+<p>Two steps: identify the classes, then design the test cases.</p>
+
+<h3>Valid and invalid classes</h3>
+<dl class="kv">
+<dt>Valid classes</dt><dd>Inputs the program is meant to accept, inside the specified range or type.</dd>
+<dt>Invalid classes</dt><dd>Inputs the program must reject or handle as errors: out-of-range values, wrong types, empty input. Do not test only valid inputs. Invalid inputs produce error conditions and unexpected behaviour.</dd>
+</dl>
+<div class="note tip"><b>Two rules for the test cases</b><p>One test case can cover several <b>valid</b> classes at once. Test <b>invalid</b> classes one at a time, with every other input valid. If you put two invalid values in one test, the program may reject at the first one and the second is never tested.</p></div>
+
+<h3>Worked example 1: three numbers in [1, 50]</h3>
+<p>This is the slide example and the shape of your 2023 and 2024 questions.</p>
+<h4>Step 1: input-domain classes</h4>
+<div class="scroll"><table><thead><tr><th>Class</th><th>Meaning</th><th>Type</th></tr></thead><tbody>
+<tr><td>I1</td><td>1 &le; A &le; 50</td><td class="ok">Valid</td></tr>
+<tr><td>I2</td><td>1 &le; B &le; 50</td><td class="ok">Valid</td></tr>
+<tr><td>I3</td><td>1 &le; C &le; 50</td><td class="ok">Valid</td></tr>
+<tr><td>I4</td><td>A &lt; 1</td><td class="no">Invalid</td></tr>
+<tr><td>I5</td><td>A &gt; 50</td><td class="no">Invalid</td></tr>
+<tr><td>I6</td><td>B &lt; 1</td><td class="no">Invalid</td></tr>
+<tr><td>I7</td><td>B &gt; 50</td><td class="no">Invalid</td></tr>
+<tr><td>I8</td><td>C &lt; 1</td><td class="no">Invalid</td></tr>
+<tr><td>I9</td><td>C &gt; 50</td><td class="no">Invalid</td></tr>
+</tbody></table></div>
+<h4>Step 2: test cases for those classes</h4>
+<div class="scroll"><table><thead><tr><th>TC</th><th class="c">A</th><th class="c">B</th><th class="c">C</th><th>Expected result</th><th>Classes covered</th></tr></thead><tbody>
+<tr><td>1</td><td class="c num">13</td><td class="c num">25</td><td class="c num">36</td><td>C is largest</td><td>I1, I2, I3</td></tr>
+<tr class="bad"><td>2</td><td class="c num">0</td><td class="c num">13</td><td class="c num">45</td><td>Invalid input</td><td>I4</td></tr>
+<tr class="bad"><td>3</td><td class="c num">51</td><td class="c num">34</td><td class="c num">17</td><td>Invalid input</td><td>I5</td></tr>
+<tr class="bad"><td>4</td><td class="c num">29</td><td class="c num">0</td><td class="c num">18</td><td>Invalid input</td><td>I6</td></tr>
+<tr class="bad"><td>5</td><td class="c num">36</td><td class="c num">53</td><td class="c num">32</td><td>Invalid input</td><td>I7</td></tr>
+<tr class="bad"><td>6</td><td class="c num">27</td><td class="c num">42</td><td class="c num">0</td><td>Invalid input</td><td>I8</td></tr>
+<tr class="bad"><td>7</td><td class="c num">33</td><td class="c num">21</td><td class="c num">51</td><td>Invalid input</td><td>I9</td></tr>
+</tbody></table></div>
+<h4>Step 3: classes based on the output</h4>
+<p>The program's job is to find the largest number, so the relation between A, B and C also defines classes:</p>
+<div class="scroll"><table><thead><tr><th>Class</th><th>Condition</th></tr></thead><tbody>
+<tr><td>O1</td><td>A &gt; B and A &gt; C</td></tr>
+<tr><td>O2</td><td>B &gt; A and B &gt; C</td></tr>
+<tr><td>O3</td><td>C &gt; A and C &gt; B</td></tr>
+<tr><td>O4</td><td>A = B and A &ne; C</td></tr>
+<tr><td>O5</td><td>B = C and A &ne; B</td></tr>
+<tr><td>O6</td><td>A = C and C &ne; B</td></tr>
+<tr><td>O7</td><td>A = B = C</td></tr>
+</tbody></table></div>
+<p>Four test cases cover all seven:</p>
+<div class="scroll"><table><thead><tr><th>TC</th><th class="c">A</th><th class="c">B</th><th class="c">C</th><th>Expected result</th><th>Classes covered</th></tr></thead><tbody>
+<tr><td>8</td><td class="c num">25</td><td class="c num">13</td><td class="c num">13</td><td>A is largest</td><td>O1, O5</td></tr>
+<tr><td>9</td><td class="c num">25</td><td class="c num">40</td><td class="c num">25</td><td>B is largest</td><td>O2, O6</td></tr>
+<tr><td>10</td><td class="c num">24</td><td class="c num">24</td><td class="c num">37</td><td>C is largest</td><td>O3, O4</td></tr>
+<tr><td>11</td><td class="c num">25</td><td class="c num">25</td><td class="c num">25</td><td>All three are equal</td><td>O7</td></tr>
+</tbody></table></div>
+
+<h3>Practice 1: three numbers in [1, 20]</h3>
+<div class="prob"><b>Asked in Sep 2024 (8 marks, after 2 marks for the definitions)</b><p>A program reads three numbers A, B and C with a range [1, 20] and prints the largest number. Design test cases using the equivalence class testing technique.</p></div>
+<details class="try"><summary>Reveal the worked solution</summary><div class="in">
+<p><b>Classes.</b> Valid: I1: 1 &le; A &le; 20, I2: 1 &le; B &le; 20, I3: 1 &le; C &le; 20. Invalid: I4: A &lt; 1, I5: A &gt; 20, I6: B &lt; 1, I7: B &gt; 20, I8: C &lt; 1, I9: C &gt; 20. Output classes O1 to O7 as above.</p>
+<div class="scroll"><table><thead><tr><th>TC</th><th class="c">A</th><th class="c">B</th><th class="c">C</th><th>Expected result</th><th>Classes</th></tr></thead><tbody>
+<tr><td>1</td><td class="c num">5</td><td class="c num">10</td><td class="c num">15</td><td>C is largest</td><td>I1, I2, I3</td></tr>
+<tr class="bad"><td>2</td><td class="c num">0</td><td class="c num">10</td><td class="c num">15</td><td>Invalid input</td><td>I4</td></tr>
+<tr class="bad"><td>3</td><td class="c num">21</td><td class="c num">10</td><td class="c num">15</td><td>Invalid input</td><td>I5</td></tr>
+<tr class="bad"><td>4</td><td class="c num">5</td><td class="c num">0</td><td class="c num">15</td><td>Invalid input</td><td>I6</td></tr>
+<tr class="bad"><td>5</td><td class="c num">5</td><td class="c num">21</td><td class="c num">15</td><td>Invalid input</td><td>I7</td></tr>
+<tr class="bad"><td>6</td><td class="c num">5</td><td class="c num">10</td><td class="c num">0</td><td>Invalid input</td><td>I8</td></tr>
+<tr class="bad"><td>7</td><td class="c num">5</td><td class="c num">10</td><td class="c num">21</td><td>Invalid input</td><td>I9</td></tr>
+<tr><td>8</td><td class="c num">18</td><td class="c num">9</td><td class="c num">9</td><td>A is largest</td><td>O1, O5</td></tr>
+<tr><td>9</td><td class="c num">10</td><td class="c num">18</td><td class="c num">10</td><td>B is largest</td><td>O2, O6</td></tr>
+<tr><td>10</td><td class="c num">9</td><td class="c num">9</td><td class="c num">17</td><td>C is largest</td><td>O3, O4</td></tr>
+<tr><td>11</td><td class="c num">10</td><td class="c num">10</td><td class="c num">10</td><td>All three are equal</td><td>O7</td></tr>
+</tbody></table></div>
+</div></details>
+
+<h3>Practice 2: two inputs with different ranges</h3>
+<div class="prob"><b>Asked in Sep 2025</b><p>A system accepts inputs A: 1 to 100 and B: 20 to 40. Apply equivalence partitioning to find the test cases.</p></div>
+<details class="try"><summary>Reveal the worked solution</summary><div class="in">
+<p><b>Classes.</b> Valid: V1: 1 &le; A &le; 100. V2: 20 &le; B &le; 40. Invalid: I1: A &lt; 1. I2: A &gt; 100. I3: B &lt; 20. I4: B &gt; 40.</p>
+<div class="scroll"><table><thead><tr><th>TC</th><th class="c">A</th><th class="c">B</th><th>Expected result</th><th>Classes covered</th></tr></thead><tbody>
+<tr><td>1</td><td class="c num">50</td><td class="c num">30</td><td>Accepted</td><td>V1, V2</td></tr>
+<tr class="bad"><td>2</td><td class="c num">0</td><td class="c num">30</td><td>A rejected</td><td>I1</td></tr>
+<tr class="bad"><td>3</td><td class="c num">101</td><td class="c num">30</td><td>A rejected</td><td>I2</td></tr>
+<tr class="bad"><td>4</td><td class="c num">50</td><td class="c num">19</td><td>B rejected</td><td>I3</td></tr>
+<tr class="bad"><td>5</td><td class="c num">50</td><td class="c num">41</td><td>B rejected</td><td>I4</td></tr>
+</tbody></table></div>
+<p>Five test cases: one valid case covering both valid classes, then four invalid cases, one invalid input at a time. If the question mentions data types, add two more classes: non-numeric A (for example "abc") and non-numeric B.</p>
+</div></details>
+
+<h3>Equivalence classes versus boundary values</h3>
+<div class="scroll"><table><thead><tr><th></th><th>Equivalence classes</th><th>Boundary values</th></tr></thead><tbody>
+<tr><td><b>Picks</b></td><td>One representative from each class, usually from the middle</td><td>Values at and next to the edges of each range</td></tr>
+<tr><td><b>Strength</b></td><td>Small test set that covers the whole domain, valid and invalid</td><td>Catches off-by-one mistakes in comparisons</td></tr>
+<tr><td><b>Shared limit</b></td><td colspan="2">Neither considers combinations of input conditions. In practice you use both.</td></tr>
+</tbody></table></div>
+
+<details class="sheet"><summary>Answer sheet: explain equivalence class testing with a valid example <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Equivalence class testing</h4>
+<p>A black-box method. The input domain is divided into equivalence classes. Every member of a class causes the same kind of processing and output.</p>
+<ul>
+<li>Only one test case from each class is executed.</li>
+<li>If one value in a class finds a bug, the others would too.</li>
+<li>Goals: completeness and non-redundancy.</li>
+<li>Steps: 1. identify classes, 2. design test cases.</li>
+<li>Valid classes: inputs the program should accept. Invalid classes: inputs that should be rejected.</li>
+</ul>
+<h4>Example: A in 1 to 100, B in 20 to 40</h4>
+<ul>
+<li>Valid: 1 &lt;= A &lt;= 100, 20 &lt;= B &lt;= 40.</li>
+<li>Invalid: A &lt; 1, A &gt; 100, B &lt; 20, B &gt; 40.</li>
+<li>Tests: (50,30) accepted; (0,30), (101,30), (50,19), (50,41) rejected.</li>
+</ul>
+<p class="draw">Draw the table with columns: TC, A, B, expected, classes covered.</p>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: what are valid and invalid equivalence classes? <small>2 marks</small></summary>
+<div class="sbody">
+<p><b>Valid equivalence classes</b> consider valid inputs to the program, those inside the specified range or type, which it should accept.</p>
+<p><b>Invalid equivalence classes</b> consider invalid inputs, such as out-of-range values or wrong types, which generate error conditions or unexpected behaviour and must be tested too.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">How should invalid equivalence classes be tested?</p><div class="opts"><button type="button" data-k="a">All together in a single test</button><button type="button" data-k="b">One invalid class at a time, with the other inputs valid</button><button type="button" data-k="c">They need not be tested</button><button type="button" data-k="d">Only after beta testing</button></div><p class="why" hidden>If two invalid values share a test, the program may reject at the first and never reach the second.</p></div>
+<div class="mcq" data-a="c"><p class="q">A field accepts 1 to 100. How many equivalence classes are there, counting valid and invalid?</p><div class="opts"><button type="button" data-k="a">1</button><button type="button" data-k="b">2</button><button type="button" data-k="c">3</button><button type="button" data-k="d">100</button></div><p class="why" hidden>One valid class (1 to 100) and two invalid classes (below 1 and above 100).</p></div>
+<div class="mcq" data-a="d"><p class="q">Which is a goal of equivalence partitioning?</p><div class="opts"><button type="button" data-k="a">Run every possible input</button><button type="button" data-k="b">Test only the boundary values</button><button type="button" data-k="c">Find combinations of conditions</button><button type="button" data-k="d">Completeness without redundancy</button></div><p class="why" hidden>Cover the whole domain without running two tests from the same class.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 3 ============ -->
+<section class="lesson" id="static" data-tier="1">
+<header class="lh"><span class="no">3</span><div><h2>Static testing: inspection, walkthrough, review</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2024, Sep 2025</span><span>About 30 min</span><span>Syllabus 2.1</span></p></div></header>
+
+<p>Static testing finds defects <b>without running the software</b>. People read and examine requirements, designs and code. It is also called non-computer-based or human testing, and it is how most verification activities (Module 1, Lesson 5) are carried out.</p>
+
+<h3>Why it exists</h3>
+<p>Dynamic testing has drawbacks: it finds bugs late in the SDLC, which makes them costly to fix; it is expensive and slow because test cases must be created, run and maintained; and tracing a failure back to its cause is hard. Static testing complements it and reveals errors that dynamic testing does not show.</p>
+<div class="grid3" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+<div><h4>Benefits</h4><ul><li>Defects found and fixed early raise quality.</li><li>Each new phase starts from a technically correct base.</li><li>Life-cycle cost is lower.</li><li>Dynamic testing becomes more effective and needs less time.</li><li>Authors get immediate feedback from peers.</li></ul></div>
+<div><h4>Objectives</h4><ul><li>Find errors in any SDLC phase as early as possible.</li><li>Check that components conform to requirements.</li><li>Provide information for project monitoring.</li><li>Improve software quality and productivity.</li></ul></div>
+</div>
+
+<h3>The three techniques</h3>
+<p>Your slides name three: <b>software inspections</b>, <b>walkthroughs</b> and <b>technical reviews</b>. Inspection is the most formal, the walkthrough is looser, and the technical review involves management.</p>
+
+<h3>Inspection</h3>
+<p>An in-process, manual examination of an item to detect bugs. It can be applied to any product of development: requirements, design, code, project and quality plans, test cases, user manuals. It is done early, needs no executable code and no test cases, and can find bugs on rarely executed paths that tests would miss.</p>
+<p><b>Team:</b> author (owner or producer), inspector, moderator, recorder.</p>
+<p><b>Process:</b></p>
+<ol class="steps">
+<li><b>Planning.</b> Plan the inspection meeting.</li>
+<li><b>Overview.</b> Define the purpose of the meeting.</li>
+<li><b>Individual preparation.</b> Each member studies the item and notes potential errors.</li>
+<li><b>Inspection meeting.</b> The item is inspected and the bugs are recorded.</li>
+<li><b>Rework.</b> The author fixes the reported bugs.</li>
+<li><b>Follow-up.</b> Check that the fixes were made; re-inspect if needed.</li>
+</ol>
+<div class="note"><b>Measuring it</b><p>Error detection efficiency = (errors found by an inspection / total errors in the item before the inspection) &times; 100.</p></div>
+<p>Benefits include bug reduction and prevention, higher productivity, real-time feedback to engineers, quality improvement, finding the most error-prone modules, learning through inspection, and process improvement.</p>
+
+<h3>Structured walkthrough</h3>
+<p>A less formal and less rigorous technique than inspection. The author presents the work product step by step to a small group, who ask questions and point out problems.</p>
+<p><b>Team:</b></p>
+<ul>
+<li><b>Coordinator:</b> organises and runs the walkthrough.</li>
+<li><b>Presenter / developer:</b> explains the product, step by step.</li>
+<li><b>Scribe / recorder:</b> writes down issues and decisions.</li>
+<li><b>Maintenance representative:</b> checks that the product can be maintained.</li>
+<li><b>Standards bearer:</b> checks that standards are followed.</li>
+<li><b>User representative / accreditation agent:</b> checks that it meets the user's needs.</li>
+</ul>
+<p><b>Process:</b> organisation, then preparation, then the walkthrough itself, then rework and follow-up.</p>
+<div class="note src"><b>What the roles do</b><p>Your slide lists the roles only by name. The one-line descriptions above are the standard meanings, added so you can write a full answer.</p></div>
+
+<h3>Technical review</h3>
+<p>Evaluates the software against development standards, guidelines and specifications, and gives management evidence that development is following its stated objectives. It is like an inspection or walkthrough, except that the review team includes <b>management and project management</b>. It is considered a higher-level technique.</p>
+
+<div class="scroll"><table>
+<thead><tr><th></th><th>Inspection</th><th>Walkthrough</th><th>Technical review</th></tr></thead>
+<tbody>
+<tr><td><b>Formality</b></td><td>Most formal, defined steps</td><td>Less formal and less rigorous</td><td>Formal, higher level</td></tr>
+<tr><td><b>Led by</b></td><td>Moderator</td><td>Coordinator, with the author presenting</td><td>Project or management level</td></tr>
+<tr><td><b>Team</b></td><td>Author, inspectors, moderator, recorder</td><td>Coordinator, presenter, scribe, maintenance, standards bearer, user representative</td><td>Includes management</td></tr>
+<tr><td><b>Purpose</b></td><td>Detect and remove defects after each phase</td><td>Find defects and share understanding</td><td>Check against standards and show management progress</td></tr>
+</tbody></table></div>
+
+<details class="sheet"><summary>Answer sheet: what is static testing? List the techniques and explain any two <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Static testing</h4>
+<p>Static testing finds defects without executing the software. It is human or non-computer-based testing, applied at every SDLC phase up to coding. It complements dynamic testing and finds errors that dynamic testing misses.</p>
+<p><b>Benefits:</b> early defect removal, lower cost, better quality, more effective dynamic testing.</p>
+<p><b>Techniques:</b> inspection, walkthrough, technical review.</p>
+<h4>1. Inspection</h4>
+<ul>
+<li>Formal, manual examination of an item such as requirements, design or code.</li>
+<li>Team: author, inspector, moderator, recorder.</li>
+<li>Steps: planning, overview, individual preparation, inspection meeting, rework, follow-up.</li>
+</ul>
+<h4>2. Walkthrough</h4>
+<ul>
+<li>Less formal. The presenter takes the team through the item step by step.</li>
+<li>Team: coordinator, presenter, scribe, maintenance, standards bearer, user representative.</li>
+<li>Steps: organisation, preparation, walkthrough, rework and follow-up.</li>
+</ul>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: explain structured walkthrough static testing <small>about 5 marks</small></summary>
+<div class="sbody">
+<h4>Structured walkthrough</h4>
+<p>A static testing technique that is less formal and less rigorous than inspection. The author presents a work product, such as a design or code, to a small team step by step. Nothing is executed.</p>
+<ul>
+<li>Team: coordinator, presenter or developer, scribe or recorder, maintenance, standards bearer, user representative.</li>
+<li>Process: organisation, preparation, walkthrough, rework and follow-up.</li>
+<li>Benefits: early defects, shared understanding, feedback to the author.</li>
+</ul>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">Which static technique includes management in the team?</p><div class="opts"><button type="button" data-k="a">Inspection</button><button type="button" data-k="b">Walkthrough</button><button type="button" data-k="c">Technical review</button><button type="button" data-k="d">Unit testing</button></div><p class="why" hidden>A technical review team includes management-level representatives.</p></div>
+<div class="mcq" data-a="b"><p class="q">The steps of an inspection are:</p><div class="opts"><button type="button" data-k="a">Organisation, preparation, walkthrough, rework</button><button type="button" data-k="b">Planning, overview, preparation, meeting, rework, follow-up</button><button type="button" data-k="c">Plan, design, execute, review</button><button type="button" data-k="d">Classify, isolate, resolve</button></div><p class="why" hidden>The first list is the walkthrough process.</p></div>
+<div class="mcq" data-a="d"><p class="q">Static testing:</p><div class="opts"><button type="button" data-k="a">Needs the code to be executed</button><button type="button" data-k="b">Can only be done after system testing</button><button type="button" data-k="c">Replaces dynamic testing completely</button><button type="button" data-k="d">Finds defects without executing the software</button></div><p class="why" hidden>It complements dynamic testing; it does not replace it.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 4 ============ -->
+<section class="lesson" id="regression" data-tier="1">
+<header class="lh"><span class="no">4</span><div><h2>Regression testing</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2025</span><span>About 25 min</span><span>Syllabus 2.3</span></p></div></header>
+
+<p>Fix one thing, break another. When software changes, parts that worked before can stop working. Regression testing runs tests again after a change to prove that nothing else was damaged.</p>
+
+<h3>Why it is needed</h3>
+<ul>
+<li>When a new module is added during integration, new data-flow paths and new input and output appear. Modules that worked can be affected.</li>
+<li>When a bug is fixed, the change itself may affect other parts of the software.</li>
+<li>So whenever the software configuration changes, the software is tested again with the existing test cases.</li>
+</ul>
+
+<h3>Definition</h3>
+<p>Regression testing is the <b>selective retesting</b> of a system or component to verify that modifications have not caused unintended effects, and that the system still complies with its specified requirements. It is a maintenance task performed on a modified program to build confidence that the changes are correct and have not harmed the unchanged parts.</p>
+<p>A system <b>regresses</b> if a modified component fails, or if a new component causes failures in unchanged components through side effects or feature interactions. The versions involved:</p>
+<dl class="kv">
+<dt>Baseline version</dt><dd>A version that has passed a test suite.</dd>
+<dt>Delta version</dt><dd>A changed version that has not yet passed a regression test.</dd>
+<dt>Delta build</dt><dd>An executable configuration containing the delta and baseline components.</dd>
+</dl>
+
+<h3>Objectives</h3>
+<ol>
+<li>Check that the bug has been addressed.</li>
+<li>Find other related bugs.</li>
+<li>Check the effect of the change on other parts of the program.</li>
+</ol>
+
+<h3>When it is performed</h3>
+<p>Every time the software changes: after a bug fix, after a new feature or enhancement, when a new module is integrated, and after a change of configuration or environment. Run it before the changed build is released.</p>
+
+<h3>Why it matters</h3>
+<ul>
+<li>It validates the parts of the software where changes occurred.</li>
+<li>It validates parts that may be affected by the change, even if they seem unrelated.</li>
+<li>It keeps the software working as it did before the change.</li>
+<li>It raises quality by lowering the risk of serious bugs.</li>
+</ul>
+
+<h3>Types</h3>
+<dl class="kv">
+<dt>Bug-fix regression</dt><dd>Done after a bug is reported and fixed. Repeats the test cases that exposed the problem in the first place.</dd>
+<dt>Side-effect (stability) regression</dt><dd>Retests a substantial part of the product to show the change has no harmful effect on what was already working. It tests the overall integrity of the program, not whether the fix succeeded.</dd>
+</dl>
+
+<h3>The problem, and how it is managed</h3>
+<p>Regression testing is expensive: large systems take a long time to retest, tests are slow to create and evaluate, and the cost can eat resources that could improve the software. Three techniques keep it affordable:</p>
+<ul>
+<li><b>Regression test selection:</b> pick only the tests relevant to the change (selective retest).</li>
+<li><b>Test case prioritisation:</b> run the most important tests first.</li>
+<li><b>Test suite reduction:</b> remove redundant tests.</li>
+</ul>
+<figure class="fig"><svg class="dg" viewBox="0 0 700 250" role="img" aria-labelledby="f4r"><title id="f4r">Selective retest technique</title>
+<rect class="b" x="10" y="20" width="150" height="44" rx="8"/><text class="t h m" x="85" y="47">Test suite T</text>
+<rect class="b" x="230" y="20" width="130" height="44" rx="8"/><text class="t h m" x="295" y="47">Program P</text>
+<rect class="b hl" x="470" y="20" width="210" height="44" rx="8"/><text class="t h m" x="575" y="38">Modified program P&#8242;</text><text class="t s m" x="575" y="55">changed + new features</text>
+<path class="a" d="M160 42H228"/><text class="t s m" x="194" y="34">tested by</text>
+<path class="a" d="M360 42H468"/><text class="t s m" x="414" y="34">modify</text>
+<rect class="b" x="10" y="150" width="200" height="56" rx="8"/><text class="t h m" x="110" y="174">T&#8242;: regression tests</text><text class="t s m" x="110" y="192">selected from T</text>
+<rect class="b" x="250" y="150" width="190" height="56" rx="8"/><text class="t h m" x="345" y="174">T&#8243;: new test cases</text><text class="t s m" x="345" y="192">for new features</text>
+<rect class="b ok" x="480" y="150" width="200" height="56" rx="8"/><text class="t h m" x="580" y="174">T&#8244;: regression suite</text><text class="t s m" x="580" y="192">T&#8242; plus T&#8243;</text>
+<path class="a" d="M85 66V148"/><text class="t s" x="93" y="112">select</text>
+<text class="t h m" x="230" y="184">+</text>
+<path class="a" d="M440 178H478"/>
+<path class="a" d="M580 148V66"/><text class="t s" x="588" y="112">run on P&#8242;</text>
+</svg><figcaption>From the old suite T, select the tests that matter (T&#8242;), add new tests for new features (T&#8243;), and run the combined regression suite (T&#8244;) on the modified program.</figcaption></figure>
+
+<details class="sheet"><summary>Answer sheet: objectives of regression testing, and when it is performed <small>about 5 marks</small></summary>
+<div class="sbody">
+<h4>Regression testing</h4>
+<p>Selective retesting of a modified system or component to verify that the changes have not caused unintended effects and that it still meets its requirements.</p>
+<h4>Objectives</h4>
+<ul>
+<li>Check that the bug has been addressed.</li>
+<li>Find other related bugs.</li>
+<li>Check the effect of the change on other parts of the program.</li>
+</ul>
+<h4>When it is performed</h4>
+<ul>
+<li>After a bug fix.</li>
+<li>After a new feature, enhancement or configuration change.</li>
+<li>When a new module is integrated, because new data-flow paths appear.</li>
+</ul>
+<p>Types: bug-fix regression and side-effect regression.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="a"><p class="q">A version that has passed a test suite is called the:</p><div class="opts"><button type="button" data-k="a">Baseline version</button><button type="button" data-k="b">Delta version</button><button type="button" data-k="c">Delta build</button><button type="button" data-k="d">Alpha version</button></div><p class="why" hidden>A delta version is the changed one that has not yet passed regression testing.</p></div>
+<div class="mcq" data-a="c"><p class="q">Which type of regression testing repeats the test cases that exposed the original problem?</p><div class="opts"><button type="button" data-k="a">Side-effect regression</button><button type="button" data-k="b">Stability regression</button><button type="button" data-k="c">Bug-fix regression</button><button type="button" data-k="d">Progressive testing</button></div><p class="why" hidden>Side-effect (stability) regression retests a substantial part of the product.</p></div>
+<div class="mcq" data-a="d"><p class="q">Which is NOT one of the three regression-cost techniques?</p><div class="opts"><button type="button" data-k="a">Test selection</button><button type="button" data-k="b">Test prioritisation</button><button type="button" data-k="c">Test suite reduction</button><button type="button" data-k="d">Test suite expansion</button></div><p class="why" hidden>The aim is to cut the cost, so expansion is not a technique.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 5 ============ -->
+<section class="lesson" id="usability" data-tier="1">
+<header class="lh"><span class="no">5</span><div><h2>Usability and accessibility testing</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022, Oct 2025</span><span>About 30 min</span><span>Syllabus 2.2</span></p></div></header>
+
+<div class="note src"><b>Not in your slides</b><p>The syllabus lists this topic and two papers asked it, but neither Chapter 1 nor Chapter 2 covers it. This lesson is taught from standard references (Nielsen's usability attributes, the WCAG guidelines). If your lecturer gave a specific definition in class, use that wording and add the points below.</p></div>
+
+<h3>Usability testing</h3>
+<p>Usability testing checks <b>how easily and pleasantly real users can get their tasks done</b> with the software. It asks "can people use this?", not "does it work?". It is done by watching representative users attempt realistic tasks.</p>
+<p>What a usable system looks like (Nielsen's five attributes):</p>
+<ul>
+<li><b>Learnability:</b> a first-time user can do basic tasks quickly.</li>
+<li><b>Efficiency:</b> an experienced user can work fast.</li>
+<li><b>Memorability:</b> someone returning after a break does not have to relearn.</li>
+<li><b>Errors:</b> few mistakes, and easy recovery from the ones that happen.</li>
+<li><b>Satisfaction:</b> users find it pleasant to use.</li>
+</ul>
+<p><b>How it is done:</b></p>
+<ol class="steps">
+<li>Define the goals and the tasks to test, for example "buy a book as a new user".</li>
+<li>Recruit users who match the real audience.</li>
+<li>Observe each user doing the tasks, often asking them to think aloud.</li>
+<li>Measure: task completion rate, time on task, number of errors, satisfaction rating from a short questionnaire.</li>
+<li>Analyse the problems, fix the design, and test again.</li>
+</ol>
+<h4>Example</h4>
+<p>An online bookstore. Task: "Find a novel and complete the purchase." Illustratively, suppose 6 of 10 test users cannot find the "Place order" button because it sits below the visible screen on a phone. Completion rate is 40 percent, which is a clear usability defect. Moving the button and retesting is the fix.</p>
+
+<h3>Accessibility testing</h3>
+<p>Accessibility testing checks that <b>people with disabilities</b> can use the software: users who are blind or have low vision, are deaf, have limited motor control, or have cognitive difficulties. It also helps everyone using a small screen, bright sunlight or a broken mouse.</p>
+<p>The reference standard is WCAG (Web Content Accessibility Guidelines), built on four principles, often remembered as POUR:</p>
+<div class="scroll"><table><thead><tr><th>Principle</th><th>Meaning</th><th>Typical check</th></tr></thead><tbody>
+<tr><td><b>Perceivable</b></td><td>Information can be perceived by every user</td><td>Text alternatives (alt text) for images; captions for video; enough colour contrast, at least 4.5:1 for normal text at level AA</td></tr>
+<tr><td><b>Operable</b></td><td>Every control can be operated</td><td>Everything works with the keyboard alone; visible focus; logical tab order</td></tr>
+<tr><td><b>Understandable</b></td><td>Content and behaviour are clear</td><td>Labelled form fields; clear error messages; consistent navigation</td></tr>
+<tr><td><b>Robust</b></td><td>Works with assistive technology</td><td>Valid markup; compatible with screen readers such as NVDA, JAWS, VoiceOver, TalkBack; text resizable to 200 percent</td></tr>
+</tbody></table></div>
+<p>WCAG has conformance levels A, AA and AAA. Tools such as WAVE, axe and Lighthouse find many issues automatically; manual checks with a keyboard and a screen reader find the rest.</p>
+<h4>Example</h4>
+<p>A login page. Check that: both fields have labels a screen reader announces; you can log in using only Tab, Shift+Tab and Enter; an error such as "wrong password" is announced, not only shown in red; text contrast is at least 4.5:1; the page still works when zoomed to 200 percent.</p>
+
+<div class="scroll"><table><thead><tr><th></th><th>Usability testing</th><th>Accessibility testing</th></tr></thead><tbody>
+<tr><td><b>Asks</b></td><td>Is it easy and pleasant for typical users?</td><td>Can people with disabilities use it at all?</td></tr>
+<tr><td><b>Users</b></td><td>Representative target users</td><td>Users with visual, hearing, motor and cognitive needs</td></tr>
+<tr><td><b>Measured by</b></td><td>Task success, time, errors, satisfaction</td><td>Conformance to guidelines such as WCAG; assistive technology checks</td></tr>
+</tbody></table></div>
+
+<details class="sheet"><summary>Answer sheet: explain usability and accessibility testing in detail with example <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Usability testing</h4>
+<p>Checks how easy, efficient and satisfying the software is for real users to use.</p>
+<ul>
+<li>Attributes: learnability, efficiency, memorability, errors, satisfaction.</li>
+<li>Method: define tasks, choose representative users, observe, measure, fix, retest.</li>
+<li>Measures: completion rate, time on task, errors, satisfaction.</li>
+<li>Example: online bookstore checkout; users who cannot find the order button show a defect.</li>
+</ul>
+<h4>Accessibility testing</h4>
+<p>Checks that people with disabilities can use the software.</p>
+<ul>
+<li>WCAG principles: perceivable, operable, understandable, robust.</li>
+<li>Checks: alt text, keyboard-only use, colour contrast, screen reader support, captions.</li>
+<li>Example: login page with labelled fields, keyboard login, announced errors.</li>
+</ul>
+<p>Difference: usability is about ease for typical users; accessibility is about access for users with disabilities.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">Which is a typical accessibility check?</p><div class="opts"><button type="button" data-k="a">Measuring the response time under load</button><button type="button" data-k="b">Operating every control with the keyboard alone</button><button type="button" data-k="c">Counting executed statements</button><button type="button" data-k="d">Killing mutants</button></div><p class="why" hidden>Keyboard-only operation is part of the Operable principle.</p></div>
+<div class="mcq" data-a="d"><p class="q">Which is a usability measure?</p><div class="opts"><button type="button" data-k="a">Cyclomatic complexity</button><button type="button" data-k="b">Statement coverage</button><button type="button" data-k="c">Number of stubs</button><button type="button" data-k="d">Task completion rate</button></div><p class="why" hidden>Completion rate, time on task, errors and satisfaction are the usual usability measures.</p></div>
+<div class="mcq" data-a="a"><p class="q">The four principles of WCAG are:</p><div class="opts"><button type="button" data-k="a">Perceivable, operable, understandable, robust</button><button type="button" data-k="b">Planning, design, execution, review</button><button type="button" data-k="c">Learnability, efficiency, memorability, errors</button><button type="button" data-k="d">Alpha, beta, gamma, delta</button></div><p class="why" hidden>The third option lists some of Nielsen's usability attributes.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 6 ============ -->
+<section class="lesson" id="basispath" data-tier="1">
+<header class="lh"><span class="no">6</span><div><h2>Basis path testing and cyclomatic complexity</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2025 (as an option)</span><span>About 40 min</span><span>Syllabus 2.2</span></p></div></header>
+
+<p>This is a white-box technique: you use the code. Turn the program into a flow graph, count how many independent paths it has, and write one test case for each. If every independent path is run, every statement and every branch has been executed at least once.</p>
+
+<h3>Flow graph notation</h3>
+<ul>
+<li><b>Node:</b> one or more procedural statements, drawn as a circle.</li>
+<li><b>Edge (link):</b> flow of control, drawn as an arrow. An edge must end at a node.</li>
+<li><b>Decision node:</b> a node with more than one arrow leaving it.</li>
+<li><b>Junction node:</b> a node with more than one arrow entering it.</li>
+<li><b>Region:</b> an area bounded by edges and nodes. The area outside the graph counts as a region too.</li>
+</ul>
+<figure class="fig"><svg class="dg" viewBox="0 0 640 195" role="img" aria-labelledby="f6n"><title id="f6n">Flow graph patterns</title>
+<circle class="b" cx="60" cy="35" r="14"/><circle class="b" cx="60" cy="115" r="14"/><path class="a" d="M60 49V99"/><text class="t s m" x="60" y="178">Sequence</text>
+<circle class="b" cx="330" cy="25" r="14"/><circle class="b" cx="280" cy="85" r="14"/><circle class="b" cx="380" cy="85" r="14"/><circle class="b" cx="330" cy="150" r="14"/>
+<path class="a" d="M321 36L289 74"/><path class="a" d="M339 36L371 74"/><path class="a" d="M288 96L321 139"/><path class="a" d="M372 96L339 139"/><text class="t s m" x="330" y="184">If-then-else</text>
+<path class="a" d="M540 6V29"/><circle class="b" cx="540" cy="45" r="14"/><circle class="b" cx="540" cy="120" r="14"/><circle class="b" cx="620" cy="45" r="14"/>
+<path class="a" d="M540 59V105"/><text class="t s" x="548" y="86">true</text><path class="a" d="M526 120C470 120 470 45 524 45"/><path class="a" d="M554 45H604"/><text class="t s m" x="580" y="38">false</text><text class="t s m" x="560" y="184">While loop</text>
+</svg><figcaption>Three building blocks. A decision has two edges leaving; a loop has an edge going back.</figcaption></figure>
+
+<h3>Cyclomatic complexity V(G)</h3>
+<p>V(G) is the number of <b>independent paths</b> through the graph, and so the number of test cases basis path testing needs. An independent path introduces at least one new set of statements or new condition, so it travels along at least one edge not used by the earlier paths. There are three formulas, and they must all give the same answer:</p>
+<div class="scroll"><table><thead><tr><th>Formula</th><th>Meaning of the letters</th></tr></thead><tbody>
+<tr><td><b>V(G) = e &minus; n + 2p</b></td><td>e = edges, n = nodes, p = connected components (1 for a single program)</td></tr>
+<tr><td><b>V(G) = d + p</b></td><td>d = decision nodes. For one program this is d + 1</td></tr>
+<tr><td><b>V(G) = number of regions</b></td><td>Count the bounded areas and the outside area</td></tr>
+</tbody></table></div>
+
+<h3>The method</h3>
+<ol class="steps">
+<li>Number the statements and group them into nodes. Draw the flow graph.</li>
+<li>Compute V(G) with all three formulas. If the answer differs, recount.</li>
+<li>List V(G) independent paths.</li>
+<li>For each path choose input values and write the expected output. That is your test case.</li>
+</ol>
+
+<h3>Worked example: your Sep 2025 question</h3>
+<pre><code>1   int a, b, x, y;
+2   printf("Enter values for a, b, x, y: ");  scanf(...);
+3   if (a &gt; b)
+4       x = x + y;
+5   else
+6       x = y;
+7   printf("Result: %d\n", x);
+8   return 0;</code></pre>
+<div class="scroll"><table><thead><tr><th>Node</th><th>Lines</th><th>What it is</th></tr></thead><tbody>
+<tr><td class="num">1</td><td>1, 2</td><td>Declarations, prompt, scanf</td></tr>
+<tr><td class="num">2</td><td>3</td><td>Decision: a &gt; b</td></tr>
+<tr><td class="num">3</td><td>4</td><td>x = x + y</td></tr>
+<tr><td class="num">4</td><td>6</td><td>x = y</td></tr>
+<tr><td class="num">5</td><td>7, 8</td><td>Print result, return (junction)</td></tr>
+</tbody></table></div>
+<figure class="fig"><svg class="dg" viewBox="0 0 440 320" role="img" aria-labelledby="f6g"><title id="f6g">Control flow graph of the if-else program</title>
+<circle class="b" cx="220" cy="30" r="18"/><text class="t h m" x="220" y="35">1</text>
+<circle class="b hl" cx="220" cy="100" r="18"/><text class="t h m" x="220" y="105">2</text>
+<circle class="b" cx="120" cy="185" r="18"/><text class="t h m" x="120" y="190">3</text>
+<circle class="b" cx="320" cy="185" r="18"/><text class="t h m" x="320" y="190">4</text>
+<circle class="b" cx="220" cy="270" r="18"/><text class="t h m" x="220" y="275">5</text>
+<path class="a" d="M220 48V80"/>
+<path class="a" d="M206 112L133 173"/><text class="t s" x="160" y="136" text-anchor="end">true</text>
+<path class="a" d="M234 112L307 173"/><text class="t s" x="282" y="136">false</text>
+<path class="a" d="M133 197L206 258"/><path class="a" d="M307 197L234 258"/>
+<text class="t s m" x="220" y="192">R1</text><text class="t s" x="372" y="60">R2 (outside)</text>
+</svg><figcaption>Nodes 1 to 5. Node 2 is the decision, node 5 is the junction. R1 is the enclosed region, R2 is the outside.</figcaption></figure>
+<p><b>Cyclomatic complexity, all three ways:</b></p>
+<ul>
+<li>V(G) = e &minus; n + 2p = 5 &minus; 5 + 2(1) = <b>2</b> (edges: 1&rarr;2, 2&rarr;3, 2&rarr;4, 3&rarr;5, 4&rarr;5).</li>
+<li>V(G) = d + p = 1 + 1 = <b>2</b> (one decision node).</li>
+<li>V(G) = regions = <b>2</b> (R1 and the outside R2).</li>
+</ul>
+<p><b>Independent paths and test cases:</b></p>
+<div class="scroll"><table><thead><tr><th>Path</th><th>Nodes</th><th>Inputs a, b, x, y</th><th>Expected output</th></tr></thead><tbody>
+<tr><td>P1</td><td>1-2-3-5</td><td class="num">5, 3, 2, 4 (a &gt; b)</td><td>Result: 6</td></tr>
+<tr><td>P2</td><td>1-2-4-5</td><td class="num">3, 5, 2, 4 (a &le; b)</td><td>Result: 4</td></tr>
+</tbody></table></div>
+<p>P1 gives x = x + y = 2 + 4 = 6. P2 gives x = y = 4. Two test cases, matching V(G) = 2.</p>
+
+<h3>Practice: a loop with two exits</h3>
+<div class="prob"><b>From your slides (prime number program)</b><p>Draw the flow graph, find V(G) by all three formulas, and give one test input for each independent path.</p>
+<pre><code>1   printf("Enter a number");
+2   scanf("%d", &amp;number);
+3   index = 2;
+4   while (index &lt;= number - 1)
+5   {
+6       if (number % index == 0)
+7       {
+8           printf("Not a prime number");
+9           break;
+10      }
+11      index++;
+12  }
+13  if (index == number)
+14      printf("Prime number");
+15  }  // end of main</code></pre></div>
+<details class="try"><summary>Reveal the worked solution</summary><div class="in">
+<div class="scroll"><table><thead><tr><th>Node</th><th>Lines</th><th>Node</th><th>Lines</th></tr></thead><tbody>
+<tr><td class="num">1</td><td>1 to 3</td><td class="num">5</td><td>11 (index++)</td></tr>
+<tr><td class="num">2</td><td>4 (while, decision)</td><td class="num">6</td><td>13 (if, decision)</td></tr>
+<tr><td class="num">3</td><td>6 (if, decision)</td><td class="num">7</td><td>14 (print prime)</td></tr>
+<tr><td class="num">4</td><td>8, 9 (print, break)</td><td class="num">8</td><td>15 (end, junction)</td></tr>
+</tbody></table></div>
+<figure class="fig"><svg class="dg" viewBox="0 0 520 440" role="img" aria-labelledby="f6p"><title id="f6p">Control flow graph of the prime number program</title>
+<circle class="b" cx="200" cy="30" r="18"/><text class="t h m" x="200" y="35">1</text>
+<circle class="b hl" cx="200" cy="100" r="18"/><text class="t h m" x="200" y="105">2</text>
+<circle class="b hl" cx="200" cy="175" r="18"/><text class="t h m" x="200" y="180">3</text>
+<circle class="b" cx="110" cy="250" r="18"/><text class="t h m" x="110" y="255">4</text>
+<circle class="b" cx="290" cy="250" r="18"/><text class="t h m" x="290" y="255">5</text>
+<circle class="b hl" cx="200" cy="330" r="18"/><text class="t h m" x="200" y="335">6</text>
+<circle class="b" cx="130" cy="405" r="18"/><text class="t h m" x="130" y="410">7</text>
+<circle class="b" cx="270" cy="405" r="18"/><text class="t h m" x="270" y="410">8</text>
+<path class="a" d="M200 48V82"/>
+<path class="a" d="M200 118V157"/><text class="t s" x="208" y="142">true</text>
+<path class="a" d="M186 187L124 238"/><text class="t s" x="150" y="200" text-anchor="end">true</text>
+<path class="a" d="M214 187L276 238"/><text class="t s" x="250" y="200">false</text>
+<path class="a" d="M123 262L187 318"/><text class="t s" x="130" y="300" text-anchor="end">break</text>
+<path class="a" d="M308 250H400V108H218"/><text class="t s" x="408" y="180">loop back</text>
+<path class="a" d="M218 92H470V330H218"/><text class="t s" x="360" y="86">false (loop ends)</text>
+<path class="a" d="M188 343L142 392"/><text class="t s" x="150" y="365" text-anchor="end">true</text>
+<path class="a" d="M212 343L258 392"/><text class="t s" x="250" y="365">false</text>
+<path class="a" d="M148 405H252"/>
+</svg><figcaption>Node 2 is the while test, node 3 the divisibility test, node 6 the final test. The break edge 4&rarr;6 skips the rest of the loop.</figcaption></figure>
+<p><b>Cyclomatic complexity.</b> Edges: 1&rarr;2, 2&rarr;3, 2&rarr;6, 3&rarr;4, 3&rarr;5, 4&rarr;6, 5&rarr;2, 6&rarr;7, 6&rarr;8, 7&rarr;8, so e = 10, n = 8.</p>
+<ul>
+<li>V(G) = e &minus; n + 2p = 10 &minus; 8 + 2 = <b>4</b></li>
+<li>V(G) = d + p = 3 + 1 = <b>4</b> (decisions at nodes 2, 3 and 6)</li>
+<li>V(G) = regions = <b>4</b></li>
+</ul>
+<div class="scroll"><table><thead><tr><th>Path</th><th>Nodes</th><th>Input</th><th>Output</th></tr></thead><tbody>
+<tr><td>P1</td><td>1-2-6-7-8</td><td class="num">number = 2 (loop skipped)</td><td>Prime number</td></tr>
+<tr><td>P2</td><td>1-2-6-8</td><td class="num">number = 1 (loop skipped)</td><td>nothing printed</td></tr>
+<tr><td>P3</td><td>1-2-3-4-6-8</td><td class="num">number = 4 (break)</td><td>Not a prime number</td></tr>
+<tr><td>P4</td><td>1-2-3-5-2-6-7-8</td><td class="num">number = 3 (loop runs once, ends)</td><td>Prime number</td></tr>
+</tbody></table></div>
+<p>The four inputs were traced through the code to confirm each follows the path shown.</p>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: draw the control flow graph and apply all methods to find the number of test cases <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Basis path testing</h4>
+<p>A white-box technique based on the control structure. A flow graph is drawn and each independent path is tested.</p>
+<p class="draw">Draw the 5-node graph: 1, decision 2, then 3 and 4, then 5.</p>
+<p>Nodes: 1 = declarations and input, 2 = if (a &gt; b), 3 = x = x + y, 4 = x = y, 5 = print and return.</p>
+<ul>
+<li>V(G) = e - n + 2p = 5 - 5 + 2 = 2</li>
+<li>V(G) = d + p = 1 + 1 = 2</li>
+<li>V(G) = number of regions = 2</li>
+</ul>
+<p>So two test cases are needed.</p>
+<ul>
+<li>P1: 1-2-3-5. a=5, b=3, x=2, y=4. Output: Result: 6.</li>
+<li>P2: 1-2-4-5. a=3, b=5, x=2, y=4. Output: Result: 4.</li>
+</ul>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">A flow graph has 9 edges and 8 nodes (one component). V(G) is:</p><div class="opts"><button type="button" data-k="a">1</button><button type="button" data-k="b">2</button><button type="button" data-k="c">3</button><button type="button" data-k="d">17</button></div><p class="why" hidden>e &minus; n + 2 = 9 &minus; 8 + 2 = 3.</p></div>
+<div class="mcq" data-a="d"><p class="q">A single program has 4 decision nodes. The minimum number of basis-path test cases is:</p><div class="opts"><button type="button" data-k="a">3</button><button type="button" data-k="b">4</button><button type="button" data-k="c">6</button><button type="button" data-k="d">5</button></div><p class="why" hidden>V(G) = d + 1 = 5.</p></div>
+<div class="mcq" data-a="b"><p class="q">A node with more than one arrow leaving it is called a:</p><div class="opts"><button type="button" data-k="a">Junction node</button><button type="button" data-k="b">Decision node</button><button type="button" data-k="c">Region</button><button type="button" data-k="d">Segment</button></div><p class="why" hidden>More than one arrow entering is a junction node.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 7 ============ -->
+<section class="lesson" id="dtable" data-tier="2">
+<header class="lh"><span class="no">7</span><div><h2>Decision table testing</h2>
+<p class="meta"><span class="sev major">Major</span><span>Never asked yet</span><span>About 25 min</span><span>Syllabus 2.2</span></p></div></header>
+
+<p>Boundary values and equivalence classes treat each input alone. When the output depends on a <b>combination</b> of conditions, a decision table lists every combination and what should happen for each.</p>
+
+<h3>Parts of a decision table</h3>
+<ul>
+<li><b>Condition stub:</b> the list of conditions (the inputs).</li>
+<li><b>Action stub:</b> the list of possible actions (the outputs).</li>
+<li><b>Rules:</b> the columns. Each rule is one combination of condition entries (T, F, or a dash for "does not matter") and the actions that follow.</li>
+</ul>
+<p>To get test cases: conditions become the inputs, actions become the expected output, and <b>each rule is one test case</b>. With k rules over n binary conditions you need at least k and at most 2<sup>n</sup> test cases.</p>
+
+<h3>Worked example from your slides</h3>
+<div class="prob"><b>Salary program</b><p>If working hours are 48 or fewer, pay the normal salary. Hours above 48 on normal days are paid at 1.25 times the salary. On holidays or Sundays the hours are paid at 2.00 times. Design test cases using a decision table.</p></div>
+<div class="scroll"><table><thead><tr><th></th><th class="c">Rule 1</th><th class="c">Rule 2</th><th class="c">Rule 3</th></tr></thead><tbody>
+<tr><td>C1: hours &le; 48</td><td class="c">T</td><td class="c">F</td><td class="c">&ndash;</td></tr>
+<tr><td>C2: holiday or Sunday</td><td class="c">F</td><td class="c">F</td><td class="c">T</td></tr>
+<tr><td>A1: normal salary</td><td class="c">X</td><td></td><td></td></tr>
+<tr><td>A2: 1.25 &times; salary</td><td></td><td class="c">X</td><td></td></tr>
+<tr><td>A3: 2.00 &times; salary</td><td></td><td></td><td class="c">X</td></tr>
+</tbody></table></div>
+<p>Two binary conditions allow up to 2<sup>2</sup> = 4 rules. Rule 3 ignores C1 because the 2.00 rate applies on a holiday or Sunday whatever the hours, so three rules are enough.</p>
+<div class="scroll"><table><thead><tr><th>Test case</th><th class="c">Hours</th><th>Day</th><th>Expected result</th></tr></thead><tbody>
+<tr><td>1</td><td class="c num">48</td><td>Monday</td><td>Normal salary</td></tr>
+<tr><td>2</td><td class="c num">50</td><td>Tuesday</td><td>1.25 of salary</td></tr>
+<tr><td>3</td><td class="c num">52</td><td>Sunday</td><td>2.00 of salary</td></tr>
+</tbody></table></div>
+<div class="note plain"><b>Bigger examples</b><p>Your slides also have a wholesaler discount table (7 conditions, 8 rules) and a university admission table. They use exactly this method with more rows, so there is nothing new to memorise.</p></div>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="d"><p class="q">The components of a decision table are:</p><div class="opts"><button type="button" data-k="a">Condition stub only</button><button type="button" data-k="b">Action stub only</button><button type="button" data-k="c">Condition entry and action entry only</button><button type="button" data-k="d">Condition stub, condition entries, action stub, action entries</button></div><p class="why" hidden>All four are components.</p></div>
+<div class="mcq" data-a="b"><p class="q">With 3 binary conditions, the maximum number of rules (and test cases) is:</p><div class="opts"><button type="button" data-k="a">3</button><button type="button" data-k="b">8</button><button type="button" data-k="c">6</button><button type="button" data-k="d">9</button></div><p class="why" hidden>2<sup>3</sup> = 8. Dashes (don't care) reduce the number of rules.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 8 ============ -->
+<section class="lesson" id="whitebox" data-tier="2">
+<header class="lh"><span class="no">8</span><div><h2>Black-box versus white-box, and logic coverage</h2>
+<p class="meta"><span class="sev major">Major</span><span>Never asked yet</span><span>About 20 min</span><span>Syllabus 2.2</span></p></div></header>
+
+<p>Dynamic testing means executing the code. It has two families, and your syllabus lists techniques from both.</p>
+<div class="scroll"><table><thead><tr><th></th><th>Black-box (functional)</th><th>White-box (structural, glass-box)</th></tr></thead><tbody>
+<tr><td><b>Looks at</b></td><td>Inputs and outputs. The inside is ignored.</td><td>The design, structure and code.</td></tr>
+<tr><td><b>Usually done by</b></td><td>Testers</td><td>Developers, on their own code</td></tr>
+<tr><td><b>Stage</b></td><td>Second stage of testing</td><td>Initial stage, the module level</td></tr>
+<tr><td><b>Finds</b></td><td>Wrong or missing functions, interface errors, performance and load problems</td><td>Logic errors, unexecuted paths, typing mistakes that black-box tests miss</td></tr>
+<tr><td><b>Techniques here</b></td><td>Boundary values, equivalence classes, decision tables</td><td>Logic coverage, basis path, loop, data flow, mutation</td></tr>
+</tbody></table></div>
+<p>The two are complementary. Some bugs show up only in white-box tests, for example a logical path you believed was rare but runs daily, or a typo that no functional test happens to hit.</p>
+
+<h3>Logic coverage criteria</h3>
+<p>These say how thoroughly a set of tests has exercised the code. Take this decision: <code>if (A &amp;&amp; B) x = 1;</code></p>
+<div class="scroll"><table><thead><tr><th>Criterion</th><th>Requirement</th><th>Tests for the example</th></tr></thead><tbody>
+<tr><td><b>Statement coverage</b></td><td>Every statement runs at least once. Necessary, but not sufficient.</td><td>(A, B) = (T, T). One test.</td></tr>
+<tr><td><b>Decision (branch) coverage</b></td><td>Every decision is true once and false once.</td><td>(T, T) and (F, T). Two tests.</td></tr>
+<tr><td><b>Condition coverage</b></td><td>Every condition inside a decision is true once and false once.</td><td>(T, F) and (F, T). Two tests.</td></tr>
+<tr><td><b>Multiple condition coverage</b></td><td>Every combination of condition outcomes.</td><td>(T,T) (T,F) (F,T) (F,F). Four tests.</td></tr>
+</tbody></table></div>
+<div class="note warn"><b>A trap in the table</b><p>The two condition-coverage tests (T, F) and (F, T) make the whole decision false both times, so condition coverage does <b>not</b> guarantee decision coverage. That is why multiple condition coverage exists.</p></div>
+</section>
+
+<!-- ============ LESSON 9 ============ -->
+<section class="lesson" id="loops" data-tier="2">
+<header class="lh"><span class="no">9</span><div><h2>Loop testing</h2>
+<p class="meta"><span class="sev major">Major</span><span>Never asked yet</span><span>About 10 min</span><span>Syllabus 2.2</span></p></div></header>
+<p>Loop testing extends branch coverage. Loops are important because mistakes in how many times they run, such as the classic off-by-one, can go undetected.</p>
+<h3>Simple loop</h3>
+<p>Your slide gives these checks. Let the loop run at most <i>n</i> times:</p>
+<ul>
+<li>Check whether the loop can be bypassed. If the bypass test runs and you still enter the loop, there is a bug.</li>
+<li>Check whether the loop control variable can be negative.</li>
+<li>One test that executes the statements inside the loop.</li>
+<li>Tests for a typical number of passes.</li>
+<li>Tests at the boundaries of the iteration count: minimum, min+1, min&minus;1, max&minus;1, max, max+1 passes.</li>
+</ul>
+<div class="scroll"><table><thead><tr><th>Passes through a loop that runs at most n times</th><th>What it checks</th></tr></thead><tbody>
+<tr><td>0</td><td>The loop is skipped correctly</td></tr>
+<tr><td>1 and 2</td><td>First iteration, and that a second one starts</td></tr>
+<tr><td>m, where m &lt; n</td><td>A typical number of passes</td></tr>
+<tr><td>n&minus;1, n, n+1</td><td>The boundary: last allowed passes, and one too many</td></tr>
+</tbody></table></div>
+<h3>Nested and concatenated loops</h3>
+<ul>
+<li><b>Nested loops:</b> start with the innermost loop, holding the outer loops at their minimum. Test it as a simple loop. Then move outward one level, keeping the inner loops at typical values.</li>
+<li><b>Concatenated loops</b> (one after another): if they are independent, test each as a simple loop. If the second depends on the first, for example it uses the first loop's counter, treat them as nested.</li>
+</ul>
+</section>
+
+<!-- ============ LESSON 10 ============ -->
+<section class="lesson" id="dataflow" data-tier="2">
+<header class="lh"><span class="no">10</span><div><h2>Data flow testing</h2>
+<p class="meta"><span class="sev major">Major</span><span>Never asked yet</span><span>About 15 min</span><span>Syllabus 2.2</span></p></div></header>
+<p>A white-box technique that finds improper use of data caused by coding errors, by studying how each variable is defined, used and killed.</p>
+<h3>States of a data object</h3>
+<ul>
+<li><b>d</b>, defined: given a value (assigned or read in).</li>
+<li><b>u</b>, used: its value is read, in a calculation or a condition.</li>
+<li><b>k</b>, killed (undefined or released): its value is no longer valid, for example a freed pointer or a variable out of scope.</li>
+</ul>
+<h3>Anomalies: two states in a row</h3>
+<p>Look at pairs of consecutive actions on the same variable along a path.</p>
+<div class="scroll"><table><thead><tr><th>Pair</th><th>Meaning</th><th>Verdict</th></tr></thead><tbody>
+<tr><td>du</td><td>define, then use</td><td class="ok">Normal</td></tr>
+<tr><td>ud</td><td>use, then define</td><td class="ok">Allowed</td></tr>
+<tr><td>uk</td><td>use, then kill</td><td class="ok">Allowed</td></tr>
+<tr><td>kd</td><td>kill, then define</td><td class="ok">Allowed</td></tr>
+<tr><td>uu</td><td>use, then use</td><td class="ok">Allowed</td></tr>
+<tr class="bad"><td>dk</td><td>define, then kill with no use</td><td class="no">Potential bug</td></tr>
+<tr class="bad"><td>ku</td><td>kill, then use</td><td class="no">Serious bug</td></tr>
+<tr class="bad"><td>dd</td><td>define, then define again with no use</td><td class="no">Harmless bug, but not allowed</td></tr>
+<tr class="bad"><td>kk</td><td>kill, then kill</td><td class="no">Harmless bug, but not allowed</td></tr>
+</tbody></table></div>
+<div class="note tip"><b>Remember</b><p>The pairs that are always trouble all repeat or waste something: <b>dk</b>, <b>ku</b>, <b>dd</b>, <b>kk</b>.</p></div>
+<h4>Tiny example</h4>
+<pre><code>1  x = 10;        // d(x)
+2  y = x + 5;     // u(x), d(y)
+3  x = 20;        // d(x)
+4  x = 30;        // d(x) again: dd anomaly, the 20 was never used
+5  print(y);      // u(y)</code></pre>
+<h3>Static versus dynamic</h3>
+<ul>
+<li><b>Static data flow testing:</b> analyse the source code without running it. It is not enough, because it cannot tell which paths actually run.</li>
+<li><b>Dynamic data flow testing:</b> run the code. Test cases are designed so that every definition is traced to each of its uses, and every use is traced back to each of its definitions.</li>
+</ul>
+</section>
+
+<!-- ============ LESSON 11 ============ -->
+<section class="lesson" id="mutation" data-tier="2">
+<header class="lh"><span class="no">11</span><div><h2>Mutation testing</h2>
+<p class="meta"><span class="sev major">Major</span><span>Never asked yet</span><span>About 15 min</span><span>Syllabus 2.2</span></p></div></header>
+<p>Mutation testing does not test the program. It tests <b>your tests</b>. Put a small error into the code, run the tests, and see whether they notice. If they do not, the tests are weak.</p>
+<ul>
+<li>A faulty copy of the program is a <b>mutant</b>. Each mutant contains one fault.</li>
+<li>A mutant is <b>killed</b> when some test case makes it fail, that is, its output differs from the original program's. A dead mutant has done its job and leaves the process.</li>
+<li>A mutant that survives every test is <b>alive</b>. It means the test data is not good enough, and you add a test that kills it.</li>
+<li><b>Primary mutants</b> come from one change in the code. <b>Secondary mutants</b> come from two or more changes.</li>
+</ul>
+<h3>Example from your slides</h3>
+<pre><code>if (a &gt; b)
+    x = x + y;
+else
+    x = y;
+printf("%d", x);</code></pre>
+<p>Primary mutants: <b>M1</b> x = x &minus; y. <b>M2</b> x = x / y. <b>M3</b> x = x + 1. <b>M4</b> print y instead of x. Adding one more, <b>M5</b>, changes the condition to <code>a &gt;= b</code>. Try three tests with x = 2, y = 4 (K means killed, A means alive):</p>
+<div class="scroll"><table><thead><tr><th>Test (a, b)</th><th>Original</th><th class="c">M1</th><th class="c">M2</th><th class="c">M3</th><th class="c">M4</th><th class="c">M5</th></tr></thead><tbody>
+<tr><td>t1: (5, 3)</td><td class="num">6</td><td class="c">K</td><td class="c">K</td><td class="c">K</td><td class="c">K</td><td class="c">A</td></tr>
+<tr><td>t2: (3, 5)</td><td class="num">4</td><td class="c">A</td><td class="c">A</td><td class="c">A</td><td class="c">A</td><td class="c">A</td></tr>
+<tr><td>t3: (3, 3)</td><td class="num">4</td><td class="c">A</td><td class="c">A</td><td class="c">A</td><td class="c">A</td><td class="c">K</td></tr>
+</tbody></table></div>
+<p>t1 kills four mutants. t2 kills none, so it adds nothing for mutation purposes. M5 survives until t3, where a equals b, exposes it. Without a test with a = b, a real boundary bug of that kind would also survive.</p>
+<div class="note src"><b>Extra point</b><p>The mutation score = killed mutants / total mutants. It is a standard measure, not in your slides, but it makes a good closing line.</p></div>
+<h4>Secondary mutants from your slide</h4>
+<p>For <code>if (a &lt; b) c = a;</code> the slide shows <code>if (a &lt;= b-1) c = a;</code>, <code>if (a+1 &lt;= b) c = a;</code> and <code>if (a == b) c = a+1;</code>. Each has more than one change, which makes it secondary.</p>
+</section>
+
+<!-- ============ LESSON 12 ============ -->
+<section class="lesson" id="skip" data-tier="3">
+<header class="lh"><span class="no">12</span><div><h2>In the slides, not in the syllabus</h2>
+<p class="meta"><span class="sev minor">Minor</span><span>Skip, or read once</span><span>About 5 min</span></p></div></header>
+<p>Syllabus 2.2 does not list these four, so spend your time elsewhere. One line each in case they appear as a short part of a question.</p>
+<dl class="kv">
+<dt>State table testing</dt><dd>Model the software as a finite state machine: a table with states as rows and input events as columns, each cell giving the next state and output. Each cell becomes a test case.</dd>
+<dt>Cause-effect graphing</dt><dd>Draw causes (inputs) and effects (outputs) as a graph, convert it to a decision table, derive test cases.</dd>
+<dt>Error guessing</dt><dd>An ad hoc method where an experienced tester uses intuition and bug history to guess where bugs hide. The method of last resort when other techniques fail.</dd>
+<dt>Graph matrix</dt><dd>A matrix representation of a flow graph, used to automate path tracing.</dd>
+</dl>
+</section>
+
+<!-- ============ LESSON 13 ============ -->
+<section class="lesson" id="mock" data-tier="4">
+<header class="lh"><span class="no">13</span><div><h2>Mock paper for Module 2</h2>
+<p class="meta"><span>22 minutes per question</span><span>Paper and pen only</span></p></div></header>
+<p>The questions use fresh numbers so you cannot answer from memory of the lessons. Time yourself, then open the marking points.</p>
+
+<div class="prob"><b>Q1 (10 marks), attempt any one</b>
+<p>A. A program reads two numbers X in [10, 90] and Y in [1, 12] (a month number). Design test cases using boundary value checking and robust testing.</p>
+<p>B. Explain equivalence class testing. A password field accepts 8 to 16 characters. Derive the test cases.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in">
+<p><b>A:</b> two variables, so BVC gives 4n + 1 = 9 and robust gives 6n + 1 = 13. Nominal X = 50, Y = 6. Boundary values X: 10, 11, 89, 90 and Y: 1, 2, 11, 12; robust adds X: 9, 91 and Y: 0, 13.</p>
+<div class="bva-fixed" data-vars="X:10:90;Y:1:12" data-mode="bvc" data-prog="generic"></div>
+<div class="bva-fixed" data-vars="X:10:90;Y:1:12" data-mode="robust" data-prog="generic"></div>
+<p><b>B:</b> definition, goals, valid and invalid classes. Classes: length &lt; 8 (invalid), 8 to 16 (valid), length &gt; 16 (invalid). Tests: 12 characters accepted; 7 characters rejected; 17 characters rejected. Good answers add an empty password as one more invalid class.</p>
+</div></details>
+
+<div class="prob"><b>Q2 (10 marks), attempt any one</b>
+<p>A. What is static testing? Explain inspection and walkthrough.</p>
+<p>B. Explain regression testing: its objectives, types, and when it is performed.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in">
+<p><b>A:</b> definition (no execution); why; benefits; inspection with team and six steps; walkthrough with team and four steps; a one-line contrast.</p>
+<p><b>B:</b> definition; three objectives; when performed (bug fix, new feature, integration); two types; three cost-control techniques.</p>
+</div></details>
+
+<div class="prob"><b>Q3 (10 marks), attempt any one</b>
+<p>A. Draw the control flow graph for the code below, find V(G) by all three methods, and write the test cases.</p>
+<pre><code>1  scanf("%d", &amp;n);
+2  if (n % 2 == 0)
+3      printf("even");
+4  else
+5      printf("odd");
+6  if (n &gt; 100)
+7      printf(" large");</code></pre>
+<p>B. Explain usability testing and accessibility testing with an example.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in">
+<p><b>A:</b> nodes: 1 = line 1; 2 = decision (n % 2 == 0); 3 = line 3; 4 = line 5; 5 = decision (n &gt; 100) and junction of 3 and 4; 6 = line 7; 7 = end (junction of 5 and 6). Edges: 1&rarr;2, 2&rarr;3, 2&rarr;4, 3&rarr;5, 4&rarr;5, 5&rarr;6, 5&rarr;7, 6&rarr;7, so e = 8, n = 7.</p>
+<ul>
+<li>V(G) = 8 &minus; 7 + 2 = <b>3</b></li>
+<li>V(G) = d + 1 = 2 + 1 = <b>3</b></li>
+<li>V(G) = regions = <b>3</b></li>
+</ul>
+<p>Paths: 1-2-3-5-7 with n = 4 prints "even"; 1-2-4-5-7 with n = 3 prints "odd"; 1-2-3-5-6-7 with n = 102 prints "even large".</p>
+<p><b>B:</b> usability attributes, method and measures with an example; WCAG principles and checks with an example; one-line difference.</p>
+</div></details>
+
+<h3>Not asked yet, but fair game</h3>
+<ul>
+<li>Black-box versus white-box testing.</li>
+<li>A decision table for a small business rule.</li>
+<li>Statement, branch and condition coverage.</li>
+<li>Loop testing (simple, nested, concatenated).</li>
+<li>Data-flow anomalies; mutation testing with killed and alive mutants.</li>
+<li>Unit testing with drivers and stubs (Module 1, Lesson 7).</li>
+</ul>
+<p>Quiz scores on this page are for you only and are not saved.</p>
+<p class="score" id="score">Quiz score so far: no questions answered yet.</p>
+</section>
+
+<!-- ============ LESSON 14 ============ -->
+<section class="lesson" id="cheat" data-tier="4">
+<header class="lh"><span class="no">14</span><div><h2>Last-hour sheet</h2>
+<p class="meta"><span>Read this just before the exam</span></p></div></header>
+<dl class="kv">
+<dt>BVA values</dt><dd>min, min+, nominal, max&minus;, max (robust adds min&minus;, max+). Nominal = middle of the range.</dd>
+<dt>BVA counts</dt><dd>BVC 4n+1. Robust 6n+1. Worst-case 5<sup>n</sup>. Three variables: 13, 19, 125. Two variables: 9, 13, 25. One variable: 5, 7, 5.</dd>
+<dt>Equivalence</dt><dd>One test per class. Valid classes can share a test. Invalid classes one at a time. Largest of three: I1 to I3 valid, I4 to I9 invalid, plus 7 output classes covered by 4 tests (11 total).</dd>
+<dt>Decision table</dt><dd>Conditions are inputs, actions are outputs, each rule is a test. k rules on n binary conditions: at least k, at most 2<sup>n</sup> tests.</dd>
+<dt>Basis path</dt><dd>Draw the graph, then V(G) = e &minus; n + 2p = d + p = regions. One test per independent path. Your Sep 2025 code: V(G) = 2.</dd>
+<dt>Coverage</dt><dd>Statement, decision (branch), condition, multiple condition.</dd>
+<dt>Loops</dt><dd>Simple: 0, 1, 2, typical, n&minus;1, n, n+1 passes. Nested: innermost first. Concatenated: independent means simple, dependent means nested.</dd>
+<dt>Data flow</dt><dd>States d, u, k. Trouble pairs: dk, ku, dd, kk.</dd>
+<dt>Mutation</dt><dd>Mutant, killed (test output differs), alive (test data is weak). Primary: one change. Secondary: more than one.</dd>
+<dt>Static</dt><dd>No execution. Inspection: planning, overview, preparation, meeting, rework, follow-up; moderator-led. Walkthrough: organisation, preparation, walkthrough, rework and follow-up; less formal. Technical review: includes management.</dd>
+<dt>Regression</dt><dd>Selective retesting after change. Objectives: bug fixed, related bugs, effect on other parts. Types: bug-fix, side-effect. Techniques: selection, prioritisation, reduction. Versions: baseline, delta, delta build.</dd>
+<dt>Usability</dt><dd>Learnability, efficiency, memorability, errors, satisfaction. Measure completion, time, errors, satisfaction.</dd>
+<dt>Accessibility</dt><dd>WCAG: perceivable, operable, understandable, robust. Alt text, keyboard-only, contrast 4.5:1, screen readers.</dd>
+</dl>
+</section>
+
+</div></main>
+</div>
+<script>window.COURSE={"id": "m2", "title": "Module 2: Testing Techniques", "sub": "Software Testing and Quality Assurance", "tiers": {"1": "Critical: already asked", "2": "Major: in syllabus, not asked yet", "3": "Minor: skip or skim", "4": "Finish line"}, "other": {"href": "STQA_Module1_Testing_Methodology.html", "label": "Open Module 1: Testing Methodology"}};</script>
+<script>
+(function(){
+  var C = window.COURSE || {};
+  var KEY = 'stqa:' + (C.id || 'x') + ':done';
+  var done = {};
+  try { done = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { done = {}; }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(done)); } catch(e) {} }
+
+  var lessons = Array.prototype.slice.call(document.querySelectorAll('section.lesson'));
+
+  /* ---- build outline ---- */
+  var nav = document.getElementById('outline');
+  if (nav) {
+    var html = '<p class="brand">' + C.title + '</p><p class="sub">' + (C.sub || '') + '</p>' +
+      '<div class="bar" aria-hidden="true"><i id="barfill"></i></div><p class="count" id="barcount"></p>';
+    var tiers = C.tiers || {};
+    Object.keys(tiers).forEach(function(t){
+      var inTier = lessons.filter(function(s){ return s.dataset.tier === t; });
+      if (!inTier.length) return;
+      html += '<h6>' + tiers[t] + '</h6><ol>';
+      inTier.forEach(function(s){
+        var n = s.querySelector('.no'), h = s.querySelector('h2');
+        html += '<li><a href="#' + s.id + '" data-id="' + s.id + '"><span class="n">' + (n ? n.textContent : '') +
+                '</span><span class="t">' + h.textContent + '</span></a></li>';
+      });
+      html += '</ol>';
+    });
+    if (C.other) html += '<div class="other"><a href="' + C.other.href + '">' + C.other.label + '</a></div>';
+    nav.innerHTML = html;
+  }
+
+  function refresh(){
+    var n = 0;
+    lessons.forEach(function(s){
+      var d = !!done[s.id]; if (d) n++;
+      var a = document.querySelector('.outline a[data-id="' + s.id + '"]');
+      if (a) a.classList.toggle('done', d);
+      var b = s.querySelector('.donebtn');
+      if (b) { b.setAttribute('aria-pressed', d ? 'true' : 'false'); b.textContent = d ? 'Done. Click to undo' : 'Mark this lesson as done'; }
+    });
+    var f = document.getElementById('barfill'), c = document.getElementById('barcount');
+    if (f) f.style.width = (lessons.length ? Math.round(100 * n / lessons.length) : 0) + '%';
+    if (c) c.textContent = n + ' of ' + lessons.length + ' lessons done';
+  }
+
+  /* ---- done buttons ---- */
+  lessons.forEach(function(s){
+    var bar = document.createElement('div'); bar.className = 'donebar';
+    bar.innerHTML = '<button type="button" class="donebtn" aria-pressed="false"></button>';
+    s.appendChild(bar);
+    bar.firstChild.addEventListener('click', function(){ done[s.id] = !done[s.id]; save(); refresh(); });
+  });
+  refresh();
+
+  /* ---- MCQs ---- */
+  var total = 0, right = 0, answered = 0;
+  var mcqs = Array.prototype.slice.call(document.querySelectorAll('.mcq'));
+  total = mcqs.length;
+  mcqs.forEach(function(q){
+    var ans = q.dataset.a;
+    q.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (q.classList.contains('done')) return;
+        q.classList.add('done'); answered++;
+        var ok = btn.dataset.k === ans;
+        if (ok) right++;
+        btn.classList.add(ok ? 'right' : 'wrong');
+        if (!ok) { var r = q.querySelector('button[data-k="' + ans + '"]'); if (r) r.classList.add('right'); }
+        var w = q.querySelector('.why'); if (w) w.hidden = false;
+        var sc = document.getElementById('score'); if (sc) sc.textContent = 'Quiz score so far: ' + right + ' correct out of ' + answered + ' answered (' + total + ' questions on this page).';
+      });
+    });
+  });
+
+  /* ---- mobile menu ---- */
+  var mb = document.getElementById('menubtn');
+  if (mb) mb.addEventListener('click', function(){ document.body.classList.toggle('menu'); });
+  if (nav) nav.addEventListener('click', function(e){ if (e.target.closest('a')) document.body.classList.remove('menu'); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') document.body.classList.remove('menu'); });
+  document.addEventListener('click', function(e){
+    if (document.body.classList.contains('menu') && !e.target.closest('#outline') && !e.target.closest('#menubtn')) document.body.classList.remove('menu');
+  });
+
+  /* ---- scrollspy ---- */
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if (en.isIntersecting) {
+          document.querySelectorAll('.outline a.on').forEach(function(a){ a.classList.remove('on'); });
+          var a = document.querySelector('.outline a[data-id="' + en.target.id + '"]');
+          if (a) { a.classList.add('on'); }
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    lessons.forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---- print: open every reveal ---- */
+  window.addEventListener('beforeprint', function(){ document.querySelectorAll('details').forEach(function(d){ d.open = true; }); });
+})();
+
+</script>
+<script>(function (root) {
+  var MINUS = '−';
+  function nom(v) { return Math.floor((v.min + v.max) / 2); }
+
+  function expected(prog, vars, row) {
+    for (var i = 0; i < vars.length; i++) {
+      if (row[i] < vars[i].min || row[i] > vars[i].max) return 'Invalid input';
+    }
+    if (prog === 'largest') {
+      var mx = Math.max.apply(null, row), names = [];
+      for (var j = 0; j < row.length; j++) if (row[j] === mx) names.push(vars[j].name);
+      if (names.length === row.length && row.length > 1) return 'All are equal';
+      if (names.length === 1) return names[0] + ' is largest';
+      return names.join(' and ') + ' are largest';
+    }
+    if (prog === 'power') return String(Math.pow(row[0], row[1]));
+    if (prog === 'accept') return 'Accepted';
+    return 'Valid input';
+  }
+
+  function expectedOf(prog, vars, row) {
+    var e = expected(prog, vars, row);
+    if (prog === 'accept' && e === 'Invalid input') return 'Rejected';
+    return e;
+  }
+
+  function gen(vars, mode, prog) {
+    var n = vars.length, rows = [], i;
+    var noms = vars.map(nom);
+    if (mode === 'worst') {
+      var sets = vars.map(function (v) {
+        return [[v.min, 'min'], [v.min + 1, 'min+'], [nom(v), 'nom'], [v.max - 1, MINUS === '' ? 'max-' : 'max' + MINUS], [v.max, 'max']];
+      });
+      var acc = [{ vals: [], note: [] }];
+      sets.forEach(function (s) {
+        var nx = [];
+        acc.forEach(function (a) { s.forEach(function (p) { nx.push({ vals: a.vals.concat([p[0]]), note: a.note.concat([p[1]]) }); }); });
+        acc = nx;
+      });
+      acc.forEach(function (a) { rows.push({ vals: a.vals, note: a.note.join(', ') }); });
+    } else {
+      vars.forEach(function (v, k) {
+        var list = mode === 'robust'
+          ? [[v.min - 1, 'min' + MINUS], [v.min, 'min'], [v.min + 1, 'min+'], [v.max - 1, 'max' + MINUS], [v.max, 'max'], [v.max + 1, 'max+']]
+          : [[v.min, 'min'], [v.min + 1, 'min+'], [v.max - 1, 'max' + MINUS], [v.max, 'max']];
+        list.forEach(function (p) {
+          var r = noms.slice(); r[k] = p[0];
+          rows.push({ vals: r, note: v.name + ' ' + p[1] + (n > 1 ? ', others nominal' : '') });
+        });
+      });
+      rows.push({ vals: noms.slice(), note: 'all nominal' });
+    }
+    var seen = {}, distinct = 0;
+    rows.forEach(function (r) {
+      var key = r.vals.join(',');
+      r.dup = !!seen[key];
+      if (!r.dup) { seen[key] = 1; distinct++; }
+      r.out = expectedOf(prog, vars, r.vals);
+    });
+    var formula = mode === 'bvc' ? 4 * n + 1 : mode === 'robust' ? 6 * n + 1 : Math.pow(5, n);
+    var label = mode === 'bvc' ? '4n + 1' : mode === 'robust' ? '6n + 1' : '5<sup>n</sup>';
+    return { rows: rows, formula: formula, label: label, n: n, distinct: distinct, noms: noms };
+  }
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+  function render(vars, mode, prog, opts) {
+    opts = opts || {};
+    var g = gen(vars, mode, prog), limit = opts.limit || 0;
+    var html = '<p class="count">' + g.n + ' variable' + (g.n > 1 ? 's' : '') + ': ' + g.label + ' = <b>' + g.formula + '</b> test cases'
+      + (g.distinct !== g.formula ? ' (' + g.distinct + ' distinct, because the range is so small that some values coincide)' : '') + '.</p>';
+    if (mode === 'worst' && g.n === 2 && opts.grid) {
+      var a = vars[0], b = vars[1];
+      var av = [a.min, a.min + 1, nom(a), a.max - 1, a.max], bv = [b.min, b.min + 1, nom(b), b.max - 1, b.max];
+      var al = ['min', 'min+', 'nom', 'max' + MINUS, 'max'];
+      html += '<div class="scroll"><table><thead><tr><th>' + esc(b.name) + ' \\ ' + esc(a.name) + '</th>';
+      av.forEach(function (x, i) { html += '<th class="c">' + esc(a.name) + ' = ' + x + '<br><small>' + al[i] + '</small></th>'; });
+      html += '</tr></thead><tbody>';
+      bv.forEach(function (y, j) {
+        html += '<tr><th>' + esc(b.name) + ' = ' + y + ' <small>(' + al[j] + ')</small></th>';
+        av.forEach(function (x) { html += '<td class="c num">' + expectedOf(prog, vars, [x, y]) + '</td>'; });
+        html += '</tr>';
+      });
+      html += '</tbody></table></div><p>Each cell is one test case: the inputs are the row and column headings, the number shown is the expected output.</p>';
+      return html;
+    }
+    html += '<div class="scroll"><table><thead><tr><th>TC</th>';
+    vars.forEach(function (v) { html += '<th class="c">' + esc(v.name) + '</th>'; });
+    html += '<th>Expected output</th><th>What it tests</th></tr></thead><tbody>';
+    var shown = limit && g.rows.length > limit ? g.rows.slice(0, limit) : g.rows;
+    shown.forEach(function (r, i) {
+      var bad = r.out === 'Invalid input' || r.out === 'Rejected';
+      html += '<tr' + (bad ? ' class="bad"' : '') + '><td class="num">' + (i + 1) + '</td>';
+      r.vals.forEach(function (x) { html += '<td class="c num">' + x + '</td>'; });
+      html += '<td>' + esc(r.out) + '</td><td>' + esc(r.note) + (r.dup ? ' (repeats an earlier row)' : '') + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    if (shown.length < g.rows.length) html += '<p>Showing the first ' + shown.length + ' of ' + g.rows.length + ' rows. In the exam you state the count and show a few rows.</p>';
+    return html;
+  }
+
+  root.STQA = { gen: gen, render: render, expected: expectedOf, nom: nom };
+  if (typeof module !== 'undefined' && module.exports) module.exports = root.STQA;
+
+  /* ---------- page wiring (browser only) ---------- */
+  if (typeof document === 'undefined') return;
+  function parseVars(s) {
+    return s.split(';').map(function (t) { var p = t.split(':'); return { name: p[0], min: +p[1], max: +p[2] }; });
+  }
+  function fill() {
+    document.querySelectorAll('.bva-fixed').forEach(function (el) {
+      el.innerHTML = render(parseVars(el.dataset.vars), el.dataset.mode, el.dataset.prog || 'generic',
+        { limit: +(el.dataset.limit || 0), grid: el.dataset.grid === '1' });
+    });
+  }
+  function wireGen() {
+    var box = document.getElementById('gen'); if (!box) return;
+    var presets = {
+      'p1': { v: 'A:1:50;B:1:50;C:1:50', prog: 'largest', label: 'Largest of three, range 1 to 50' },
+      'p2': { v: 'a:1:8;b:1:4', prog: 'power', label: 'a to the power b, a 1 to 8, b 1 to 4' },
+      'p3': { v: 'Age:18:60', prog: 'accept', label: 'Age field, 18 to 60' },
+      'p4': { v: 'A:1:20;B:1:20;C:1:20', prog: 'largest', label: 'Largest of three, range 1 to 20' }
+    };
+    var rowsEl = document.getElementById('gen-vars'), out = document.getElementById('gen-out');
+    var nSel = document.getElementById('gen-n'), modeSel = document.getElementById('gen-mode'), progSel = document.getElementById('gen-prog');
+    function build(vs) {
+      rowsEl.innerHTML = '';
+      vs.forEach(function (v, i) {
+        var d = document.createElement('div'); d.className = 'row';
+        d.innerHTML = '<label>Name<input data-f="name" value="' + v.name + '" maxlength="6"></label><label>Min<input data-f="min" type="number" value="' + v.min + '"></label><label>Max<input data-f="max" type="number" value="' + v.max + '"></label>';
+        rowsEl.appendChild(d);
+      });
+      nSel.value = String(vs.length);
+      draw();
+    }
+    function read() {
+      return Array.prototype.map.call(rowsEl.querySelectorAll('.row'), function (r) {
+        return { name: r.querySelector('[data-f=name]').value || 'x', min: parseInt(r.querySelector('[data-f=min]').value, 10), max: parseInt(r.querySelector('[data-f=max]').value, 10) };
+      });
+    }
+    function draw() {
+      var vs = read(), prog = progSel.value;
+      if (vs.some(function (v) { return isNaN(v.min) || isNaN(v.max) || v.max - v.min < 2; })) { out.innerHTML = '<p>Each range needs a minimum, a maximum, and at least three values between them.</p>'; return; }
+      if (prog === 'power' && vs.length !== 2) { out.innerHTML = '<p>The power program needs exactly two variables.</p>'; return; }
+      out.innerHTML = render(vs, modeSel.value, prog, { limit: 40, grid: vs.length === 2 && modeSel.value === 'worst' });
+    }
+    document.querySelectorAll('[data-preset]').forEach(function (b) {
+      b.addEventListener('click', function () { var p = presets[b.dataset.preset]; progSel.value = p.prog; build(parseVars(p.v)); });
+    });
+    nSel.addEventListener('change', function () {
+      var cur = read(), n = +nSel.value, names = ['A', 'B', 'C'];
+      while (cur.length < n) cur.push({ name: names[cur.length] || 'x', min: 1, max: 50 });
+      build(cur.slice(0, n));
+    });
+    [modeSel, progSel].forEach(function (s) { s.addEventListener('change', draw); });
+    rowsEl.addEventListener('input', draw);
+    build(parseVars(presets.p1.v));
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { fill(); wireGen(); });
+  else { fill(); wireGen(); }
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+</body>
+</html>
