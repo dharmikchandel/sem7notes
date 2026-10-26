@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital Marketing Module 2</title>
+<style>
+:root{
+  --bg:#F5F7FB;--surface:#FFFFFF;--surface2:#EBF0FA;--ink:#101A33;--muted:#53617D;--line:#D9E0EE;
+  --link:#2352D8;--on-link:#FFFFFF;--gold:#E7A600;--gold-ink:#3B2A00;--good:#12805C;--bad:#C0401D;--hl:#FFF3C4;
+  --code-bg:#0F1A33;--code-ink:#E6EDFF;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root[data-theme="dark"]{
+  --bg:#0B1120;--surface:#131B2E;--surface2:#1B2640;--ink:#E8EDF8;--muted:#9CA9C6;--line:#27324F;
+  --link:#8AA9FF;--on-link:#0B1120;--gold:#F2BE2E;--gold-ink:#2B2000;--good:#3DD6A3;--bad:#FF8F6B;--hl:#3A3010;
+  --code-bg:#070C18;--code-ink:#DCE6FF;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1120;--surface:#131B2E;--surface2:#1B2640;--ink:#E8EDF8;--muted:#9CA9C6;--line:#27324F;
+    --link:#8AA9FF;--on-link:#0B1120;--gold:#F2BE2E;--gold-ink:#2B2000;--good:#3DD6A3;--bad:#FF8F6B;--hl:#3A3010;
+    --code-bg:#070C18;--code-ink:#DCE6FF;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 var(--sans);-webkit-text-size-adjust:100%}
+a{color:var(--link)}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;margin:0}
+h2{font-size:clamp(24px,3.4vw,31px);margin-bottom:8px}
+h3{font-size:20px;margin:26px 0 8px}
+h4{font-size:17px;margin:18px 0 4px}
+p{margin:10px 0}
+ul,ol{padding-left:1.25em;margin:8px 0}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:.9em;background:var(--surface2);padding:1px 5px;border-radius:4px}
+pre.code{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:10px;overflow-x:auto;font:14px/1.55 var(--mono);margin:12px 0;white-space:pre}
+pre.code code{background:none;padding:0;font-size:inherit}
+:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--serif);font-weight:700;white-space:nowrap}
+.prog{flex:1;display:flex;align-items:center;gap:10px;min-width:0}
+.bar{flex:1;height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;max-width:320px}
+.bar>i{display:block;height:100%;width:0;background:var(--good);transition:width .3s}
+.ptxt{font-size:13px;color:var(--muted);white-space:nowrap}
+.btn{font:inherit;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{border-color:var(--link)}
+.menu-btn{display:none}
+
+/* layout */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+.side{position:sticky;top:57px;align-self:start;height:calc(100vh - 57px);overflow:auto;padding:16px 14px;border-right:1px solid var(--line)}
+.side ul{list-style:none;padding:0;margin:0 0 18px}
+.side li{margin:2px 0}
+.side-h{font-size:13px;color:var(--muted);margin:6px 10px}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:15px;line-height:1.3}
+.side a:hover,.side a.cur{background:var(--surface2)}
+.side a.is-done .lbl{color:var(--muted)}
+.tick{margin-left:auto;color:var(--good);font-weight:700}
+.side a.is-done .tick::after{content:"\2713"}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--muted)}
+.dot.r1{background:var(--gold)}.dot.r2{background:var(--link)}.dot.r3{background:var(--muted)}
+main{padding:24px 24px 90px;max-width:840px;min-width:0}
+@media(max-width:900px){
+  .shell{display:block}
+  .menu-btn{display:inline-block}
+  .side{position:fixed;left:0;top:57px;bottom:0;width:290px;height:auto;transform:translateX(-102%);transition:transform .2s;background:var(--surface);z-index:15}
+  .side.open{transform:none;box-shadow:4px 0 24px rgba(0,0,0,.25)}
+  main{padding:18px 16px 80px}
+  .ptxt{display:none}
+  .brand{display:none}
+}
+
+/* hero (results page) */
+.hero{padding:22px 0 10px}
+.hero h1{font-size:clamp(30px,5.4vw,44px);margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch}
+.searchbar{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:12px 18px;margin:22px 0 4px;box-shadow:0 1px 8px rgba(16,26,51,.08)}
+.searchbar svg{flex:none;color:var(--muted)}
+.serp-h{font-size:18px;margin:26px 0 2px;color:var(--ink)}
+.serp{list-style:none;padding:0;margin:0}
+.serp li{margin:0;border-bottom:1px solid var(--line)}
+.serp a{display:block;padding:13px 0;text-decoration:none;color:inherit}
+.serp .url{display:block;font-size:13px;color:var(--good)}
+.serp .ttl{display:block;font-size:20px;color:var(--link);font-weight:600;line-height:1.3;margin:2px 0}
+.serp a:hover .ttl{text-decoration:underline}
+.serp .snip{display:block;color:var(--muted);font-size:15px}
+
+/* blocks and topics */
+.block,.topic{padding:36px 0;border-top:1px solid var(--line)}
+.crumb{font-size:13px;color:var(--good);margin:0 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
+.chip{font-size:13px;padding:3px 10px;border-radius:99px;background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+.chip.rank1{background:var(--gold);color:var(--gold-ink);border-color:transparent;font-weight:700}
+.chip.rank2{background:var(--link);color:var(--on-link);border-color:transparent;font-weight:700}
+
+.idea,.say,.trap,.src{padding:11px 14px;margin:14px 0;border-left:4px solid;border-radius:0 8px 8px 0;background:var(--surface2)}
+.idea{border-color:var(--link)}
+.say{border-color:var(--gold)}
+.trap{border-color:var(--bad)}
+.src{border-color:var(--muted);border-left-style:dashed}
+.idea>b:first-child,.say>b:first-child,.trap>b:first-child,.src>b:first-child{display:block;margin-bottom:2px}
+
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:15px;background:var(--surface)}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface2);font-weight:700}
+td:first-child{font-weight:600}
+.tw table{min-width:520px}
+
+details{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:10px 0}
+details>summary{cursor:pointer;padding:11px 14px;font-weight:600;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"+";display:inline-block;width:1.3em;color:var(--link);font-weight:700}
+details[open]>summary::before{content:"\2212"}
+details>.dbody{padding:0 14px 12px}
+details.try{border-color:var(--gold)}
+details.try>summary{background:var(--hl);border-radius:10px}
+details.try[open]>summary{border-radius:10px 10px 0 0}
+.chk-h{font-size:17px;margin:22px 0 4px}
+
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.flow>div{border:1px solid var(--line);background:var(--surface);padding:10px 12px;border-radius:8px}
+.flow b{display:block;font-family:var(--serif);font-size:18px}
+.flow span{font-size:14px;color:var(--muted)}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.pills span{padding:4px 12px;border:1px solid var(--line);border-radius:99px;background:var(--surface);font-size:14px}
+.hook{font-family:var(--serif);font-size:19px;padding:10px 14px;background:var(--hl);border-radius:8px;margin:12px 0}
+
+.done{display:flex;align-items:center;gap:10px;margin-top:24px;padding:12px 14px;border:1px dashed var(--line);border-radius:10px;cursor:pointer;font-weight:600}
+.done input{width:20px;height:20px}
+
+/* lab */
+.lab{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:12px 0}
+.lab label{display:flex;flex-direction:column;font-size:14px;color:var(--muted)}
+.lab input{font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.out div{background:var(--surface2);border-radius:10px;padding:10px 12px}
+.out b{display:block;font-size:22px;font-family:var(--serif)}
+.out span{font-size:13px;color:var(--muted)}
+
+/* quiz */
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.qq{font-weight:600;margin:0 0 10px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--link)}
+.opt:disabled{cursor:default;color:var(--ink);opacity:1}
+.opt.right{border-color:var(--good);border-width:2px}
+.opt.wrong{border-color:var(--bad);border-width:2px}
+.why{margin:10px 0 0;padding:8px 10px;background:var(--hl);border-radius:8px;font-size:15px}
+.score{position:sticky;top:57px;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0;font-weight:600}
+
+/* cheat sheet */
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px 18px 16px}
+.sheet h3{margin-top:18px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0 28px}
+.sheet table{font-size:14px}
+.nextmod{display:block;margin-top:34px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;text-decoration:none;background:var(--surface);color:var(--ink)}
+.nextmod b{font-family:var(--serif);font-size:20px;display:block;color:var(--link)}
+
+/* svg diagrams */
+.svgwrap{margin:14px 0;overflow-x:auto}
+.svgwrap svg{width:100%;min-width:620px;height:auto;display:block}
+.svg-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.svg-box.hot{fill:var(--hl);stroke:var(--gold);stroke-width:2}
+.svg-t{fill:var(--ink);font:600 14px var(--sans);text-anchor:middle}
+.svg-s{fill:var(--muted);font:12px var(--sans);text-anchor:middle}
+.svg-line{fill:none;stroke:var(--muted);stroke-width:2}
+.svg-line.loop{stroke:var(--link);stroke-dasharray:6 4}
+.svg-head{fill:var(--muted)}
+.svg-head.loop{fill:var(--link)}
+.svg-lbl{fill:var(--link);font:600 12px var(--sans);text-anchor:middle}
+
+@media print{
+  body.print-sheet .top,body.print-sheet .side,body.print-sheet main>*:not(#sheet){display:none!important}
+  body.print-sheet .shell{display:block}
+  body.print-sheet main{padding:0;max-width:none}
+  body.print-sheet #sheet{border:0}
+  body.print-sheet .score,body.print-sheet #printSheet{display:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+</style>
+</head>
+<body>
+<div class="top">
+  <button class="btn menu-btn" id="menuBtn" type="button" aria-label="Open topic list">Topics</button>
+  <span class="brand">Digital marketing, module 2</span>
+  <div class="prog"><div class="bar" aria-hidden="true"><i id="barFill"></i></div><span id="progTxt" class="ptxt">0 of 0 topics</span></div>
+  <a class="btn" href="module-1-digital-marketing.html">Go to module 1</a>
+  <button class="btn" id="themeBtn" type="button">Dark mode</button>
+</div>
+<div class="shell">
+<nav class="side" id="side" aria-label="Topics">
+  <p class="side-h">Topics, best value first</p>
+  <ul id="toc"></ul>
+  <p class="side-h">Practice and revision</p>
+  <ul id="toc2">
+    <li><a href="#drills"><span class="dot"></span><span class="lbl">Past-paper drills</span></a></li>
+    <li><a href="#quizsec"><span class="dot"></span><span class="lbl">Quick quiz</span></a></li>
+    <li><a href="#sheet"><span class="dot"></span><span class="lbl">Last-hour cheat sheet</span></a></li>
+  </ul>
+</nav>
+<main id="main">
+<header class="hero" id="top">
+  <h1>Digital marketing, module 2: search engine optimization</h1>
+  <p class="lede">The bigger module, and the bigger share of every past paper. On-page and off-page SEO appeared in all three. Work down the results, best value first. Where a question asks for code, you get a try-first box: write it yourself, then check.</p>
+  <div class="searchbar" role="search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <span>digital marketing module 2 seo: what to study first</span>
+  </div>
+
+  <h3 class="serp-h">Rank 1: examiners have asked these</h3>
+  <ul class="serp">
+    <li><a href="#onpage-offpage"><span class="url">module-2 › seo › on-page-off-page</span><span class="ttl">On-page and off-page optimization</span><span class="snip">In all three papers: 2022 (code), 2023 (four techniques, KJSCE), 2025 (explain with example). Includes link building. 40 min.</span></a></li>
+    <li><a href="#meta-tags"><span class="url">module-2 › seo › meta-and-html-tags</span><span class="ttl">Meta tags and HTML tags, including the &lt;a href&gt; tag</span><span class="snip">2022 asked for code; 2023 asked for href attributes. 35 min.</span></a></li>
+    <li><a href="#robots-sitemap"><span class="url">module-2 › seo › robots-and-sitemap</span><span class="ttl">robots.txt and sitemap</span><span class="snip">2023 Q1 was a full 10-mark robots.txt coding question. 30 min.</span></a></li>
+    <li><a href="#seo-process"><span class="url">module-2 › seo › process</span><span class="ttl">The SEO process: research and (re)assessment</span><span class="snip">2022 Q3, with the relation between the two phases. 25 min.</span></a></li>
+    <li><a href="#content-optimization"><span class="url">module-2 › seo › content</span><span class="ttl">Content optimization: short-term, long-term, balance, duplication</span><span class="snip">2025 Q3 option: a clothing brand's content plan. 35 min.</span></a></li>
+  </ul>
+
+  <h3 class="serp-h">Rank 2: core syllabus, not yet asked directly</h3>
+  <ul class="serp">
+    <li><a href="#keyword-research"><span class="url">module-2 › seo › keywords</span><span class="ttl">Keyword research, stemming, modifiers and process</span><span class="snip">Syllabus 2.3. Four keyword types come straight from your notes. 30 min.</span></a></li>
+    <li><a href="#seo-basics"><span class="url">module-2 › seo › basics</span><span class="ttl">SEO benefits, challenges, SEO vs SEM, how search works, hats</span><span class="snip">Syllabus 2.1. Good one-mark and table material. 25 min.</span></a></li>
+    <li><a href="#analytics"><span class="url">module-2 › seo › tracking</span><span class="ttl">Tracking website activity and Google Analytics</span><span class="snip">2022 Q2 option. 15 min.</span></a></li>
+  </ul>
+
+  <h3 class="serp-h">Page 2: skim in five minutes</h3>
+  <ul class="serp">
+    <li><a href="#skim"><span class="url">module-2 › overview</span><span class="ttl">Terminology and do's and don'ts</span><span class="snip">Handy one-liners for any SEO answer.</span></a></li>
+  </ul>
+</header>
+
+<section class="block" id="plan">
+  <h2>Your plan for the day</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Order</th><th>What to do</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td>First</td><td>This module, Rank 1 topics. SEO is the larger share of every past paper.</td><td>2 h 45 min</td></tr>
+      <tr><td>Second</td><td>Module 1, Rank 1 topics.</td><td>2 h 20 min</td></tr>
+      <tr><td>Third</td><td>Past-paper drills in both modules. Write answers on paper, then compare.</td><td>1 h 10 min</td></tr>
+      <tr><td>Fourth</td><td>Rank 2 topics in both modules.</td><td>2 h 15 min</td></tr>
+      <tr><td>Last 30 minutes</td><td>Cheat sheets only. No new material.</td><td>30 min</td></tr>
+    </tbody>
+  </table></div>
+  <p>Short on time? Rank 1 in both modules plus the drills is about 6 hours, and that covers every repeated question.</p>
+
+  <h3>What three past papers tell you</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Paper</th><th>Module 2 questions</th></tr></thead>
+    <tbody>
+      <tr><td>2022 in-sem</td><td>Q2 describe on-page ranking factors and write code for two on the KJSCE homepage, OR ways to track website activity and how to pick parameters. Q3 research and (re)assessment phases of the SEO process, with the relation between them.</td></tr>
+      <tr><td>2023 in-sem</td><td>Q1 robots.txt syntax and code. Q2B optimise the &lt;a href&gt; tag. Q2C categories of potential links in direct link requests. Q3 option: four off-page techniques with five KJSCE examples.</td></tr>
+      <tr><td>2025 mid-sem</td><td>Q3 explain on-page and off-page with example, OR long-term and short-term content strategies for an e-commerce clothing brand.</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li>Three question types repeat: explain a concept with an example, write code or tags, apply the idea to a case (KJSCE or a clothing brand).</li>
+    <li>Every paper had a "pick one of two" in this module, so mastering Rank 1 gives you a choice in the exam hall.</li>
+    <li>Three pieces of this module are not in your PDFs but have been asked: the SEO process phases, categories of link requests, and robots.txt syntax. They are covered here and marked.</li>
+  </ul>
+</section>
+
+<!-- ============ TOPIC: on-page / off-page ============ -->
+<section class="topic" id="onpage-offpage" data-rank="1" data-title="On-page and off-page SEO">
+  <p class="crumb">module-2 › seo › on-page-off-page</p>
+  <h2>On-page and off-page optimization</h2>
+  <div class="chips"><span class="chip rank1">Rank 1</span><span class="chip">Asked 2022, 2023 and 2025</span><span class="chip">40 min</span></div>
+
+  <div class="idea"><b>The idea</b>On-page is what you say about yourself, on your own pages. Off-page is what the rest of the web says about you. A search engine trusts the second more, because it is harder to fake. You need both: on-page makes you eligible, off-page makes you trusted.</div>
+
+  <div class="tw"><table>
+    <thead><tr><th></th><th>On-page SEO</th><th>Off-page SEO</th></tr></thead>
+    <tbody>
+      <tr><td>Meaning</td><td>Optimising the pages of your own website to rank better and earn organic traffic</td><td>Activity elsewhere on the web that signals your site is trusted and popular</td></tr>
+      <tr><td>Control</td><td>You control all of it</td><td>You influence it; others decide</td></tr>
+      <tr><td>Typical factors</td><td>Content, titles, headings, meta tags, URLs, images, internal links, speed, mobile</td><td>Backlinks, social media marketing, brand mentions, reviews</td></tr>
+      <tr><td>Tells the search engine</td><td>What the page is about and that it is useful</td><td>That others vouch for it</td></tr>
+      <tr><td>Speed and risk</td><td>Faster to implement, low risk</td><td>Slower and relationship-based; spammy links can trigger penalties</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>On-page ranking factors, in four bundles</h3>
+  <div class="flow">
+    <div><b>Content</b><span>Relevant, original, up to date, matches search intent; keywords placed naturally; shows expertise, authority and trust</span></div>
+    <div><b>HTML tags</b><span>Title tag, meta description, headings, image alt text, anchor text and link title</span></div>
+    <div><b>Site structure</b><span>Clean URLs, internal links, sitemap.xml, robots.txt, no duplicate titles or content</span></div>
+    <div><b>Experience</b><span>Mobile-friendly, fast, secure (HTTPS), easy to navigate</span></div>
+  </div>
+
+  <h3>Write the code for the KJSCE homepage (2022 Q2)</h3>
+  <p>The question asks you to implement any two on-page factors in code. Pick two you can write in five lines. The safest pair is the title tag and the meta description, because they are what appears in the search result.</p>
+  <details class="try"><summary>Try first (5 minutes): write the &lt;head&gt; of the KJSCE homepage with two on-page factors, then open this</summary><div class="dbody">
+<pre class="code"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+
+  &lt;!-- Factor 1: title tag. Unique, main keyword first, about 60 characters --&gt;
+  &lt;title&gt;KJSCE Mumbai | B.Tech and M.Tech Engineering Admissions&lt;/title&gt;
+
+  &lt;!-- Factor 2: meta description. Persuasive, under about 160 characters --&gt;
+  &lt;meta name="description" content="K. J. Somaiya School of Engineering, Vidyavihar, Mumbai: B.Tech and M.Tech programmes, admissions, placements and campus life."&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Bonus factors: one H1 and descriptive alt text --&gt;
+  &lt;h1&gt;K. J. Somaiya School of Engineering, Mumbai&lt;/h1&gt;
+  &lt;img src="campus.jpg" alt="K. J. Somaiya engineering campus building in Vidyavihar, Mumbai"&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    <p>Write one line per tag saying why: the title is the clickable headline in results and a primary relevance signal; the description does not rank directly but decides whether people click; one H1 states the page topic; alt text describes the image to search engines and screen readers.</p>
+  </div></details>
+
+  <h3>Off-page techniques</h3>
+  <ul>
+    <li><b>Link building.</b> Getting other sites to link to yours. Three styles: natural editorial links (others link because the content is good), outreach and direct requests (you ask), and self-created links (directories and profiles). Quality and relevance beat quantity.</li>
+    <li><b>Social media marketing.</b> Shares and engagement amplify content, bring traffic and lift branded searches.</li>
+    <li><b>Brand mentions.</b> Being named on news sites, forums and review sites builds authority even without a link.</li>
+    <li><b>Guest blogging, influencer and PR work.</b> Expert articles on other sites, collaborations and press coverage that earn mentions and links.</li>
+  </ul>
+
+  <h3>The KJSCE examples (2023 Q3 option)</h3>
+  <p>The question wants four techniques and five examples about KJSCE. These are ideas you can propose; write them as what the college <i>can do</i>.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Technique</th><th>KJSCE example</th></tr></thead>
+    <tbody>
+      <tr><td>Link building</td><td>Ask Somaiya Vidyavihar University pages, sister institutes and education directories to link to the KJSCE admissions and placements pages.</td></tr>
+      <tr><td>Link building</td><td>Get alumni and recruiting companies to link to KJSCE pages from their own placement and campus-hiring posts.</td></tr>
+      <tr><td>Social media marketing</td><td>Post placements, hackathon wins and technical festival highlights on LinkedIn, Instagram and YouTube, each linking back to the relevant page.</td></tr>
+      <tr><td>Brand mentions</td><td>Earn news coverage of student achievements and encourage reviews on education portals so "KJSCE" is named across trusted sites.</td></tr>
+      <tr><td>Guest blogging</td><td>Faculty and alumni write technical or career articles on external platforms with a link to the department page.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Direct link requests and the categories of target (2023 Q2C)</h3>
+  <p>A direct link request is manual outreach: you contact a site owner and ask them to link to a specific page. The steps: find relevant sites, check quality (relevance, authority, traffic), find a contact, send a short personal message explaining why their readers benefit, and follow up politely. Do not spam or pay for links.</p>
+  <p>The categories of potential links, with a KJSCE example each:</p>
+  <ol>
+    <li><b>People you already have a relationship with:</b> partners, suppliers, customers, alumni, sister institutions.</li>
+    <li><b>Related sites in your niche:</b> engineering education portals, including sites that already link to similar colleges.</li>
+    <li><b>Resource and links pages:</b> pages that list useful resources, such as "top engineering colleges in Mumbai" lists.</li>
+    <li><b>Directories, associations and listings:</b> professional bodies and education directories.</li>
+    <li><b>Educational and government sites:</b> .edu, .ac and .gov style sites carry high authority.</li>
+    <li><b>Bloggers, journalists and influencers:</b> coverage, reviews and features.</li>
+    <li><b>Broken-link and unlinked-mention opportunities:</b> offer your page to replace a dead link; ask a site that mentions you to add the link.</li>
+  </ol>
+  <div class="src"><b>Not in your slides</b>This categorisation is compiled from standard link-building practice (resource pages, directories, relationships, edu and gov, broken links). In the exam, write any four or five with an example each. Check your class notes for the textbook's exact list.</div>
+
+  <div class="say"><b>How to write it for marks</b>For "explain on-page and off-page with example" (2025 Q3): two definitions, a comparison table, four on-page bundles, four off-page techniques, and one example site throughout (KJSCE or an e-commerce brand). Add a line that on-page and off-page work together.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Which of these is on-page and which is off-page: alt text, a news site linking to you, a unique title tag, a LinkedIn post that links to you?</summary><div class="dbody">On-page: alt text and the unique title tag. Off-page: the news link and the LinkedIn post.</div></details>
+  <details><summary>Why are off-page signals hard to fake?</summary><div class="dbody">They depend on other independent sites and people, so search engines treat them as a vote of trust.</div></details>
+  <details><summary>Three off-page activities listed in your slides?</summary><div class="dbody">Link building, social media marketing, brand mentions.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="onpage-offpage"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: meta tags ============ -->
+<section class="topic" id="meta-tags" data-rank="1" data-title="Meta tags and HTML tags">
+  <p class="crumb">module-2 › seo › meta-and-html-tags</p>
+  <h2>Meta tags and HTML tags</h2>
+  <div class="chips"><span class="chip rank1">Rank 1</span><span class="chip">Asked 2022 (code) and 2023 (href)</span><span class="chip">35 min</span></div>
+
+  <div class="idea"><b>The idea</b>Meta tags are information about a page that the visitor does not see but search engines read. They influence how engines understand your page and how it looks in results. Learn each tag as a pair: the syntax, and the one rule that goes with it.</div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Tag</th><th>Syntax</th><th>The rule</th></tr></thead>
+    <tbody>
+      <tr><td>Title</td><td><code>&lt;title&gt;Page title&lt;/title&gt;</code></td><td>The clickable headline in results. About 60 to 65 characters, unique on every page, accurately describes the content.</td></tr>
+      <tr><td>Meta description</td><td><code>&lt;meta name="description" content="..."&gt;</code></td><td>The summary under the title. About 150 to 160 characters, compelling, unique per page.</td></tr>
+      <tr><td>Meta keywords</td><td><code>&lt;meta name="keywords" content="a, b, c"&gt;</code></td><td>Comma-separated, descriptive keywords. Add that Google today largely ignores it; your syllabus still lists it.</td></tr>
+      <tr><td>Meta author</td><td><code>&lt;meta name="author" content="Name"&gt;</code></td><td>States who wrote the page.</td></tr>
+      <tr><td>Country and language</td><td><code>&lt;meta name="geo.region" content="IN"&gt;</code><br><code>&lt;meta name="language" content="en"&gt;</code></td><td>Tells engines which region and language the page targets.</td></tr>
+      <tr><td>Robots tag</td><td><code>&lt;meta name="robots" content="index, follow"&gt;</code></td><td>Per-page instructions: <code>noindex</code> keeps it out of results, <code>nofollow</code> tells crawlers not to follow its links.</td></tr>
+      <tr><td>Redirection tag</td><td><code>&lt;meta http-equiv="refresh" content="5;url=https://newsite.com/"&gt;</code></td><td>Sends users to a new URL after 5 seconds. SEO tip: use a 301 (permanent) or 302 (temporary) redirect.</td></tr>
+      <tr><td>Heading tags</td><td><code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code></td><td>One H1 stating the main topic, then H2 and H3 in order. Structure for readers and engines.</td></tr>
+      <tr><td>Anchor text</td><td><code>&lt;a href="url"&gt;visible text&lt;/a&gt;</code></td><td>The clickable words. Descriptive, not "click here".</td></tr>
+      <tr><td>Link title</td><td><code>&lt;a href="url" title="more detail"&gt;</code></td><td>Extra context for a link, for instance anchor "Read more" with the title "Read more about the history of the company".</td></tr>
+      <tr><td>Sitemap</td><td><code>sitemap.xml</code></td><td>Lists the important URLs so engines index them. Covered in the next topic.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Optimising the &lt;a href&gt; tag (2023 Q2B)</h3>
+  <p>"Attributes and factors" means: everything on a link that you can tune.</p>
+  <ul>
+    <li><b>href:</b> a descriptive, short, working URL. Fix broken links. Use clean words, not <code>page?id=482</code>.</li>
+    <li><b>Anchor text:</b> describes the target page, includes a relevant keyword naturally, varies across links. Avoid "click here" and avoid over-optimising the same exact phrase.</li>
+    <li><b>title attribute:</b> adds useful context about the destination. Do not stuff keywords.</li>
+    <li><b>rel attribute:</b> <code>nofollow</code> for untrusted links, <code>sponsored</code> for paid, <code>ugc</code> for user-generated. Pairs with <code>noopener</code> on external links.</li>
+    <li><b>target attribute:</b> <code>_blank</code> opens in a new tab; use with <code>rel="noopener noreferrer"</code>.</li>
+    <li><b>Placement and relevance:</b> link from related content; internal links pass authority within your site.</li>
+  </ul>
+<pre class="code"><code>&lt;!-- internal link: descriptive anchor, useful title --&gt;
+&lt;a href="/admissions/btech-admission-process"
+   title="Step-by-step B.Tech admission process at KJSCE"&gt;
+   B.Tech admission process
+&lt;/a&gt;
+
+&lt;!-- external paid link: tell search engines it is sponsored --&gt;
+&lt;a href="https://partner.example.com" target="_blank"
+   rel="sponsored noopener noreferrer"&gt;Our placement partner&lt;/a&gt;</code></pre>
+
+  <h3>Headings, the cheapest win</h3>
+<pre class="code"><code>&lt;h1&gt;Ultimate SEO Guide for Beginners&lt;/h1&gt;
+  &lt;h2&gt;Understanding Meta Tags&lt;/h2&gt;
+    &lt;h3&gt;Meta Description&lt;/h3&gt;</code></pre>
+
+  <div class="say"><b>How to write it for marks</b>For a "tags" answer, never write just the names. For each tag give the syntax, one purpose line and a KJSCE-flavoured example. That is the pattern the 2022 question rewarded.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Title and description lengths?</summary><div class="dbody">Title about 60 to 65 characters. Description about 150 to 160 characters.</div></details>
+  <details><summary>Write the robots meta tag that stops a page being indexed.</summary><div class="dbody"><code>&lt;meta name="robots" content="noindex"&gt;</code>. Add <code>nofollow</code> to stop link following too.</div></details>
+  <details><summary>Which redirect type for a permanent move?</summary><div class="dbody">301. Use 302 for temporary.</div></details>
+  <details><summary>Why avoid "click here" as anchor text?</summary><div class="dbody">It tells neither users nor search engines what the linked page is about.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="meta-tags"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: robots + sitemap ============ -->
+<section class="topic" id="robots-sitemap" data-rank="1" data-title="robots.txt and sitemap">
+  <p class="crumb">module-2 › seo › robots-and-sitemap</p>
+  <h2>robots.txt and sitemap</h2>
+  <div class="chips"><span class="chip rank1">Rank 1</span><span class="chip">Asked 2023 (Q1, 10 marks)</span><span class="chip">30 min</span></div>
+
+  <div class="idea"><b>The idea</b>A robots.txt file is a plain-text note at the front door of your site telling crawlers where they may and may not go. A sitemap is the opposite: a list of pages you <i>want</i> found. One restricts, the other invites.</div>
+
+  <h3>General syntax</h3>
+<pre class="code"><code># comment
+User-agent: &lt;bot name, or * for all bots&gt;
+Disallow: &lt;path the bot must not crawl&gt;
+Allow: &lt;path allowed inside a blocked area&gt;
+Sitemap: https://example.com/sitemap.xml</code></pre>
+  <div class="tw"><table>
+    <thead><tr><th>Line</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>User-agent</code></td><td>Starts a group of rules for the named crawler. <code>*</code> means every crawler.</td></tr>
+      <tr><td><code>Disallow: /path/</code></td><td>Do not crawl URLs beginning with this path. <code>Disallow: /</code> blocks the whole site. <code>Disallow:</code> with nothing after it blocks nothing.</td></tr>
+      <tr><td><code>Allow</code></td><td>Exception inside a blocked area.</td></tr>
+      <tr><td><code>Sitemap</code></td><td>Full URL of your sitemap.</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li>Filename is exactly <code>robots.txt</code>, in lowercase, plain text. The question says "robot.txt"; write the correct name.</li>
+    <li>Rules are grouped by user-agent. A crawler obeys the one group that best matches its name and ignores the others.</li>
+    <li>Paths match by prefix and are case-sensitive.</li>
+    <li>It is a request, not security. Polite bots obey; it does not hide pages from people.</li>
+  </ul>
+
+  <h3>Solve the 2023 question</h3>
+  <p>Allow Googlebot everywhere. Block msnbot from the whole site. Block every other robot from <code>/tmp/</code>. Block every other robot from any directory or file called <code>/logs</code>. State where the file lives and its URL.</p>
+  <p>Think before you open it: how many groups do you need, and what does each bot do with the <code>*</code> group?</p>
+  <details class="try"><summary>Try first (5 minutes): write the file, then open this</summary><div class="dbody">
+<pre class="code"><code># Googlebot may crawl everything
+User-agent: Googlebot
+Disallow:
+
+# msnbot is blocked from the whole site
+User-agent: msnbot
+Disallow: /
+
+# every other robot: stay out of /tmp/ and anything starting with /logs
+User-agent: *
+Disallow: /tmp/
+Disallow: /logs</code></pre>
+    <p><b>Why three groups:</b> Googlebot and msnbot each get their own group, so they ignore the <code>*</code> group. That is exactly why "other than Googlebot" needs no extra work: Googlebot never reads the <code>*</code> rules. <code>Disallow: /logs</code> matches by prefix, so it blocks <code>/logs</code>, <code>/logs/</code> and <code>/logs.php</code>.</p>
+    <p><b>Location and URL:</b> the file sits in the root directory of the web server (the top folder of the website), so crawlers find it at <code>https://yourdomain/robots.txt</code>, for example <code>https://kjsce.somaiya.edu/robots.txt</code>. It must not be in a subfolder.</p>
+    <p><b>Honest note:</b> prefix matching also blocks something like <code>/logsheet.html</code>. If the question insists on exactness, add <code>Disallow: /logs/</code> and <code>Disallow: /logs.php</code> instead. Msnbot is Microsoft's older crawler name (now bingbot), but use the name given.</p>
+  </div></details>
+  <div class="src"><b>Not in your slides</b>robots.txt syntax is not in your PDFs but was a full question in 2023. What is above is standard and safe to write.</div>
+
+  <h3>Sitemap</h3>
+  <p>An XML file listing the important URLs of the site, with optional hints, so crawlers discover and index them.</p>
+<pre class="code"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://example.com/&lt;/loc&gt;
+    &lt;lastmod&gt;2026-10-01&lt;/lastmod&gt;
+    &lt;changefreq&gt;monthly&lt;/changefreq&gt;
+    &lt;priority&gt;1.0&lt;/priority&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;</code></pre>
+  <p><b>Creating and using one:</b> list the pages you want indexed (canonical URLs only); write them in XML as above (or generate with a CMS plugin or tool); save as <code>sitemap.xml</code> in the site root; mention it with a <code>Sitemap:</code> line in robots.txt; submit it in Google Search Console.</p>
+
+  <div class="trap"><b>Watch out</b><code>Disallow:</code> (empty) means allow everything. <code>Disallow: /</code> means block everything. One slash is the difference between a site that ranks and one that vanishes.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Where does robots.txt live?</summary><div class="dbody">In the root directory of the website, reachable at yourdomain/robots.txt.</div></details>
+  <details><summary>Write the rule that blocks every bot from /private/.</summary><div class="dbody"><code>User-agent: *</code> then <code>Disallow: /private/</code>.</div></details>
+  <details><summary>Does robots.txt hide a page from the public?</summary><div class="dbody">No. It only asks well-behaved crawlers not to crawl it. Anyone with the URL can still visit.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="robots-sitemap"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: SEO process ============ -->
+<section class="topic" id="seo-process" data-rank="1" data-title="The SEO process">
+  <p class="crumb">module-2 › seo › process</p>
+  <h2>The SEO process: research and (re)assessment</h2>
+  <div class="chips"><span class="chip rank1">Rank 1</span><span class="chip">Asked 2022 (Q3)</span><span class="chip">25 min</span></div>
+
+  <div class="idea"><b>The idea</b>SEO is not something you finish. It is a cycle. Research tells you where you stand and where to aim. (Re)assessment checks whether you got there, and sends you back to research when the answer is "not yet" or "the world changed".</div>
+
+  <div class="svgwrap"><svg viewBox="0 0 900 215" role="img" aria-label="Six phases of the SEO process with two feedback loops">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="svg-head" d="M0 0L10 5L0 10z"/></marker>
+      <marker id="ahl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="svg-head loop" d="M0 0L10 5L0 10z"/></marker>
+    </defs>
+    <rect class="svg-box hot" x="6" y="30" width="128" height="62" rx="10"/>
+    <text class="svg-t" x="70" y="58">Research</text><text class="svg-s" x="70" y="77">find out</text>
+    <rect class="svg-box" x="158" y="30" width="128" height="62" rx="10"/>
+    <text class="svg-t" x="222" y="58">Planning</text><text class="svg-s" x="222" y="77">and strategy</text>
+    <rect class="svg-box" x="310" y="30" width="128" height="62" rx="10"/>
+    <text class="svg-t" x="374" y="58">Implementation</text><text class="svg-s" x="374" y="77">on and off page</text>
+    <rect class="svg-box" x="462" y="30" width="128" height="62" rx="10"/>
+    <text class="svg-t" x="526" y="58">Monitoring</text><text class="svg-s" x="526" y="77">track results</text>
+    <rect class="svg-box hot" x="614" y="30" width="128" height="62" rx="10"/>
+    <text class="svg-t" x="678" y="58">(Re)assessment</text><text class="svg-s" x="678" y="77">judge results</text>
+    <rect class="svg-box" x="766" y="30" width="128" height="62" rx="10"/>
+    <text class="svg-t" x="830" y="58">Maintenance</text><text class="svg-s" x="830" y="77">keep improving</text>
+    <path class="svg-line" d="M134 61H154" marker-end="url(#ah)"/>
+    <path class="svg-line" d="M286 61H306" marker-end="url(#ah)"/>
+    <path class="svg-line" d="M438 61H458" marker-end="url(#ah)"/>
+    <path class="svg-line" d="M590 61H610" marker-end="url(#ah)"/>
+    <path class="svg-line" d="M742 61H762" marker-end="url(#ah)"/>
+    <path class="svg-line loop" d="M650 92V190H70V97" marker-end="url(#ahl)"/>
+    <text class="svg-lbl" x="360" y="182">Large loop: findings send you back to research</text>
+    <path class="svg-line loop" d="M830 92V140H706V97" marker-end="url(#ahl)"/>
+    <text class="svg-lbl" x="768" y="158">Small loop: keep tuning</text>
+  </svg></div>
+  <div class="hook">Memory hook: "Real People Implement, Monitor, Assess, Maintain" gives Research, Planning, Implementation, Monitoring, Assessment, Maintenance.</div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Phase</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td>Research</td><td>Business research (goals, audience, products), competitor analysis (who ranks, why), current state assessment (audit your own site: indexed pages, rankings, traffic, technical issues), keyword research (the terms to target). Output: a research summary that becomes your baseline.</td></tr>
+      <tr><td>Planning and strategy</td><td>Turn research into a plan: content, link-building, social media, search engine targeting, SEM and technical strategies.</td></tr>
+      <tr><td>Implementation</td><td>Do the work: internal (on-page) optimisation and external (off-page) optimisation.</td></tr>
+      <tr><td>Monitoring</td><td>Watch spider activity, referrals, search rankings, website traffic and conversions.</td></tr>
+      <tr><td>(Re)assessment</td><td>Compare what monitoring shows with the goals and baseline from research. Decide what worked, what did not, why, and what to change. Output: an assessment report with recommendations.</td></tr>
+      <tr><td>Maintenance</td><td>Keep the gains: refresh content, earn new links, fix new issues, follow algorithm and competitor changes.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>The relation between research and (re)assessment</h3>
+  <ul>
+    <li><b>Research gives (re)assessment its yardstick.</b> Without the baseline, goals and competitor picture from research, there is nothing to compare monitoring results against.</li>
+    <li><b>(Re)assessment gives research fresh evidence.</b> What it finds (new keyword opportunities, competitors who moved, algorithm changes, goals missed) feeds the next round of research.</li>
+    <li><b>Together they make the large loop.</b> The first phase and the judging phase are linked, which is why SEO is continuous and not a one-off project. The small loop, between (re)assessment and maintenance, handles routine tuning without restarting.</li>
+  </ul>
+  <div class="src"><b>Source of the phase model</b>Your slides do not list the phases. The six-phase model with a "(re)assessment" phase and the two loops is from the SEO Warrior textbook (O'Reilly), which matches the exact wording of the 2022 question. If your lecturer used another list, lead with theirs and keep this logic for the relation.</div>
+
+  <div class="say"><b>How to write it for marks (10)</b>One-line intro on the six phases (1 mark). Research with its four parts (4 marks). (Re)assessment with its purpose and output (3 marks). The relation, with the loop diagram (2 marks). The diagram is the quickest mark in the answer.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Name the six phases in order.</summary><div class="dbody">Research, planning and strategy, implementation, monitoring, (re)assessment, maintenance.</div></details>
+  <details><summary>Four parts of the research phase?</summary><div class="dbody">Business research, competitor analysis, current state assessment, keyword research.</div></details>
+  <details><summary>Which two phases are joined by the larger loop, and which pair by the smaller?</summary><div class="dbody">Larger: (re)assessment and research. Smaller: (re)assessment and maintenance.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="seo-process"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: content optimization ============ -->
+<section class="topic" id="content-optimization" data-rank="1" data-title="Content optimization">
+  <p class="crumb">module-2 › seo › content</p>
+  <h2>Content optimization</h2>
+  <div class="chips"><span class="chip rank1">Rank 1</span><span class="chip">Asked 2025 (Q3 option)</span><span class="chip">35 min</span></div>
+
+  <div class="idea"><b>The idea</b>Content optimisation means making content easy for search engines to find and worth a person's time. The tension: short-term content wins attention this week, long-term content builds authority for years. A sound plan uses both, and keeps neither cheap.</div>
+
+  <h3>What you optimise</h3>
+  <div class="pills"><span>Search intent</span><span>Keywords used naturally</span><span>Quality and relevance</span><span>Titles and meta descriptions</span><span>Readability and UX</span><span>Internal and external links</span><span>Monitor and update</span></div>
+  <p>Do not stuff keywords. Structure with headings, short paragraphs and bullets; use images and video; make it mobile-friendly and fast; track performance and refresh it.</p>
+
+  <h3>Short-term vs long-term content</h3>
+  <div class="tw"><table>
+    <thead><tr><th></th><th>Short-term content</th><th>Long-term content</th></tr></thead>
+    <tbody>
+      <tr><td>Aim</td><td>Quick wins: traffic, visibility, sales now</td><td>Sustainable organic traffic and authority</td></tr>
+      <tr><td>Examples</td><td>Seasonal promotions, limited offers, social posts, short blogs, PPC ads, optimised product descriptions, infographics, email campaigns</td><td>Evergreen guides, how-tos, tutorials, in-depth long-form articles, video, case studies</td></tr>
+      <tr><td>Lifespan</td><td>Days to weeks</td><td>Months to years; keeps ranking</td></tr>
+      <tr><td>Cost pattern</td><td>Ongoing spend, stops when you stop</td><td>Effort up front, then very cost-effective</td></tr>
+      <tr><td>Strength</td><td>Fast results, targeted audience, data to guide strategy</td><td>Builds authority, backlinks and trust</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Content balance</h3>
+  <p>Quality over quantity; relevance to user intent; natural keywords; good user experience; technical SEO (titles, descriptions, alt text); promotion and distribution; a balance of on-page and off-page work; and continuous improvement from performance data.</p>
+  <p><b>Content creation motives:</b> build brand awareness and visibility; support the customer journey from awareness to purchase; boost inbound traffic; improve conversion rates; build authority on a topic.</p>
+
+  <h3>Duplicate content</h3>
+  <p><b>What:</b> identical or near-identical content on several URLs. <b>Why it hurts:</b> search engines cannot tell which version to rank; backlinks get split (diluted link equity); visibility drops; repeated manipulation can invite penalties. <b>How it happens:</b> URL variations (www vs non-www, trailing slash), content syndication, printer-friendly pages, CMS configuration.</p>
+  <p><b>Fixes:</b> canonical tags to name the preferred URL; 301 redirects from duplicates; keep only canonical URLs in the sitemap; clean URL rewriting; configure the CMS; a clear syndication plan; internal links to canonical pages; regular audits (Google Search Console); write unique content for every page.</p>
+
+  <h3>Apply it: the clothing brand (2025 Q3 option)</h3>
+  <p>Imagine you are the digital marketing manager of an e-commerce clothing brand. Suggest and justify three long-term and three short-term content strategies for sustainable SEO growth.</p>
+  <details class="try"><summary>Try first (8 minutes): write three of each with a reason, then open this</summary><div class="dbody">
+    <div class="tw"><table>
+      <thead><tr><th>Strategy</th><th>Type</th><th>Why it works for this brand</th></tr></thead>
+      <tbody>
+        <tr><td>Evergreen guides: size and fit guides, fabric care, "how to style" pieces, with category pages built around real search intent</td><td>Long-term</td><td>Matches what shoppers search before buying, keeps ranking for years, builds topical authority</td></tr>
+        <tr><td>Authority content: lookbooks, long-form trend and sustainability articles, designer or influencer collaborations earning backlinks</td><td>Long-term</td><td>Backlinks and brand mentions raise domain trust, which lifts every product page</td></tr>
+        <tr><td>Content refresh and customer proof: update top pages seasonally, add reviews and customer photos, strengthen internal links</td><td>Long-term</td><td>Fresh, trusted pages hold rankings and convert better; signals the site is active</td></tr>
+        <tr><td>Seasonal sale landing pages with optimised titles and keyword-rich product descriptions (for example festive season)</td><td>Short-term</td><td>Captures peak-demand searches quickly, and the data shows which keywords convert</td></tr>
+        <tr><td>Social media posts, reels and stories timed to new drops and offers</td><td>Short-term</td><td>Fast traffic and engagement, feeds social signals back to the site</td></tr>
+        <tr><td>Paid search or social ads, email campaigns and shareable infographics for limited-time offers</td><td>Short-term</td><td>Immediate visibility and sales while organic rankings are still building</td></tr>
+      </tbody>
+    </table></div>
+    <p><b>Link the two:</b> short-term campaigns send traffic and data to the site; the best of that content is rebuilt as long-term evergreen pages. That is the sustainability argument the question wants.</p>
+  </div></details>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Two examples each of short-term and long-term content?</summary><div class="dbody">Short-term: seasonal sale page, PPC ad. Long-term: evergreen how-to guide, in-depth long-form article.</div></details>
+  <details><summary>Name four fixes for duplicate content.</summary><div class="dbody">Canonical tags, 301 redirects, canonical-only sitemap, CMS configuration. Also unique content and audits.</div></details>
+  <details><summary>How can short-term content help long-term SEO?</summary><div class="dbody">It brings traffic, brand awareness and engagement data, which shows what to turn into lasting content.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="content-optimization"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: keyword research ============ -->
+<section class="topic" id="keyword-research" data-rank="2" data-title="Keyword research">
+  <p class="crumb">module-2 › seo › keywords</p>
+  <h2>Keyword research, stemming, modifiers and process</h2>
+  <div class="chips"><span class="chip rank2">Rank 2</span><span class="chip">Syllabus 2.3, not asked yet</span><span class="chip">30 min</span></div>
+
+  <div class="idea"><b>The idea</b>A keyword is a phrase you want to rank for. Keyword research finds the phrases real people type, and works out which ones are worth targeting. The mistake to avoid is guessing.</div>
+
+  <h3>Four types, by what the searcher wants</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Type</th><th>Searcher wants</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>Informational</td><td>Answers or general information; clue words like "what", "how"</td><td>coffee calories; difference between cold brew and iced coffee</td></tr>
+      <tr><td>Navigational</td><td>A particular site or page; they already know the brand</td><td>YouTube; where is CCD located</td></tr>
+      <tr><td>Commercial</td><td>To compare before buying; interest in a product or service</td><td>iPad vs iPad Air; iPad review</td></tr>
+      <tr><td>Transactional</td><td>To complete an action or purchase; also called buyer keywords (buy, subscribe, sell)</td><td>buy crypto online; sandwich places near me that delivers</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Word stemming and keyword modifiers</h3>
+  <p><b>Word stemming</b> reduces words to a root, so search engines treat variations as related: consult, consulting, consultant, consultation. For SEO, write naturally using several forms of your keyword, because one page can then match many searches.</p>
+  <p><b>Keyword modifiers</b> are words added before or after a keyword to narrow or shape intent.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Modifier kind</th><th>Examples for "engineering college"</th></tr></thead>
+    <tbody>
+      <tr><td>Commercial or quality</td><td>best, top, affordable, cheap</td></tr>
+      <tr><td>Informational</td><td>how to choose, what is, guide</td></tr>
+      <tr><td>Location</td><td>Mumbai, near me, Vidyavihar</td></tr>
+      <tr><td>Time or action</td><td>2026, admission, fees, apply</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Strategy and process</h3>
+  <div class="flow">
+    <div><b>Brainstorm</b><span>Your products, audience, competitors' terms, your own site</span></div>
+    <div><b>Expand</b><span>Keyword tools (for example Google Keyword Planner), autocomplete, related searches, stems and modifiers</span></div>
+    <div><b>Evaluate</b><span>Search volume, competition, relevance, intent</span></div>
+    <div><b>Choose and map</b><span>Pick primary and secondary keywords and assign each to a page</span></div>
+    <div><b>Track and refine</b><span>Watch rankings and traffic, repeat regularly</span></div>
+  </div>
+  <p><b>Strategy points:</b> very short, popular terms are highly competitive, so mix in longer, more specific phrases that convert; match each keyword to its intent; use it naturally in the title, headings and body, never stuffed. "Traditional approaches" means the manual way: brainstorming, competitor and own-site review, and basic keyword tools.</p>
+  <div class="src"><b>Not in your PDFs</b>Your notes cover keyword types in detail. Stemming, modifiers, the process steps and "traditional approaches" are the standard textbook treatment (SEO Warrior, chapter 11), given here at exam depth. Check your class notes for the exact steps.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Classify: "buy running shoes online", "Nike", "best running shoes review", "how to choose running shoes".</summary><div class="dbody">Transactional, navigational, commercial, informational.</div></details>
+  <details><summary>Why does stemming matter for writing?</summary><div class="dbody">Search engines link word variations, so natural use of several forms helps a page match more queries.</div></details>
+  <details><summary>Why target long phrases?</summary><div class="dbody">Less competition and clearer intent, so visitors convert better.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="keyword-research"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: SEO basics ============ -->
+<section class="topic" id="seo-basics" data-rank="2" data-title="SEO basics, SEO vs SEM">
+  <p class="crumb">module-2 › seo › basics</p>
+  <h2>SEO benefits, challenges, SEO vs SEM, how search works, hats</h2>
+  <div class="chips"><span class="chip rank2">Rank 2</span><span class="chip">Syllabus 2.1</span><span class="chip">25 min</span></div>
+
+  <div class="idea"><b>The idea</b>SEO is the practice of increasing both the quantity and quality of traffic to your site through unpaid ("organic") search results. Quality traffic means the right visitors who act; quantity means more of them.</div>
+
+  <h3>How search engines work</h3>
+  <div class="flow">
+    <div><b>Crawl</b><span>Spiders scour the web and read the code and content of each URL they find</span></div>
+    <div><b>Index</b><span>Store and organise what was found. A page in the index can appear for relevant queries</span></div>
+    <div><b>Rank</b><span>Order results from most to least relevant to the query</span></div>
+  </div>
+
+  <h3>Benefits and challenges</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Benefits</th><th>Challenges</th></tr></thead>
+    <tbody>
+      <tr><td>Most users click one of the top five results, so rank means traffic</td><td>Algorithms change often and can drop your rankings</td></tr>
+      <tr><td>Improves user experience and usability</td><td>Strong competition for popular keywords</td></tr>
+      <tr><td>Top positions build trust</td><td>Results take months, with no guaranteed position</td></tr>
+      <tr><td>People who find you through search are more likely to share on social media</td><td>Temptation of black-hat shortcuts, which risk penalties</td></tr>
+      <tr><td>Organic traffic is unpaid, so cost-effective over time</td><td>Ongoing effort: content, links, technical fixes, mobile and voice changes</td></tr>
+    </tbody>
+  </table></div>
+  <div class="src"><b>Partly from your slides</b>Benefits are from your "Why SEO is important" slide, plus cost-effectiveness. The challenges list is standard material; your slides do not give one.</div>
+
+  <h3>SEO vs SEM</h3>
+  <div class="tw"><table>
+    <thead><tr><th></th><th>SEO</th><th>SEM (paid search marketing)</th></tr></thead>
+    <tbody>
+      <tr><td>Traffic</td><td>Organic, unpaid</td><td>Paid, through ads such as PPC on search engines</td></tr>
+      <tr><td>Cost per click</td><td>None for the click; costs are effort and tools</td><td>You pay per click</td></tr>
+      <tr><td>Speed</td><td>Slow; takes months</td><td>Fast; visible once the campaign is live</td></tr>
+      <tr><td>Lasting effect</td><td>Long-lasting</td><td>Stops when the budget stops</td></tr>
+      <tr><td>Depends on</td><td>Algorithm and rankings</td><td>Bid and quality score</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>White hat, black hat, grey hat</h3>
+  <div class="tw"><table>
+    <thead><tr><th>White hat</th><th>Black hat</th><th>Grey hat</th></tr></thead>
+    <tbody>
+      <tr><td>Follows Google's guidelines. Slow but long-lasting. Quality content, HTML optimisation, restructuring the site.</td><td>Violates webmaster guidelines (spamdexing). Spam links, keyword stuffing, cloaking, hidden text and links. Gains do not last.</td><td>A mix of white and black hat techniques.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Crawl, index, rank: one line each.</summary><div class="dbody">Crawl: find content. Index: store and organise it. Rank: order results by relevance.</div></details>
+  <details><summary>Give two black-hat techniques.</summary><div class="dbody">Keyword stuffing and cloaking (also hidden text, spam links).</div></details>
+  <details><summary>Which one stops delivering the moment you stop paying?</summary><div class="dbody">SEM (paid search). SEO results persist.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="seo-basics"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: analytics ============ -->
+<section class="topic" id="analytics" data-rank="2" data-title="Tracking and Google Analytics">
+  <p class="crumb">module-2 › seo › tracking</p>
+  <h2>Tracking website activity and Google Analytics</h2>
+  <div class="chips"><span class="chip rank2">Rank 2</span><span class="chip">Asked 2022 (Q2 option)</span><span class="chip">15 min</span></div>
+
+  <div class="idea"><b>The idea</b>Do not start with the tool. Start with the goal, then ask which numbers would show you are getting there, then find where those numbers can be measured. That chain is also the answer to "how can one identify the parameters to measure".</div>
+
+  <h3>Ways to track activity</h3>
+  <ul>
+    <li><b>Google Analytics:</b> a free service. You register, get a tracking code, add it to every page, and it sends visitor data to Google's servers for reports and a dashboard.</li>
+    <li><b>Google Search Console:</b> search queries, impressions, clicks, indexing and crawl errors.</li>
+    <li><b>Server log files:</b> record spider (crawler) activity and requests.</li>
+    <li><b>Goal and event tracking, and campaign tags (UTM):</b> record button clicks, form submissions and which campaign sent a visitor.</li>
+    <li><b>Heatmaps and session recordings:</b> show where people click and scroll.</li>
+    <li><b>Platform insights:</b> social media, email and ad platform dashboards.</li>
+  </ul>
+
+  <h3>How to identify the parameters</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Goal</th><th>Question</th><th>Parameters to measure</th></tr></thead>
+    <tbody>
+      <tr><td>More visitors</td><td>Where is traffic coming from?</td><td>Sessions, traffic sources, organic keywords, new vs returning visitors</td></tr>
+      <tr><td>Better engagement</td><td>Are people interested?</td><td>Bounce rate, average session duration, pages per visit, exit pages</td></tr>
+      <tr><td>More enquiries or sales</td><td>Do visitors act?</td><td>Goal completions, conversion rate, revenue</td></tr>
+      <tr><td>Reach the right audience</td><td>Who are they?</td><td>Location, device, demographics</td></tr>
+      <tr><td>Fix navigation</td><td>Where do people get stuck?</td><td>Landing pages, exit pages, path through the site</td></tr>
+    </tbody>
+  </table></div>
+  <p>Your slides add: Google Analytics helps develop and optimise landing pages (how relevant were they?), finds navigation problems, and improves AdWords performance by keyword, timing and geography. A keyword with a high average time on site probably brought more valuable visitors. Analytics compares many things within your site but does not directly compare you with other sites.</p>
+  <div class="src"><b>Version note</b>Your slides describe the classic page-tag idea. Today's Google Analytics is called GA4 and uses events, but the principle (a tracking code on each page) is the same. Write the slide version.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Three steps to start using Google Analytics?</summary><div class="dbody">Create an account, receive the tracking code, add it to every page of the site.</div></details>
+  <details><summary>Which parameter suggests visitors left immediately?</summary><div class="dbody">A high bounce rate.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="analytics"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: skim ============ -->
+<section class="topic" id="skim" data-rank="3" data-title="Skim: terms and do's and don'ts">
+  <p class="crumb">module-2 › overview</p>
+  <h2>Skim: terminology and do's and don'ts</h2>
+  <div class="chips"><span class="chip">Page 2</span><span class="chip">5 min, read once</span></div>
+  <ul>
+    <li><b>Quality traffic:</b> the right visitors, measured by leads, interactions, sales.</li>
+    <li><b>Quantity traffic:</b> more clicks from search results once the right people are coming.</li>
+    <li><b>Organic traffic:</b> any traffic you do not pay for.</li>
+    <li><b>Keyword:</b> a phrase you want to rank for.</li>
+    <li><b>Domain:</b> the name in a URL that identifies a site.</li>
+    <li><b>Link building:</b> building one-way backlinks to your site to improve search visibility.</li>
+  </ul>
+  <div class="tw"><table>
+    <thead><tr><th>Do</th><th>Don't</th></tr></thead>
+    <tbody>
+      <tr><td>Get backlinks from relevant sites</td><td>Take backlinks from irrelevant sites</td></tr>
+      <tr><td>Use keywords in titles and tags</td><td>Duplicate titles across pages</td></tr>
+      <tr><td>Write engaging, current content</td><td>Copy other sites' content</td></tr>
+      <tr><td>Do keyword research</td><td>Stuff keywords</td></tr>
+      <tr><td>Make the site user-friendly and mobile-friendly</td><td>Over-optimise anchor text</td></tr>
+    </tbody>
+  </table></div>
+  <label class="done"><input type="checkbox" data-done="skim"> I have skimmed this</label>
+</section>
+
+<!-- ============ DRILLS ============ -->
+<section class="block" id="drills">
+  <h2>Past-paper drills</h2>
+  <p>Writing is a skill separate from knowing. For each question: set a timer, write on paper from memory, then open the checklist and mark yourself.</p>
+
+  <details class="try"><summary>2022 Q2 (10 marks): describe on-page ranking factors; write code for any two on the KJSCE homepage. Time: 20 min</summary><div class="dbody">
+    <ul><li>Definition of on-page ranking factors and why they matter.</li><li>The four bundles (content, HTML tags, site structure, experience).</li><li>Working HTML for two factors, for instance title and meta description, each commented.</li><li>One line per factor on why it ranks.</li></ul>
+    <p>Check against: <a href="#onpage-offpage">On-page and off-page</a> and <a href="#meta-tags">Meta tags</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2022 Q2 OR (10 marks): different ways to track activity on a website and how to identify parameters to measure. Time: 20 min</summary><div class="dbody">
+    <ul><li>Four or five tracking methods, with Google Analytics explained (tracking code, dashboard, reports).</li><li>The goal, question, parameter chain, with examples.</li><li>At least six named parameters (traffic sources, bounce rate, session duration, conversions, device, location).</li></ul>
+    <p>Check against: <a href="#analytics">Tracking and Google Analytics</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2022 Q3 (10 marks): explain the research and (re)assessment phases of the SEO process; mention the relation between them at the end. Time: 20 min</summary><div class="dbody">
+    <ul><li>Six-phase intro with a small diagram.</li><li>Research with business research, competitor analysis, current state assessment, keyword research.</li><li>(Re)assessment: compare results to goals, find what worked, recommend changes.</li><li>The relation: research sets the baseline, (re)assessment judges against it and feeds back; the large loop.</li></ul>
+    <p>Check against: <a href="#seo-process">The SEO process</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2023 Q1 (10 marks): explain the syntax of robots.txt and write a file for the four rules. State the location and URL. Time: 20 min</summary><div class="dbody">
+    <ul><li>Syntax: User-agent, Disallow, Allow, Sitemap.</li><li>Three groups (Googlebot, msnbot, *), correct use of empty Disallow and <code>Disallow: /</code>.</li><li><code>Disallow: /tmp/</code> and <code>Disallow: /logs</code> under the * group.</li><li>Location: root of the website; URL ending in /robots.txt.</li></ul>
+    <p>Check against: <a href="#robots-sitemap">robots.txt and sitemap</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2023 Q2B and Q2C (5 marks each if chosen): attributes to optimise the &lt;a href&gt; tag; categories of potential links in direct link request. Time: 10 min each</summary><div class="dbody">
+    <ul><li>B: href, anchor text, title, rel, target, with a code example.</li><li>C: what a direct link request is, then four or five target categories with an example each.</li></ul>
+    <p>Check against: <a href="#meta-tags">Meta tags</a> and <a href="#onpage-offpage">Direct link requests</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2023 Q3 OR (10 marks): any four off-page techniques with five examples for KJSCE. Time: 20 min</summary><div class="dbody">
+    <ul><li>Four named techniques with a short explanation each.</li><li>Five distinct KJSCE examples, each tied to a technique.</li><li>A line on quality over quantity of links.</li></ul>
+    <p>Check against: <a href="#onpage-offpage">On-page and off-page</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2025 Q3 (10 marks): explain on-page and off-page optimization in detail with example. OR: three long-term and three short-term content strategies for a clothing brand. Time: 22 min</summary><div class="dbody">
+    <ul><li>Option 1: two definitions, comparison table, on-page bundles, off-page techniques, one running example.</li><li>Option 2: six strategies (three of each type), each justified in a line, and a closing line on how short-term feeds long-term.</li></ul>
+    <p>Check against: <a href="#onpage-offpage">On-page and off-page</a> and <a href="#content-optimization">Content optimization</a>.</p>
+  </div></details>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section class="block" id="quizsec">
+  <h2>Quick quiz</h2>
+  <p>Fifteen questions. Answer first, then read the explanation, especially for the ones you miss.</p>
+  <div class="score" id="score" aria-live="polite"></div>
+  <div id="quiz"></div>
+  <button class="btn" id="quizReset" type="button">Restart quiz</button>
+</section>
+
+<!-- ============ CHEAT SHEET ============ -->
+<section class="block" id="sheet">
+  <h2>Last-hour cheat sheet</h2>
+  <p><button class="btn" id="printSheet" type="button">Print or save as PDF</button></p>
+  <div class="sheet">
+    <div class="cols">
+      <div>
+        <h3>Tags and limits</h3>
+        <table>
+          <tr><td>Title</td><td>about 60 to 65 characters, unique</td></tr>
+          <tr><td>Description</td><td>about 150 to 160 characters, unique</td></tr>
+          <tr><td>Keywords</td><td><code>&lt;meta name="keywords" content="a, b"&gt;</code></td></tr>
+          <tr><td>Robots</td><td><code>content="index, follow"</code> or <code>"noindex, nofollow"</code></td></tr>
+          <tr><td>Redirect</td><td>301 permanent, 302 temporary</td></tr>
+          <tr><td>Headings</td><td>one H1, then H2 and H3 in order</td></tr>
+          <tr><td>Link</td><td><code>&lt;a href="url" title="..." rel="..."&gt;anchor&lt;/a&gt;</code></td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>robots.txt</h3>
+<pre class="code"><code>User-agent: Googlebot
+Disallow:
+
+User-agent: msnbot
+Disallow: /
+
+User-agent: *
+Disallow: /tmp/
+Disallow: /logs</code></pre>
+        <p>Root of the site: <code>/robots.txt</code>. Empty Disallow allows all. <code>Disallow: /</code> blocks all.</p>
+      </div>
+      <div>
+        <h3>SEO process</h3>
+        <p><b>Research, Planning, Implementation, Monitoring, (Re)assessment, Maintenance.</b> Large loop: (re)assessment back to research. Small loop: (re)assessment and maintenance.</p>
+        <p><b>Research has:</b> business, competitors, current state, keywords.</p>
+        <p><b>Search engines:</b> crawl, index, rank.</p>
+        <p><b>Hats:</b> white (guidelines, slow, lasting), black (spam, cloaking, stuffing), grey (mix).</p>
+      </div>
+      <div>
+        <h3>On-page vs off-page</h3>
+        <p><b>On-page (you control):</b> content, title, description, headings, alt text, URLs, internal links, speed, mobile.</p>
+        <p><b>Off-page (others vouch):</b> link building, social media marketing, brand mentions, guest posts, PR.</p>
+        <p><b>Direct link request targets:</b> relationships, related sites, resource pages, directories, edu and gov, bloggers and press, broken links.</p>
+      </div>
+      <div>
+        <h3>Keywords</h3>
+        <p><b>Four types:</b> informational (coffee calories), navigational (YouTube), commercial (iPad review), transactional (buy crypto online).</p>
+        <p><b>Stemming:</b> consult, consulting, consultant. <b>Modifiers:</b> best, cheap, near me, 2026.</p>
+        <p><b>Process:</b> brainstorm, expand, evaluate, choose and map, track.</p>
+      </div>
+      <div>
+        <h3>Content</h3>
+        <p><b>Short-term:</b> sale page, PPC, social post, short blog, infographic. <b>Long-term:</b> evergreen guides, long-form, video, refreshes.</p>
+        <p><b>Duplicate content fixes:</b> canonical, 301, canonical-only sitemap, CMS setup, unique content, audits.</p>
+        <p><b>Sitemap:</b> sitemap.xml in root, listed in robots.txt, submitted in Search Console.</p>
+      </div>
+    </div>
+  </div>
+  <a class="nextmod" href="module-1-digital-marketing.html"><b>Back to module 1, digital marketing: the paradigm shift</b>PPC metrics, online techniques, mobile and email marketing.</a>
+</section>
+
+<script>
+window.MODULE_ID = 'm2';
+window.QUIZ = [
+  { q: 'Where must the robots.txt file be placed for crawlers to find it?', o: ['Inside the head tag of every page', 'In the root directory of the website', 'In an /admin folder', 'In the images folder'], a: 1, why: 'Crawlers look only at the root, for example yourdomain/robots.txt.' },
+  { q: 'What does a line "Disallow:" with nothing after it mean?', o: ['Block the whole site', 'Block nothing for that user-agent', 'Block only images', 'Block the home page'], a: 1, why: 'An empty Disallow allows everything. Only "Disallow: /" blocks the whole site.' },
+  { q: 'Which URLs does "Disallow: /logs" block?', o: ['Only the folder /logs/', 'Only the file logs.php', 'Any path beginning with /logs, such as /logs/ and /logs.php', 'Nothing, it needs a trailing slash'], a: 2, why: 'robots.txt rules match by prefix, so anything starting with /logs is blocked.' },
+  { q: 'Which SEO phase can send you back to the research phase?', o: ['Implementation', 'Monitoring', '(Re)assessment', 'Maintenance'], a: 2, why: '(Re)assessment judges results against the research baseline and feeds findings back to research. This is the large loop.' },
+  { q: 'Which is the correct order of the SEO process?', o: ['Research, planning, implementation, monitoring, (re)assessment, maintenance', 'Planning, research, monitoring, implementation, maintenance, (re)assessment', 'Research, implementation, planning, (re)assessment, monitoring, maintenance', 'Monitoring, research, planning, implementation, maintenance, (re)assessment'], a: 0, why: 'Remember: Real People Implement, Monitor, Assess, Maintain.' },
+  { q: 'Which tag provides the clickable headline in a search result?', o: ['The meta description', 'The title tag', 'The H1 tag only', 'The meta keywords tag'], a: 1, why: 'The title tag is shown as the clickable headline. Keep it about 60 to 65 characters.' },
+  { q: 'The recommended length of a meta description is about…', o: ['20 characters', '60 characters', '150 to 160 characters', '500 characters'], a: 2, why: 'Roughly 150 to 160 characters keeps the summary from being cut off in results.' },
+  { q: '"buy crypto online" is which kind of keyword?', o: ['Informational', 'Navigational', 'Commercial', 'Transactional'], a: 3, why: 'Words like buy and subscribe show intent to complete a purchase. These are transactional or buyer keywords.' },
+  { q: 'A search for "YouTube" is an example of which keyword type?', o: ['Informational', 'Navigational', 'Commercial', 'Transactional'], a: 1, why: 'The searcher already knows the brand and wants to reach its site: navigational.' },
+  { q: 'Which of these is an off-page SEO factor?', o: ['Image alt text', 'Unique title tag', 'Backlinks from relevant websites', 'Heading structure'], a: 2, why: 'Backlinks come from other sites, so they are off-page. The rest are tags and content you control.' },
+  { q: 'Which of these is a black-hat technique?', o: ['Publishing quality content', 'Cloaking and hidden text', 'Optimising HTML', 'Restructuring the website'], a: 1, why: 'Cloaking, hidden text and links, keyword stuffing and spam links violate webmaster guidelines.' },
+  { q: 'What is the best fix when two URLs show the same content and you want one to rank?', o: ['Delete the sitemap', 'Add a canonical tag or 301 redirect to the preferred URL', 'Add more keywords to both', 'Use noindex on the preferred one'], a: 1, why: 'Canonical tags and 301 redirects point search engines to the version you want.' },
+  { q: 'Which is an example of short-term content?', o: ['An evergreen how-to guide', 'A long-form research article', 'A seasonal sale landing page or PPC ad', 'A comprehensive style guide'], a: 2, why: 'Short-term content chases quick wins such as seasonal offers and ads. The others are long-term.' },
+  { q: 'What is the key difference between SEO and SEM (paid search)?', o: ['SEO is paid and SEM is free', 'SEO gives unpaid organic traffic that lasts; SEM is paid and stops when the budget stops', 'They are identical', 'SEM only works on social media'], a: 1, why: 'SEO results persist and are free per click; SEM is paid per click and ends with the spend.' },
+  { q: 'Which meta robots value keeps a page out of search results?', o: ['index', 'follow', 'noindex', 'nofollow'], a: 2, why: 'noindex tells engines not to include the page. nofollow only stops link following.' }
+];
+</script>
+
+</main>
+</div>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var MID = window.MODULE_ID || 'm';
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+
+  /* theme */
+  var root = document.documentElement;
+  var savedTheme = store.get('dm-theme');
+  if (savedTheme) { root.setAttribute('data-theme', savedTheme); }
+  var themeBtn = $('#themeBtn');
+  function isDark() {
+    var t = root.getAttribute('data-theme');
+    if (t) { return t === 'dark'; }
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function syncTheme() { if (themeBtn) { themeBtn.textContent = isDark() ? 'Light mode' : 'Dark mode'; } }
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function () {
+      var next = isDark() ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      store.set('dm-theme', next);
+      syncTheme();
+    });
+  }
+  syncTheme();
+
+  /* sidebar drawer on small screens */
+  var side = $('#side');
+  var menuBtn = $('#menuBtn');
+  if (menuBtn && side) { menuBtn.addEventListener('click', function () { side.classList.toggle('open'); }); }
+  if (side) {
+    side.addEventListener('click', function (e) {
+      var t = e.target;
+      while (t && t !== side) { if (t.tagName === 'A') { side.classList.remove('open'); break; } t = t.parentNode; }
+    });
+  }
+
+  /* build topic list */
+  var toc = $('#toc');
+  $$('section.topic').forEach(function (sec) {
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = '#' + sec.id;
+    a.setAttribute('data-for', sec.id);
+    var dot = document.createElement('span'); dot.className = 'dot r' + sec.getAttribute('data-rank');
+    var lbl = document.createElement('span'); lbl.className = 'lbl'; lbl.textContent = sec.getAttribute('data-title');
+    var tick = document.createElement('span'); tick.className = 'tick'; tick.setAttribute('aria-hidden', 'true');
+    a.appendChild(dot); a.appendChild(lbl); a.appendChild(tick);
+    li.appendChild(a); toc.appendChild(li);
+  });
+
+  /* progress, saved in this browser only */
+  var KEY = 'dm-' + MID + '-done';
+  var done = {};
+  try { done = JSON.parse(store.get(KEY) || '{}') || {}; } catch (e) { done = {}; }
+  var boxes = $$('input[data-done]');
+  function refresh() {
+    var n = 0;
+    boxes.forEach(function (b) {
+      var id = b.getAttribute('data-done');
+      b.checked = !!done[id];
+      if (done[id]) { n++; }
+      var link = $('a[data-for="' + id + '"]');
+      if (link) { if (done[id]) { link.classList.add('is-done'); } else { link.classList.remove('is-done'); } }
+    });
+    var tot = boxes.length;
+    var pt = $('#progTxt'); if (pt) { pt.textContent = n + ' of ' + tot + ' topics'; }
+    var bf = $('#barFill'); if (bf) { bf.style.width = (tot ? Math.round(n * 100 / tot) : 0) + '%'; }
+  }
+  boxes.forEach(function (b) {
+    b.addEventListener('change', function () {
+      var id = b.getAttribute('data-done');
+      if (b.checked) { done[id] = 1; } else { delete done[id]; }
+      store.set(KEY, JSON.stringify(done));
+      refresh();
+    });
+  });
+  refresh();
+
+  /* highlight current section in the list */
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          $$('#side a').forEach(function (a) { a.classList.remove('cur'); });
+          var l = $('#side a[href="#' + en.target.id + '"]');
+          if (l) { l.classList.add('cur'); }
+        }
+      });
+    }, { rootMargin: '-15% 0px -75% 0px' });
+    $$('section.topic, section.block').forEach(function (s) { if (s.id) { io.observe(s); } });
+  }
+
+  /* quiz */
+  var Q = window.QUIZ || [];
+  var qbox = $('#quiz');
+  var scoreEl = $('#score');
+  var score = 0, answered = 0;
+  function upd() {
+    if (scoreEl) { scoreEl.textContent = score + ' correct out of ' + answered + ' answered (' + Q.length + ' questions)'; }
+  }
+  function buildQuiz() {
+    if (!qbox) { return; }
+    qbox.innerHTML = '';
+    score = 0; answered = 0;
+    Q.forEach(function (item, i) {
+      var card = document.createElement('div'); card.className = 'qcard';
+      var p = document.createElement('p'); p.className = 'qq'; p.textContent = (i + 1) + '. ' + item.q;
+      var opts = document.createElement('div'); opts.className = 'opts';
+      var why = document.createElement('p'); why.className = 'why'; why.hidden = true;
+      item.o.forEach(function (text, j) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'opt'; b.textContent = text;
+        b.addEventListener('click', function () {
+          if (card.getAttribute('data-answered')) { return; }
+          card.setAttribute('data-answered', '1');
+          answered++;
+          $$('button', opts).forEach(function (x, k) {
+            x.disabled = true;
+            if (k === item.a) { x.classList.add('right'); }
+          });
+          if (j === item.a) { score++; } else { b.classList.add('wrong'); }
+          why.textContent = (j === item.a ? 'Correct. ' : 'Not quite. ') + item.why;
+          why.hidden = false;
+          upd();
+        });
+        opts.appendChild(b);
+      });
+      card.appendChild(p); card.appendChild(opts); card.appendChild(why);
+      qbox.appendChild(card);
+    });
+    upd();
+  }
+  var rq = $('#quizReset');
+  if (rq) { rq.addEventListener('click', buildQuiz); }
+  buildQuiz();
+
+  /* print only the cheat sheet */
+  var pb = $('#printSheet');
+  if (pb) {
+    pb.addEventListener('click', function () { document.body.classList.add('print-sheet'); window.print(); });
+    window.addEventListener('afterprint', function () { document.body.classList.remove('print-sheet'); });
+  }
+})();
+
+</script>
+</body>
+</html>

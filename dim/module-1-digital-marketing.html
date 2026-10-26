@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digital Marketing Module 1</title>
+<style>
+:root{
+  --bg:#F5F7FB;--surface:#FFFFFF;--surface2:#EBF0FA;--ink:#101A33;--muted:#53617D;--line:#D9E0EE;
+  --link:#2352D8;--on-link:#FFFFFF;--gold:#E7A600;--gold-ink:#3B2A00;--good:#12805C;--bad:#C0401D;--hl:#FFF3C4;
+  --code-bg:#0F1A33;--code-ink:#E6EDFF;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root[data-theme="dark"]{
+  --bg:#0B1120;--surface:#131B2E;--surface2:#1B2640;--ink:#E8EDF8;--muted:#9CA9C6;--line:#27324F;
+  --link:#8AA9FF;--on-link:#0B1120;--gold:#F2BE2E;--gold-ink:#2B2000;--good:#3DD6A3;--bad:#FF8F6B;--hl:#3A3010;
+  --code-bg:#070C18;--code-ink:#DCE6FF;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1120;--surface:#131B2E;--surface2:#1B2640;--ink:#E8EDF8;--muted:#9CA9C6;--line:#27324F;
+    --link:#8AA9FF;--on-link:#0B1120;--gold:#F2BE2E;--gold-ink:#2B2000;--good:#3DD6A3;--bad:#FF8F6B;--hl:#3A3010;
+    --code-bg:#070C18;--code-ink:#DCE6FF;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 var(--sans);-webkit-text-size-adjust:100%}
+a{color:var(--link)}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;margin:0}
+h2{font-size:clamp(24px,3.4vw,31px);margin-bottom:8px}
+h3{font-size:20px;margin:26px 0 8px}
+h4{font-size:17px;margin:18px 0 4px}
+p{margin:10px 0}
+ul,ol{padding-left:1.25em;margin:8px 0}
+li{margin:5px 0}
+code{font-family:var(--mono);font-size:.9em;background:var(--surface2);padding:1px 5px;border-radius:4px}
+pre.code{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:10px;overflow-x:auto;font:14px/1.55 var(--mono);margin:12px 0;white-space:pre}
+pre.code code{background:none;padding:0;font-size:inherit}
+:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--serif);font-weight:700;white-space:nowrap}
+.prog{flex:1;display:flex;align-items:center;gap:10px;min-width:0}
+.bar{flex:1;height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;max-width:320px}
+.bar>i{display:block;height:100%;width:0;background:var(--good);transition:width .3s}
+.ptxt{font-size:13px;color:var(--muted);white-space:nowrap}
+.btn{font:inherit;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{border-color:var(--link)}
+.menu-btn{display:none}
+
+/* layout */
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1200px;margin:0 auto}
+.side{position:sticky;top:57px;align-self:start;height:calc(100vh - 57px);overflow:auto;padding:16px 14px;border-right:1px solid var(--line)}
+.side ul{list-style:none;padding:0;margin:0 0 18px}
+.side li{margin:2px 0}
+.side-h{font-size:13px;color:var(--muted);margin:6px 10px}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:15px;line-height:1.3}
+.side a:hover,.side a.cur{background:var(--surface2)}
+.side a.is-done .lbl{color:var(--muted)}
+.tick{margin-left:auto;color:var(--good);font-weight:700}
+.side a.is-done .tick::after{content:"\2713"}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--muted)}
+.dot.r1{background:var(--gold)}.dot.r2{background:var(--link)}.dot.r3{background:var(--muted)}
+main{padding:24px 24px 90px;max-width:840px;min-width:0}
+@media(max-width:900px){
+  .shell{display:block}
+  .menu-btn{display:inline-block}
+  .side{position:fixed;left:0;top:57px;bottom:0;width:290px;height:auto;transform:translateX(-102%);transition:transform .2s;background:var(--surface);z-index:15}
+  .side.open{transform:none;box-shadow:4px 0 24px rgba(0,0,0,.25)}
+  main{padding:18px 16px 80px}
+  .ptxt{display:none}
+  .brand{display:none}
+}
+
+/* hero (results page) */
+.hero{padding:22px 0 10px}
+.hero h1{font-size:clamp(30px,5.4vw,44px);margin:0 0 12px}
+.lede{color:var(--muted);max-width:62ch}
+.searchbar{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:12px 18px;margin:22px 0 4px;box-shadow:0 1px 8px rgba(16,26,51,.08)}
+.searchbar svg{flex:none;color:var(--muted)}
+.serp-h{font-size:18px;margin:26px 0 2px;color:var(--ink)}
+.serp{list-style:none;padding:0;margin:0}
+.serp li{margin:0;border-bottom:1px solid var(--line)}
+.serp a{display:block;padding:13px 0;text-decoration:none;color:inherit}
+.serp .url{display:block;font-size:13px;color:var(--good)}
+.serp .ttl{display:block;font-size:20px;color:var(--link);font-weight:600;line-height:1.3;margin:2px 0}
+.serp a:hover .ttl{text-decoration:underline}
+.serp .snip{display:block;color:var(--muted);font-size:15px}
+
+/* blocks and topics */
+.block,.topic{padding:36px 0;border-top:1px solid var(--line)}
+.crumb{font-size:13px;color:var(--good);margin:0 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
+.chip{font-size:13px;padding:3px 10px;border-radius:99px;background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+.chip.rank1{background:var(--gold);color:var(--gold-ink);border-color:transparent;font-weight:700}
+.chip.rank2{background:var(--link);color:var(--on-link);border-color:transparent;font-weight:700}
+
+.idea,.say,.trap,.src{padding:11px 14px;margin:14px 0;border-left:4px solid;border-radius:0 8px 8px 0;background:var(--surface2)}
+.idea{border-color:var(--link)}
+.say{border-color:var(--gold)}
+.trap{border-color:var(--bad)}
+.src{border-color:var(--muted);border-left-style:dashed}
+.idea>b:first-child,.say>b:first-child,.trap>b:first-child,.src>b:first-child{display:block;margin-bottom:2px}
+
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:15px;background:var(--surface)}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface2);font-weight:700}
+td:first-child{font-weight:600}
+.tw table{min-width:520px}
+
+details{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:10px 0}
+details>summary{cursor:pointer;padding:11px 14px;font-weight:600;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"+";display:inline-block;width:1.3em;color:var(--link);font-weight:700}
+details[open]>summary::before{content:"\2212"}
+details>.dbody{padding:0 14px 12px}
+details.try{border-color:var(--gold)}
+details.try>summary{background:var(--hl);border-radius:10px}
+details.try[open]>summary{border-radius:10px 10px 0 0}
+.chk-h{font-size:17px;margin:22px 0 4px}
+
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.flow>div{border:1px solid var(--line);background:var(--surface);padding:10px 12px;border-radius:8px}
+.flow b{display:block;font-family:var(--serif);font-size:18px}
+.flow span{font-size:14px;color:var(--muted)}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.pills span{padding:4px 12px;border:1px solid var(--line);border-radius:99px;background:var(--surface);font-size:14px}
+.hook{font-family:var(--serif);font-size:19px;padding:10px 14px;background:var(--hl);border-radius:8px;margin:12px 0}
+
+.done{display:flex;align-items:center;gap:10px;margin-top:24px;padding:12px 14px;border:1px dashed var(--line);border-radius:10px;cursor:pointer;font-weight:600}
+.done input{width:20px;height:20px}
+
+/* lab */
+.lab{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:12px 0}
+.lab label{display:flex;flex-direction:column;font-size:14px;color:var(--muted)}
+.lab input{font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px}
+.out div{background:var(--surface2);border-radius:10px;padding:10px 12px}
+.out b{display:block;font-size:22px;font-family:var(--serif)}
+.out span{font-size:13px;color:var(--muted)}
+
+/* quiz */
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.qq{font-weight:600;margin:0 0 10px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--link)}
+.opt:disabled{cursor:default;color:var(--ink);opacity:1}
+.opt.right{border-color:var(--good);border-width:2px}
+.opt.wrong{border-color:var(--bad);border-width:2px}
+.why{margin:10px 0 0;padding:8px 10px;background:var(--hl);border-radius:8px;font-size:15px}
+.score{position:sticky;top:57px;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0;font-weight:600}
+
+/* cheat sheet */
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px 18px 16px}
+.sheet h3{margin-top:18px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0 28px}
+.sheet table{font-size:14px}
+.nextmod{display:block;margin-top:34px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;text-decoration:none;background:var(--surface);color:var(--ink)}
+.nextmod b{font-family:var(--serif);font-size:20px;display:block;color:var(--link)}
+
+/* svg diagrams */
+.svgwrap{margin:14px 0;overflow-x:auto}
+.svgwrap svg{width:100%;min-width:620px;height:auto;display:block}
+.svg-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.svg-box.hot{fill:var(--hl);stroke:var(--gold);stroke-width:2}
+.svg-t{fill:var(--ink);font:600 14px var(--sans);text-anchor:middle}
+.svg-s{fill:var(--muted);font:12px var(--sans);text-anchor:middle}
+.svg-line{fill:none;stroke:var(--muted);stroke-width:2}
+.svg-line.loop{stroke:var(--link);stroke-dasharray:6 4}
+.svg-head{fill:var(--muted)}
+.svg-head.loop{fill:var(--link)}
+.svg-lbl{fill:var(--link);font:600 12px var(--sans);text-anchor:middle}
+
+@media print{
+  body.print-sheet .top,body.print-sheet .side,body.print-sheet main>*:not(#sheet){display:none!important}
+  body.print-sheet .shell{display:block}
+  body.print-sheet main{padding:0;max-width:none}
+  body.print-sheet #sheet{border:0}
+  body.print-sheet .score,body.print-sheet #printSheet{display:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+</style>
+</head>
+<body>
+<div class="top">
+  <button class="btn menu-btn" id="menuBtn" type="button" aria-label="Open topic list">Topics</button>
+  <span class="brand">Digital marketing, module 1</span>
+  <div class="prog"><div class="bar" aria-hidden="true"><i id="barFill"></i></div><span id="progTxt" class="ptxt">0 of 0 topics</span></div>
+  <a class="btn" href="module-2-seo.html">Go to module 2</a>
+  <button class="btn" id="themeBtn" type="button">Dark mode</button>
+</div>
+<div class="shell">
+<nav class="side" id="side" aria-label="Topics">
+  <p class="side-h">Topics, best value first</p>
+  <ul id="toc"></ul>
+  <p class="side-h">Practice and revision</p>
+  <ul id="toc2">
+    <li><a href="#drills"><span class="dot"></span><span class="lbl">Past-paper drills</span></a></li>
+    <li><a href="#quizsec"><span class="dot"></span><span class="lbl">Quick quiz</span></a></li>
+    <li><a href="#sheet"><span class="dot"></span><span class="lbl">Last-hour cheat sheet</span></a></li>
+  </ul>
+</nav>
+<main id="main">
+<header class="hero" id="top">
+  <h1>Digital marketing, module 1: the paradigm shift</h1>
+  <p class="lede">Eight syllabus hours, cut down to what your examiners actually ask. Work down the results below, best value first. Each topic gives you the idea, how to write it for marks, and questions to test yourself. If time runs out, the most valuable material is already behind you.</p>
+  <div class="searchbar" role="search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <span>digital marketing module 1: what to study first</span>
+  </div>
+
+  <h3 class="serp-h">Rank 1: examiners have asked these</h3>
+  <ul class="serp">
+    <li><a href="#digital-vs-traditional"><span class="url">module-1 › marketing-basics › digital-vs-traditional</span><span class="ttl">Digital vs traditional marketing</span><span class="snip">Asked in 2022 (differentiate, five points) and 2023 (advantages). 20 min.</span></a></li>
+    <li><a href="#ppc"><span class="url">module-1 › channels › ppc</span><span class="ttl">PPC: stages and the four metrics</span><span class="snip">2022 asked CPA, CPC, CTR and conversion rate for 5 marks. 35 min.</span></a></li>
+    <li><a href="#online-techniques"><span class="url">module-1 › capturing-customers › online-techniques</span><span class="ttl">Capturing customers with online marketing techniques</span><span class="snip">2025 Q1, 10 marks, "in detail". Web 2.0, video, webinars, podcasts. 35 min.</span></a></li>
+    <li><a href="#mobile-marketing"><span class="url">module-1 › channels › mobile-marketing</span><span class="ttl">Mobile marketing in four stages</span><span class="snip">2025 Q2: a 24-hour gym in Manhattan. Learn the framework, then apply it. 25 min.</span></a></li>
+    <li><a href="#email-marketing"><span class="url">module-1 › channels › email-marketing</span><span class="ttl">Email marketing and its ten rules</span><span class="snip">2023 Q3 option: ten unique rules for an effective campaign. 25 min.</span></a></li>
+  </ul>
+
+  <h3 class="serp-h">Rank 2: core syllabus, not asked yet</h3>
+  <ul class="serp">
+    <li><a href="#strategy-measurement"><span class="url">module-1 › strategy › measurement-roi</span><span class="ttl">Strategy, measurement and ROI formulas</span><span class="snip">Syllabus 1.1. A numerical question is very possible. 35 min.</span></a></li>
+    <li><a href="#adwords-adsense"><span class="url">module-1 › channels › adwords-adsense</span><span class="ttl">AdWords vs AdSense, video marketing vs videocast</span><span class="snip">Classic table question. 15 min.</span></a></li>
+    <li><a href="#law"><span class="url">module-1 › law-in-dm</span><span class="ttl">Law in digital marketing</span><span class="snip">Seven areas, one memory sentence. 15 min.</span></a></li>
+  </ul>
+
+  <h3 class="serp-h">Page 2: skim in ten minutes</h3>
+  <ul class="serp">
+    <li><a href="#skim"><span class="url">module-1 › overview</span><span class="ttl">Evolution, importance and the list of channels</span><span class="snip">Good for one-liners inside longer answers.</span></a></li>
+  </ul>
+</header>
+
+<section class="block" id="plan">
+  <h2>Your plan for the day</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Order</th><th>What to do</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td>First</td><td>Module 2, Rank 1 topics. SEO is the larger share of every past paper.</td><td>2 h 45 min</td></tr>
+      <tr><td>Second</td><td>This module, Rank 1 topics.</td><td>2 h 20 min</td></tr>
+      <tr><td>Third</td><td>Past-paper drills in both modules. Write answers on paper, then compare.</td><td>1 h 10 min</td></tr>
+      <tr><td>Fourth</td><td>Rank 2 topics in both modules.</td><td>2 h 15 min</td></tr>
+      <tr><td>Last 30 minutes</td><td>Cheat sheets only. No new material.</td><td>30 min</td></tr>
+    </tbody>
+  </table></div>
+  <p>Short on time? Rank 1 in both modules plus the drills is about 6 hours, and that covers every repeated question.</p>
+
+  <h3>What three past papers tell you</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Paper</th><th>Module 1 questions</th></tr></thead>
+    <tbody>
+      <tr><td>2022 in-sem</td><td>Q1A differentiate digital and traditional marketing (five points, two columns). Q1B define CPA, CPC, CTR, conversion rate.</td></tr>
+      <tr><td>2023 in-sem</td><td>Q2A advantages of digital over traditional marketing (one of three, answer any two). Q3 option: ten rules for effective email marketing.</td></tr>
+      <tr><td>2025 mid-sem</td><td>Q1 online marketing techniques for capturing customers, in detail. Q2 four stages of a mobile marketing process for a 24-hour gym.</td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li>Each paper is 30 marks: three questions of 10 marks in 1 hr 15 min. That is about 22 minutes a question, with a few minutes spare.</li>
+    <li>Examiners mix theory with cases (the gym, the clothing brand). Learn the framework, then practise bending it to a business.</li>
+    <li>Law, AdWords vs AdSense and ROI formulas have not appeared yet, which is why they sit at Rank 2 and not lower.</li>
+  </ul>
+</section>
+
+<!-- ============ TOPIC: digital vs traditional ============ -->
+<section class="topic" id="digital-vs-traditional" data-rank="1" data-title="Digital vs traditional marketing">
+  <p class="crumb">module-1 › marketing-basics</p>
+  <h2>Digital vs traditional marketing</h2>
+  <div class="chips"><span class="chip rank1">Rank 1</span><span class="chip">Asked 2022 and 2023</span><span class="chip">20 min</span></div>
+
+  <div class="idea"><b>The idea</b>Traditional marketing broadcasts one message to everyone and hopes the right people see it. Digital marketing picks the people, lets them answer back, and tells you exactly what happened. Every difference below is a version of that.</div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Criterion</th><th>Digital marketing</th><th>Traditional marketing</th></tr></thead>
+    <tbody>
+      <tr><td>Medium</td><td>Internet channels: search, social media, email, apps, websites</td><td>Print, TV, radio, billboards, direct mail</td></tr>
+      <tr><td>Reach</td><td>Global, any connected user, any time</td><td>Local or regional, limited to the medium's coverage</td></tr>
+      <tr><td>Cost</td><td>Low entry cost, pay per click or impression, budget can scale up or down</td><td>High fixed cost: print runs, airtime, hoardings</td></tr>
+      <tr><td>Targeting</td><td>Precise by age, interest, location and behaviour; personalised</td><td>Mass audience, little personalisation</td></tr>
+      <tr><td>Interaction</td><td>Two-way: likes, comments, replies, instant purchase</td><td>Mostly one-way; feedback is slow and indirect</td></tr>
+      <tr><td>Measurement</td><td>Real-time analytics: clicks, conversions, ROI</td><td>Hard to measure; relies on surveys and sales estimates</td></tr>
+      <tr><td>Flexibility</td><td>Edit, pause or optimise a live campaign</td><td>Fixed once printed or aired</td></tr>
+      <tr><td>Availability</td><td>24x7, fast results</td><td>Limited slots, long lead time</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="say"><b>How to write it for marks (2022 Q1A)</b>Draw the table with the criterion in a narrow first column, then one line per side. Choose the five you can explain fastest: reach, cost, targeting, interaction, measurement. If the examiner wants strictly two columns, write "Reach: ..." at the start of each cell. Finish with one line: the best campaigns blend both.</div>
+
+  <h3>Advantages of digital over traditional (2023 Q2A)</h3>
+  <p>Same table, flipped into positives. Write six to eight, each with a one-line reason:</p>
+  <ul>
+    <li><b>Global reach:</b> a small Mumbai brand can sell to London.</li>
+    <li><b>Cost-effective:</b> small and medium businesses compete with large ones on a level field.</li>
+    <li><b>Measurable:</b> analytics show what works, so money moves to winners.</li>
+    <li><b>Targeted and personalised:</b> higher conversion and ROI because ads reach the interested.</li>
+    <li><b>Interactive:</b> direct conversations build loyalty and give feedback.</li>
+    <li><b>Flexible and real-time:</b> adjust a campaign mid-way.</li>
+    <li><b>Mobile access:</b> reach people on the device they use most.</li>
+    <li><b>Easy to scale:</b> turn a campaign up for a sale season, down afterwards.</li>
+  </ul>
+  <div class="hook">Memory hook for the first six: Global, Cost, Measurable, Targeted, Interactive, Flexible. "Great Cats Make Terrific Interactive Friends."</div>
+
+  <div class="trap"><b>Watch out</b>Do not call traditional marketing useless. Examiners reward the balanced line that it still works for local, offline and older audiences.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Which five criteria would you pick for a two-column answer?</summary><div class="dbody">Reach, cost, targeting, interaction, measurement. They are the easiest to explain with an example each.</div></details>
+  <details><summary>Why is digital marketing easier to optimise?</summary><div class="dbody">Real-time analytics show results immediately, and a live campaign can be edited, paused or reallocated. A printed ad cannot.</div></details>
+  <details><summary>Give one case where traditional marketing still wins.</summary><div class="dbody">A local shop reaching nearby residents with a hoarding or pamphlet, or a brand targeting people who are not online much.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="digital-vs-traditional"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: PPC ============ -->
+<section class="topic" id="ppc" data-rank="1" data-title="PPC: stages and metrics">
+  <p class="crumb">module-1 › channels › ppc</p>
+  <h2>PPC: stages and the four metrics</h2>
+  <div class="chips"><span class="chip rank1">Rank 1</span><span class="chip">Asked 2022 (Q1B)</span><span class="chip">35 min</span></div>
+
+  <div class="idea"><b>The idea</b>In pay-per-click advertising you bid on a keyword and pay only when someone actually clicks. Showing the ad is free. Because every click costs money, the whole discipline is: get cheap clicks from people who then do something valuable.</div>
+
+  <p><b>Definition.</b> PPC is a model where the advertiser pays only when a user clicks the ad and visits the landing page, not for the placement itself. In search advertising, you choose a keyword and bid on it. When a user searches it, your ad appears at the top of the results.</p>
+  <p><b>Benefits.</b> Easy to track (impressions, clicks, conversions). Budget is under your control. It does not depend on algorithm changes, so it works even when organic ranking is weak.</p>
+  <p><b>Platforms.</b> Google Ads is the biggest (average CPC about $2 to $4 in your slides), Bing or Microsoft Ads (about $1.5, mainly PC users), Facebook Ads (about $0.95 per click, strong on mobile).</p>
+
+  <h3>The four stages</h3>
+  <div class="flow">
+    <div><b>Stage 1: Goals</b><span>Choose the business goal and its KPI. Understand ad rank and quality score.</span></div>
+    <div><b>Stage 2: Setup</b><span>Campaign type, location, language, device, budget, bidding, keywords, ad copy.</span></div>
+    <div><b>Stage 3: Manage</b><span>Monitor, tune keywords and bids, add negative keywords, A/B test ads.</span></div>
+    <div><b>Stage 4: Analyze</b><span>Read reports, find wasted spend, carry lessons into the next campaign.</span></div>
+  </div>
+  <p>After Analyze you loop back to Goals with better information. That loop is why PPC is called a cycle.</p>
+
+  <details><summary>Open the detail for each stage</summary><div class="dbody">
+    <h4>Goals</h4>
+    <p>Match goal to KPI: traffic means clicks and sessions; brand awareness means impressions and reach; leads means number of leads; sales means revenue and conversions; engagement means time on site and page views; app promotion means downloads. Everything later (keywords, ads, bids, budget) depends on this choice.</p>
+    <h4>Setup</h4>
+    <p>Campaign types: Search (text ads in results), Display (banners on partner sites), Shopping (product ads with image and price), Video (YouTube), App (promote installs). Settings: name, geography, language, device. Bidding: manual CPC (you cap each keyword) or automatic (Google adjusts to hit your goal).</p>
+    <h4>Manage</h4>
+    <p>Keep high-performing keywords, drop weak ones, add new relevant ones, update match types, add negative keywords so you stop paying for irrelevant searches. Review bids as competition changes. Test headlines, descriptions, call to action and landing pages in A/B tests.</p>
+    <h4>Analyze</h4>
+    <p>Reports: campaign, ad group, keyword, search query, geographic, device, conversion. They answer: were the goals met, which ads and keywords convert, where is money wasted, what to change next time.</p>
+  </div></details>
+
+  <h3>The metrics (this is the 2022 Q1B answer)</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Metric</th><th>Formula</th><th>What it tells you</th></tr></thead>
+    <tbody>
+      <tr><td>Impressions</td><td>Times the ad was shown</td><td>Visibility, whether clicked or not</td></tr>
+      <tr><td>CTR (click-through rate)</td><td>Clicks ÷ Impressions × 100</td><td>How relevant and engaging the ad is</td></tr>
+      <tr><td>CPC (cost per click)</td><td>Total cost ÷ Total clicks</td><td>What each visit costs; lower means more clicks for the same budget</td></tr>
+      <tr><td>Conversion rate</td><td>Conversions ÷ Clicks × 100</td><td>Share of clickers who complete the goal (buy, register, download)</td></tr>
+      <tr><td>CPA (cost per acquisition)</td><td>Advertising cost ÷ Conversions</td><td>What one successful conversion costs</td></tr>
+      <tr><td>ROI</td><td>(Revenue − Cost) ÷ Cost × 100</td><td>Whether the campaign is profitable</td></tr>
+    </tbody>
+  </table></div>
+  <div class="trap"><b>Watch out</b>CTR divides by impressions. Conversion rate divides by clicks (in PPC). Mixing those two denominators is the commonest lost mark. Your general measurement slide divides conversion rate by visitors, so say "visitors or clicks" if the question is not PPC specific.</div>
+
+  <h3>Metric lab: change the numbers and watch them move</h3>
+  <p>Before editing, predict: with the defaults, will the CPA be above or below ₹250? Then check.</p>
+  <div class="lab">
+    <label>Impressions<input id="imp" type="number" value="20000" min="0"></label>
+    <label>Clicks<input id="clk" type="number" value="600" min="0"></label>
+    <label>Cost (₹)<input id="cost" type="number" value="9000" min="0"></label>
+    <label>Conversions<input id="conv" type="number" value="30" min="0"></label>
+    <label>Revenue (₹)<input id="rev" type="number" value="45000" min="0"></label>
+  </div>
+  <div class="out">
+    <div><b id="o-ctr">-</b><span>CTR</span></div>
+    <div><b id="o-cpc">-</b><span>CPC</span></div>
+    <div><b id="o-cr">-</b><span>Conversion rate</span></div>
+    <div><b id="o-cpa">-</b><span>CPA</span></div>
+    <div><b id="o-roas">-</b><span>ROAS (revenue ÷ cost)</span></div>
+    <div><b id="o-roi">-</b><span>ROI</span></div>
+  </div>
+
+  <h3>Quality Score</h3>
+  <p>Google's rating of how useful your ad is. It depends on expected CTR, ad relevance and landing page quality. A higher score gives a better ad position, lower CPC and more visibility. That is why a relevant ad can beat a bigger bid.</p>
+
+  <div class="say"><b>How to write it for marks</b>For "define the following terms": one line definition, the formula, and a tiny example for each. A worked example of the same ₹5,000 campaign across all four terms earns the full marks and shows you understand the link between them.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Name the four PPC stages in order.</summary><div class="dbody">Goals, Setup, Manage, Analyze, then back to Goals.</div></details>
+  <details><summary>Which stage is "add negative keywords" in, and why?</summary><div class="dbody">Manage. You learn from live search queries which irrelevant searches waste money, then block them.</div></details>
+  <details><summary>A campaign costs ₹6,000, gets 300 clicks and 15 conversions. CPC, conversion rate, CPA?</summary><div class="dbody">CPC = 6,000 ÷ 300 = ₹20. Conversion rate = 15 ÷ 300 × 100 = 5%. CPA = 6,000 ÷ 15 = ₹400.</div></details>
+  <details><summary>Three things that make up Quality Score?</summary><div class="dbody">Expected CTR, ad relevance, landing page quality.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="ppc"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: online techniques ============ -->
+<section class="topic" id="online-techniques" data-rank="1" data-title="Capturing customers online">
+  <p class="crumb">module-1 › capturing-customers › online-techniques</p>
+  <h2>Capturing customers with online marketing techniques</h2>
+  <div class="chips"><span class="chip rank1">Rank 1</span><span class="chip">Asked 2025 (Q1, 10 marks)</span><span class="chip">35 min</span></div>
+
+  <div class="idea"><b>The idea</b>"Capturing customers" is a funnel: reach people, engage them, convert them, keep them. Each technique below does one or more of those jobs. If you build your 10-mark answer around the funnel, it reads as an argument and not a list.</div>
+
+  <h3>1. Web 2.0 interactive techniques</h3>
+  <p>Web 1.0 let people read. Web 2.0 lets them create, share and respond, which is what lets a business talk with customers and not at them.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Technique</th><th>What it is</th><th>How it captures customers</th></tr></thead>
+    <tbody>
+      <tr><td>Social media marketing</td><td>Facebook, Instagram, LinkedIn, X, YouTube: posts, comments, shares, live sessions</td><td>Awareness, direct engagement, viral sharing, leads</td></tr>
+      <tr><td>Blogging</td><td>Regular articles with comments and sharing</td><td>Educates, builds authority, brings organic traffic</td></tr>
+      <tr><td>Microblogging</td><td>Short updates on X or Threads</td><td>Instant communication, trend participation, real-time support</td></tr>
+      <tr><td>Wikis</td><td>Collaboratively edited knowledge pages</td><td>Product documentation, self-service support</td></tr>
+      <tr><td>Social bookmarking</td><td>Users save and share pages (Pinterest, Flipboard)</td><td>Content discovery, referral traffic, SEO visibility</td></tr>
+      <tr><td>Reviews and ratings</td><td>Google Reviews, Yelp, Amazon reviews</td><td>Social proof and trust, which nudges the buying decision</td></tr>
+      <tr><td>Live streaming</td><td>Real-time video: launches, Q&amp;A, demos</td><td>Instant interaction and feedback</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>2. Video and vlogs</h3>
+  <p>People connect with faces and stories, not logos. Three reasons it works: vlogs feel authentic so trust rises; viewers retain far more from video than from text (your slide says roughly 95% against 10%); and platforms push video in feeds.</p>
+  <ul>
+    <li><b>Behind-the-scenes vlogs:</b> show the human side, goal is emotional connection.</li>
+    <li><b>Short-form videos</b> (Reels, Shorts, TikTok, under 60 seconds): quick tips, rapid discovery and broad organic reach.</li>
+    <li><b>Product demos and problem-solvers:</b> show the product solving a pain point, removes buying hesitation.</li>
+    <li><b>Customer stories and user-generated content:</b> real testimonials give social proof.</li>
+  </ul>
+
+  <h3>3. Webcasts, web conferences and webinars</h3>
+  <div class="tw"><table>
+    <thead><tr><th></th><th>Webcast</th><th>Webinar</th><th>Web conference</th></tr></thead>
+    <tbody>
+      <tr><td>Direction</td><td>Mostly one-way broadcast to a large audience</td><td>Two-way: presenter plus Q&amp;A, polls, chat</td><td>Many-to-many meeting in a small group</td></tr>
+      <tr><td>Typical use</td><td>Launch, keynote, training broadcast</td><td>Lead generation, demos, workshops</td><td>Client meetings, collaboration with screen sharing</td></tr>
+      <tr><td>Value to marketer</td><td>Reach and credibility</td><td>Registration forms capture leads; interaction qualifies them</td><td>Closing deals, onboarding</td></tr>
+    </tbody>
+  </table></div>
+  <p>How webcasts capture customers: they reach people anywhere, showcase expertise, engage through live Q&amp;A, generate qualified leads through registration forms, demonstrate the product, and let you follow up with recordings and emails. Attendance and engagement data show what to improve.</p>
+  <div class="src"><b>Not fully in your slides</b>Your slides cover webcasts in detail. The webinar vs web conference distinction above is the standard definition, safe to write in an exam.</div>
+
+  <h3>4. Podcasts</h3>
+  <p>Streamable or downloadable audio episodes. Uses: brand storytelling, product education, expert interviews. Strengths: builds credibility, reaches niche audiences, long-term loyalty because listeners subscribe.</p>
+
+  <h3>5. Mobile devices</h3>
+  <p>SMS, apps, mobile-friendly sites and location-based offers reach people on the device they carry all day. Full treatment in the mobile marketing topic below.</p>
+
+  <div class="say"><b>How to write it for marks (2025 Q1)</b>One line defining online marketing, then five or six techniques. For each: what it is, how it captures a customer, one example (Nike on Instagram, a clothing brand's try-on vlog, a bank's webinar). Draw a small funnel (reach, engage, convert, retain) and place each technique on it. Close with one line: the techniques work best combined and measured.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Four video formats that capture customers?</summary><div class="dbody">Behind-the-scenes vlogs, short-form videos, product demos, customer stories and user-generated content.</div></details>
+  <details><summary>How is a webinar different from a webcast?</summary><div class="dbody">A webinar is two-way (Q&amp;A, polls, chat) and captures leads through registration. A webcast is mainly a one-way broadcast to a large audience.</div></details>
+  <details><summary>Why do reviews and ratings matter for capturing customers?</summary><div class="dbody">Social proof. Buyers trust other customers more than the brand, so reviews lower hesitation and influence the purchase.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="online-techniques"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: mobile marketing ============ -->
+<section class="topic" id="mobile-marketing" data-rank="1" data-title="Mobile marketing">
+  <p class="crumb">module-1 › channels › mobile-marketing</p>
+  <h2>Mobile marketing in four stages</h2>
+  <div class="chips"><span class="chip rank1">Rank 1</span><span class="chip">Asked 2025 (Q2)</span><span class="chip">25 min</span></div>
+
+  <div class="idea"><b>The idea</b>Mobile marketing promotes products through phones and tablets: SMS and MMS, apps, mobile sites, and location-aware offers. The edge over other channels is that the phone is personal, always on, and knows where the customer is.</div>
+
+  <h3>Types, grouped so you can remember them</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Family</th><th>Types</th></tr></thead>
+    <tbody>
+      <tr><td>Messaging</td><td>Direct SMS or MMS marketing, AI-driven chatbots</td></tr>
+      <tr><td>Apps and sites</td><td>Responsive mobile websites, interactive mobile apps, in-app advertising, mobile wallet marketing</td></tr>
+      <tr><td>Social and video</td><td>Social commerce, optimised social media marketing, engaging mobile video ads, in-game advertising</td></tr>
+      <tr><td>Location-based</td><td>GPS or beacon targeting, Bluetooth proximity marketing, QR codes</td></tr>
+      <tr><td>Emerging</td><td>Augmented reality, voice search optimisation</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>Why it matters:</b> expanded reach, precise targeting, better user experience, geographically targeted outreach, agile adaptation. Brand examples from your slides: IKEA's interactive initiatives, Burger King's mobile outreach, Swiggy's mobile engagement.</p>
+
+  <h3>The process, and why the question says "four stages"</h3>
+  <p>Your slides list seven steps: understand the audience; choose a mobile approach; build an opt-in database; make the website mobile-friendly; use native ads; use QR codes; monitor with analytics. The exam asks for four stages, so group them:</p>
+  <div class="flow">
+    <div><b>Stage 1: Know the audience</b><span>Step 1</span></div>
+    <div><b>Stage 2: Choose approach and channels</b><span>Steps 2, 5 and 6 (strategy, native ads, QR codes)</span></div>
+    <div><b>Stage 3: Build the base and permission</b><span>Steps 3 and 4 (opt-in list, mobile-friendly site)</span></div>
+    <div><b>Stage 4: Measure and adapt</b><span>Step 7 (analytics)</span></div>
+  </div>
+  <div class="src"><b>My grouping, not your slides'</b>Any sensible four-stage grouping of the seven steps is acceptable. What the examiner is checking is that each stage is applied to the gym.</div>
+
+  <details class="try"><summary>Try first (6 minutes): the 24-hour gym in Manhattan. Write four stages, then open this.</summary><div class="dbody">
+    <p><b>Case:</b> new gym, audience is working professionals aged 25 to 40 who live nearby or visit for business, corporate packages are a new venture.</p>
+    <h4>Stage 1: Know and segment the audience</h4>
+    <p>Three personas: local professionals who train very early or very late; business travellers staying nearby; HR or office managers who buy corporate packages. Their mobile habits: commute browsing, searches like "24 hour gym near me", LinkedIn during work hours, hotel stays.</p>
+    <h4>Stage 2: Choose approach and channels</h4>
+    <p>Local mobile search and a Google Business profile (voice search too). Geo-targeted social and video ads around offices and hotels. Location-based push or SMS offers when someone is a few blocks away. QR codes in hotel lobbies and office buildings. Native ads or LinkedIn ads for the corporate package.</p>
+    <h4>Stage 3: Build the base and permission</h4>
+    <p>A fast, responsive mobile site with one-tap trial booking and a corporate enquiry form. An opt-in SMS list (free day pass for signing up). A mobile wallet pass for entry and offers, and a chatbot for booking questions.</p>
+    <h4>Stage 4: Measure and adapt</h4>
+    <p>Track sign-ups, day-pass redemptions, CTR and cost per acquisition by channel. A/B test offers and send times. Send timely, personalised messages ("late-night class open now"). Scale what works, add referral rewards for corporate accounts.</p>
+  </div></details>
+
+  <div class="say"><b>How to write it for marks</b>Name each stage, then spend two or three lines tying it to the case. A generic answer that never mentions the 25 to 40 professionals or corporate packages loses most of the marks.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Name your four stages.</summary><div class="dbody">Know the audience, choose approach and channels, build the base and permission (opt-in, mobile site), measure and adapt.</div></details>
+  <details><summary>Why is an opt-in list essential for SMS?</summary><div class="dbody">It complies with regulation and makes sure messages reach people who actually want them.</div></details>
+  <details><summary>Which mobile type uses GPS or beacons?</summary><div class="dbody">Location-based marketing. Proximity marketing is the Bluetooth version.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="mobile-marketing"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: email ============ -->
+<section class="topic" id="email-marketing" data-rank="1" data-title="Email marketing">
+  <p class="crumb">module-1 › channels › email-marketing</p>
+  <h2>Email marketing and its ten rules</h2>
+  <div class="chips"><span class="chip rank1">Rank 1</span><span class="chip">Asked 2023 (Q3 option)</span><span class="chip">25 min</span></div>
+
+  <div class="idea"><b>The idea</b>Email marketing sends commercial emails to existing and potential customers to build relationships, promote offers and bring people back. It is cheap, direct and measurable, but only works if people want your emails.</div>
+
+  <h3>Types</h3>
+  <div class="pills"><span>Promotional</span><span>Newsletter</span><span>Welcome</span><span>Cart abandonment</span><span>Customer re-engagement</span><span>Onboarding drip</span><span>Holiday or event</span><span>Ratings and reviews</span></div>
+  <p>Two worth explaining in a line: a <b>cart abandonment</b> email reminds shoppers who left items in the cart to return and check out; a <b>welcome</b> email is the first contact after sign-up and sets the tone of the relationship.</p>
+
+  <h3>How a campaign works (six steps)</h3>
+  <div class="flow">
+    <div><b>Define audience</b><span>Personas, demographics, interests</span></div>
+    <div><b>Set goals</b><span>Traffic, leads, sales; KPIs like open and click rates</span></div>
+    <div><b>Build the list</b><span>Opt-in forms, events, partnerships; incentivise</span></div>
+    <div><b>Pick campaign type</b><span>Promo, newsletter, win-back, drip</span></div>
+    <div><b>Make a schedule</b><span>Cadence per segment, automation</span></div>
+    <div><b>Measure</b><span>Link analytics and UTM tags; keep what works</span></div>
+  </div>
+  <p><b>Benefits:</b> high ROI, targeted reach, measurable results, cost-effective, direct line to customers.</p>
+
+  <h3>Ten rules for effective email marketing (2023 Q3)</h3>
+  <p>The question asks for ten <i>unique</i> rules. Use these, each with its reason:</p>
+  <ol>
+    <li><b>Get permission first.</b> Use opt-in sign-ups, never bought lists. Consent is both law and good targeting.</li>
+    <li><b>Segment your list.</b> Different groups get different messages, so relevance rises.</li>
+    <li><b>Personalise.</b> Name, past purchases and behaviour make an email feel written for one person.</li>
+    <li><b>Write a strong subject line and preview text.</b> Short, specific, honest. It decides whether the email is opened.</li>
+    <li><b>One clear call to action.</b> Each email should push one next step (buy, register, read).</li>
+    <li><b>Design for mobile.</b> Most emails are opened on phones, so use a responsive layout and tappable buttons.</li>
+    <li><b>Give value, not just offers.</b> Tips, news and exclusives keep people subscribed.</li>
+    <li><b>Choose timing and frequency carefully.</b> Be consistent without causing fatigue.</li>
+    <li><b>Include an unsubscribe link and sender identity.</b> It is legally required and protects deliverability.</li>
+    <li><b>Test and track.</b> A/B test subject lines and CTAs; watch open rate, CTR, conversions and unsubscribes.</li>
+  </ol>
+  <p>Spare rules if you need a swap: keep the list clean by removing bounced and inactive addresses; keep a recognisable sender name and brand style.</p>
+  <div class="src"><b>Not in your slides</b>Your slides cover types, working steps and benefits. The ten rules are standard best practice built on those, plus the email law points from the Law topic. Write them in your own words.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Which two rules are legal requirements?</summary><div class="dbody">Prior consent (opt-in) and an unsubscribe link with clear sender identity.</div></details>
+  <details><summary>What is a drip campaign?</summary><div class="dbody">A scheduled series of helpful emails, for example onboarding over the first 30, 60 or 90 days.</div></details>
+  <details><summary>What does an A/B test compare in email?</summary><div class="dbody">Two versions of one element (subject line, CTA, send time) on parts of the list, to see which performs better.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="email-marketing"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: strategy and measurement ============ -->
+<section class="topic" id="strategy-measurement" data-rank="2" data-title="Strategy, measurement and ROI">
+  <p class="crumb">module-1 › strategy › measurement-roi</p>
+  <h2>Strategy, measurement and ROI formulas</h2>
+  <div class="chips"><span class="chip rank2">Rank 2</span><span class="chip">Syllabus 1.1, not asked yet</span><span class="chip">35 min</span></div>
+
+  <div class="idea"><b>The idea</b>A strategy says what you want and how you will get it. Measurement tells you if it worked. The formulas are the language of "worked", so they are the likeliest numerical question.</div>
+
+  <h3>Building a digital marketing strategy</h3>
+  <div class="flow">
+    <div><b>Goals</b><span>SMART: specific, measurable, attainable, relevant, timely</span></div>
+    <div><b>Buyer personas</b><span>Fictional customers built from real data</span></div>
+    <div><b>Audit assets</b><span>Rank existing content and channels</span></div>
+    <div><b>Plan resources</b><span>Budget, people, tech, deadlines</span></div>
+    <div><b>Distribute</b><span>Owned, earned and paid channels</span></div>
+    <div><b>Pick KPIs</b><span>Conversion rate, cost per lead, CTR, CLV</span></div>
+  </div>
+  <p>Goal vs strategy vs objective: the goal is the outcome ("raise awareness of our widgets"), the strategy is how ("content marketing across the funnel"), the objective is the measurable check ("25% more whitepaper downloads each quarter").</p>
+  <p><b>Owned</b> = your website, blog, email, social pages. <b>Earned</b> = what others share or write about you. <b>Paid</b> = PPC and influencers.</p>
+  <div class="pills"><span>Inbound</span><span>Content marketing</span><span>ABM</span><span>SEO</span><span>Social media</span><span>Email</span><span>PPC</span><span>Video</span><span>Events</span><span>Chatbots and live chat</span><span>Earned media</span></div>
+  <p>The eleven strategies your notes list. Know the names; explain two or three.</p>
+  <p><b>Planning, then monitoring.</b> Plan: objectives, audience, channels, messaging, content, budget, timeline, tracking, team roles, launch. Monitor: watch real-time metrics, analyse data, assess ROI, read engagement and feedback, A/B test, adjust elements, reallocate budget, report, improve, adapt to outside changes.</p>
+
+  <h3>KPIs by area</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Area</th><th>Examples</th></tr></thead>
+    <tbody>
+      <tr><td>Website</td><td>Traffic, page views, bounce rate, average session duration</td></tr>
+      <tr><td>SEO</td><td>Organic traffic, keyword ranking, backlinks</td></tr>
+      <tr><td>Social media</td><td>Likes, shares, comments, followers, reach</td></tr>
+      <tr><td>Email</td><td>Open rate, CTR, unsubscribe rate</td></tr>
+      <tr><td>PPC</td><td>CPC, conversion rate, CPA</td></tr>
+      <tr><td>E-commerce</td><td>Sales, revenue, average order value</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Formulas with worked examples</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Metric</th><th>Formula</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>Bounce rate</td><td>Single-page visits ÷ total visits × 100</td><td>300 of 1,000 visits leave after one page: 30%</td></tr>
+      <tr><td>CTR</td><td>Clicks ÷ impressions × 100</td><td>500 ÷ 10,000 × 100 = 5%</td></tr>
+      <tr><td>Conversion rate</td><td>Conversions ÷ visitors × 100</td><td>40 ÷ 800 × 100 = 5%</td></tr>
+      <tr><td>CAC (customer acquisition cost)</td><td>Total marketing cost ÷ new customers</td><td>₹50,000 ÷ 100 = ₹500</td></tr>
+      <tr><td>CLV (customer lifetime value)</td><td>Average purchase value × purchase frequency × customer lifespan</td><td>₹500 × 4 a year × 3 years = ₹6,000</td></tr>
+      <tr><td>ROAS (return on ad spend)</td><td>Revenue from ads ÷ advertising cost</td><td>₹50,000 ÷ ₹10,000 = 5, so every ₹1 brought ₹5</td></tr>
+      <tr><td>ROI</td><td>(Revenue − Cost) ÷ Cost × 100</td><td>(80,000 − 20,000) ÷ 20,000 × 100 = 300%</td></tr>
+    </tbody>
+  </table></div>
+  <div class="trap"><b>Watch out</b>ROAS is a ratio of revenue to ad spend. ROI uses profit after cost and is a percentage. A campaign can have ROAS 2 and still lose money once other costs are counted.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Cost ₹30,000, revenue ₹90,000. ROI and ROAS?</summary><div class="dbody">ROI = (90,000 − 30,000) ÷ 30,000 × 100 = 200%. ROAS = 90,000 ÷ 30,000 = 3.</div></details>
+  <details><summary>Spell out SMART.</summary><div class="dbody">Specific, measurable, attainable, relevant, timely.</div></details>
+  <details><summary>Owned vs earned vs paid, with one example each?</summary><div class="dbody">Owned: your blog. Earned: a news site writes about you. Paid: an influencer sponsorship or PPC ad.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="strategy-measurement"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: adwords vs adsense ============ -->
+<section class="topic" id="adwords-adsense" data-rank="2" data-title="AdWords vs AdSense, video">
+  <p class="crumb">module-1 › channels › adwords-adsense</p>
+  <h2>AdWords vs AdSense, video marketing vs videocast</h2>
+  <div class="chips"><span class="chip rank2">Rank 2</span><span class="chip">Not asked yet</span><span class="chip">15 min</span></div>
+
+  <div class="idea"><b>The idea</b>Same ad ecosystem, opposite sides of the table. Advertisers pay through AdWords. Publishers get paid through AdSense.</div>
+  <div class="tw"><table>
+    <thead><tr><th></th><th>Google AdWords (Google Ads)</th><th>Google AdSense</th></tr></thead>
+    <tbody>
+      <tr><td>For whom</td><td>Advertisers</td><td>Publishers (website owners, bloggers, YouTube creators)</td></tr>
+      <tr><td>Purpose</td><td>Media buying channel: promote products and services</td><td>Advertising sales channel: monetise your content</td></tr>
+      <tr><td>Where ads appear</td><td>Google search result pages and the Google network</td><td>On the publisher's web pages</td></tr>
+      <tr><td>Money flow</td><td>Advertiser sets what they will pay per click and pays Google when clicked</td><td>Google pays the publisher a share when a visitor clicks</td></tr>
+      <tr><td>Matching</td><td>Ads shown for chosen keywords and targeting</td><td>Ads matched automatically to site content and audience</td></tr>
+      <tr><td>Launched</td><td>23 October 2000</td><td>18 June 2003</td></tr>
+    </tbody>
+  </table></div>
+  <p>Google Ads campaign types: Search, Display, Video, Shopping, App. Key terms: Search and Display networks, quality score, targeting by demographics, interests, location and keywords. AdSense types: AdSense for Content, AdSense for Search, AdSense for YouTube.</p>
+
+  <h3>Video marketing vs videocast</h3>
+  <div class="tw"><table>
+    <thead><tr><th></th><th>Video marketing</th><th>Videocast</th></tr></thead>
+    <tbody>
+      <tr><td>What</td><td>Broad strategy: using videos to promote a brand (demos, testimonials, explainers, live streams)</td><td>Creating and distributing video content, often live or as a video podcast</td></tr>
+      <tr><td>Goal</td><td>Awareness, leads, sales</td><td>Build an audience and community, inform or entertain</td></tr>
+      <tr><td>Tools</td><td>Adobe Express, Filmora, Vimeo, Loom; AI tools like InVideo</td><td>YouTube Live, Twitch</td></tr>
+    </tbody>
+  </table></div>
+  <p>Advantages of video marketing: boosts engagement, helps SEO, builds trust, influences purchases. Drawbacks: high production cost, finding talent, constant optimisation.</p>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>One-line difference between AdWords and AdSense?</summary><div class="dbody">AdWords is where advertisers pay to show ads; AdSense is how publishers earn from showing them.</div></details>
+  <details><summary>Who pays whom in each?</summary><div class="dbody">AdWords: advertiser pays Google. AdSense: Google pays the publisher a share.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="adwords-adsense"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: law ============ -->
+<section class="topic" id="law" data-rank="2" data-title="Law in digital marketing">
+  <p class="crumb">module-1 › law-in-dm</p>
+  <h2>Law in digital marketing</h2>
+  <div class="chips"><span class="chip rank2">Rank 2</span><span class="chip">Syllabus 1.3, not asked yet</span><span class="chip">15 min</span></div>
+
+  <div class="idea"><b>The idea</b>Marketing runs on trust, and these laws protect the customer's data, wallet and attention. Compliance builds trust and avoids penalties. Each area boils down to: get consent, tell the truth, credit others, be transparent.</div>
+  <div class="tw"><table>
+    <thead><tr><th>Area</th><th>What it covers</th><th>What a marketer must do</th></tr></thead>
+    <tbody>
+      <tr><td>Data privacy</td><td>GDPR (consent for collecting and processing data), CCPA (consumer rights), national laws</td><td>Explicit consent, clear privacy policy, easy way to opt out</td></tr>
+      <tr><td>Advertising standards</td><td>FTC truth-in-advertising, ASA guidelines on claims, promotions, influencers</td><td>Label sponsored posts, no false claims, genuine testimonials</td></tr>
+      <tr><td>Intellectual property</td><td>Using content without permission leads to penalties</td><td>Licensed or royalty-free assets, respect trademarks and copyrights, credit creators</td></tr>
+      <tr><td>Email marketing</td><td>Rules on unsolicited email</td><td>Prior consent, unsubscribe link, identify the sender</td></tr>
+      <tr><td>E-commerce and consumer protection</td><td>Consumer-rights laws</td><td>Clear pricing and terms, honour return and refund rules, avoid dark patterns</td></tr>
+      <tr><td>Social media and influencers</td><td>Paid relationships must be visible</td><td>Disclose, monitor content, keep records of paid partnerships</td></tr>
+      <tr><td>Cookies</td><td>Tracking behaviour must follow privacy laws</td><td>Cookie banner, customisable preferences, cookie policy</td></tr>
+    </tbody>
+  </table></div>
+  <div class="hook">Memory sentence for the seven areas in order: "Dan Always Insists Everyone Eats Sweet Cookies." Data, Ads, IP, Email, E-commerce, Social, Cookies.</div>
+
+  <h3 class="chk-h">Check yourself</h3>
+  <details><summary>Which two laws overlap with email marketing rules?</summary><div class="dbody">Data privacy (consent) and the email law itself (unsubscribe link, sender identity).</div></details>
+  <details><summary>What is a dark pattern?</summary><div class="dbody">A design trick that pushes users into choices they would not otherwise make, such as hidden fees or a hard-to-find cancel button.</div></details>
+
+  <label class="done"><input type="checkbox" data-done="law"> I can answer this from memory</label>
+</section>
+
+<!-- ============ TOPIC: skim ============ -->
+<section class="topic" id="skim" data-rank="3" data-title="Skim: evolution, channels">
+  <p class="crumb">module-1 › overview</p>
+  <h2>Skim: evolution, importance and the channel list</h2>
+  <div class="chips"><span class="chip">Page 2</span><span class="chip">10 min, read once</span></div>
+
+  <h3>Meaning</h3>
+  <p>Digital marketing uses digital channels, platforms and technologies to promote products, services or brands to a target audience, to create awareness, generate leads, drive sales and build relationships. Google's definition: an umbrella term for all online marketing efforts (search, social, email, websites). Forrester's angle: using digital technology to analyse campaigns in real time.</p>
+
+  <h3>Evolution in one line each</h3>
+  <ul>
+    <li>1990s: internet, basic websites, email, banner ads.</li>
+    <li>Late 1990s to early 2000s: SEO and PPC; Google AdWords launched in 2000.</li>
+    <li>Mid-2000s on: social media; user-generated content.</li>
+    <li>2010s on: mobile marketing, content and inbound marketing, big data and analytics, video and live streaming, AI and chatbots, voice search, AR and VR, ephemeral content and influencer marketing.</li>
+  </ul>
+
+  <h3>Why it matters</h3>
+  <div class="pills"><span>Global reach</span><span>Cost-effective</span><span>Measurable results</span><span>Targeted advertising</span><span>Customer interaction</span><span>Flexibility</span><span>Brand building</span><span>Personalisation</span><span>Mobile access</span><span>Competitive advantage</span></div>
+
+  <h3>The eighteen channels</h3>
+  <div class="pills"><span>SEO</span><span>SEM and PPC</span><span>Content</span><span>Social media</span><span>Email</span><span>Affiliate</span><span>Influencer</span><span>Online advertising</span><span>Mobile</span><span>Video</span><span>Podcasting</span><span>Online PR</span><span>Chatbots and messaging</span><span>AR and VR</span><span>Voice search</span><span>Webinars and virtual events</span><span>Ephemeral content</span><span>Review sites</span></div>
+
+  <label class="done"><input type="checkbox" data-done="skim"> I have skimmed this</label>
+</section>
+
+<!-- ============ DRILLS ============ -->
+<section class="block" id="drills">
+  <h2>Past-paper drills</h2>
+  <p>Writing is a skill separate from knowing. For each question: set a timer, write on paper from memory, then open the checklist and mark yourself.</p>
+
+  <details class="try"><summary>2022 Q1A (5 marks): differentiate digital and traditional marketing, two columns, any five differences. Time: 7 min</summary><div class="dbody">
+    <p><b>A full-marks answer has:</b></p>
+    <ul><li>A drawn table with a criterion for each row.</li><li>Five rows, for example reach, cost, targeting, interaction, measurement.</li><li>Each cell is specific, with an example in at least two.</li><li>A one-line conclusion about blending both.</li></ul>
+    <p>Check against: <a href="#digital-vs-traditional">Digital vs traditional</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2022 Q1B (5 marks): define CPA, CPC, CTR and conversion rate with respect to PPC. Time: 7 min</summary><div class="dbody">
+    <ul><li>Four definitions in plain words.</li><li>The formula for each, with the right denominator (CTR: impressions; CPC: clicks; conversion rate: clicks; CPA: conversions).</li><li>One shared example, for instance ₹5,000 spent, 10,000 impressions, 500 clicks, 25 conversions: CTR 5%, CPC ₹10, conversion rate 5%, CPA ₹200.</li></ul>
+    <p>Check against: <a href="#ppc">PPC</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2023 Q2A (5 marks if you pick two of three): advantages of digital over traditional marketing. Time: 8 min</summary><div class="dbody">
+    <ul><li>Six to eight advantages, each with one reason.</li><li>Every point phrased as a comparison with traditional marketing.</li><li>One example (a small brand reaching a national audience).</li></ul>
+    <p>Check against: <a href="#digital-vs-traditional">Digital vs traditional</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2023 Q3 option (10 marks): ten important, unique rules for effective email marketing. Time: 20 min</summary><div class="dbody">
+    <ul><li>Exactly ten rules, no repeats in disguise.</li><li>Each has a bold name and a one-line reason.</li><li>At least two legal points (consent, unsubscribe and sender identity).</li><li>Short intro line defining email marketing.</li></ul>
+    <p>Check against: <a href="#email-marketing">Email marketing</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2025 Q1 (10 marks): explain different online marketing techniques for capturing customers in detail. Time: 22 min</summary><div class="dbody">
+    <ul><li>Intro defining online marketing, with the funnel idea.</li><li>Five or six techniques: Web 2.0 (social media, blogs, reviews), video and vlogs, webcasts and webinars, podcasts, mobile.</li><li>For each: what it is, how it captures a customer, one example.</li><li>A small funnel diagram and a one-line conclusion.</li></ul>
+    <p>Check against: <a href="#online-techniques">Capturing customers online</a>.</p>
+  </div></details>
+
+  <details class="try"><summary>2025 Q2 (10 marks): four stages of mobile marketing for a 24-hour gym in Manhattan. Time: 20 min</summary><div class="dbody">
+    <ul><li>Four named stages.</li><li>Each stage tied to the case: professionals aged 25 to 40, residents and business visitors, corporate packages.</li><li>At least one location-based tactic, one opt-in tactic, and one metric.</li></ul>
+    <p>Check against: <a href="#mobile-marketing">Mobile marketing</a>.</p>
+  </div></details>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section class="block" id="quizsec">
+  <h2>Quick quiz</h2>
+  <p>Fourteen questions. Answer first, then read the explanation, especially for the ones you miss.</p>
+  <div class="score" id="score" aria-live="polite"></div>
+  <div id="quiz"></div>
+  <button class="btn" id="quizReset" type="button">Restart quiz</button>
+</section>
+
+<!-- ============ CHEAT SHEET ============ -->
+<section class="block" id="sheet">
+  <h2>Last-hour cheat sheet</h2>
+  <p><button class="btn" id="printSheet" type="button">Print or save as PDF</button></p>
+  <div class="sheet">
+    <div class="cols">
+      <div>
+        <h3>Formulas</h3>
+        <table>
+          <tr><td>CTR</td><td>Clicks ÷ Impressions × 100</td></tr>
+          <tr><td>CPC</td><td>Cost ÷ Clicks</td></tr>
+          <tr><td>Conversion rate</td><td>Conversions ÷ Clicks (or Visitors) × 100</td></tr>
+          <tr><td>CPA</td><td>Cost ÷ Conversions</td></tr>
+          <tr><td>Bounce rate</td><td>Single-page visits ÷ Total visits × 100</td></tr>
+          <tr><td>CAC</td><td>Marketing cost ÷ New customers</td></tr>
+          <tr><td>CLV</td><td>Avg purchase × Frequency × Lifespan</td></tr>
+          <tr><td>ROAS</td><td>Ad revenue ÷ Ad cost</td></tr>
+          <tr><td>ROI</td><td>(Revenue − Cost) ÷ Cost × 100</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3>Frameworks</h3>
+        <p><b>PPC:</b> Goals, Setup, Manage, Analyze (loop).</p>
+        <p><b>Mobile (four stages):</b> Know audience, choose channels, build base and opt-in, measure and adapt.</p>
+        <p><b>Online techniques funnel:</b> Reach, engage, convert, retain.</p>
+        <p><b>Strategy:</b> Goals (SMART), personas, audit, resources, distribute (owned, earned, paid), KPIs.</p>
+        <p><b>Quality Score:</b> expected CTR, ad relevance, landing page.</p>
+      </div>
+      <div>
+        <h3>Memory hooks</h3>
+        <p><b>Digital wins:</b> Great Cats Make Terrific Interactive Friends (Global, Cost, Measurable, Targeted, Interactive, Flexible).</p>
+        <p><b>Law:</b> Dan Always Insists Everyone Eats Sweet Cookies (Data, Ads, IP, Email, E-commerce, Social, Cookies).</p>
+        <p><b>Ten email rules:</b> permission, segment, personalise, subject line, one CTA, mobile, value, timing, unsubscribe and identity, test and track.</p>
+      </div>
+      <div>
+        <h3>One-liners</h3>
+        <p><b>AdWords:</b> advertisers pay Google. <b>AdSense:</b> publishers earn from Google.</p>
+        <p><b>Webcast:</b> one-way broadcast. <b>Webinar:</b> two-way, captures leads.</p>
+        <p><b>Video marketing:</b> strategy to promote. <b>Videocast:</b> broadcasting video, often live.</p>
+        <p><b>Owned, earned, paid:</b> your site, others write about you, you pay.</p>
+      </div>
+    </div>
+  </div>
+  <a class="nextmod" href="module-2-seo.html"><b>Next: module 2, search engine optimization</b>The larger share of every past paper. If you have not done its Rank 1 topics yet, start there.</a>
+</section>
+
+<script>
+window.MODULE_ID = 'm1';
+window.QUIZ = [
+  { q: 'Which metric divides clicks by impressions?', o: ['CPC', 'CTR', 'Conversion rate', 'CPA'], a: 1, why: 'CTR is clicks divided by impressions, times 100. It shows how many viewers of the ad clicked it.' },
+  { q: 'An advertiser spends ₹6,000 and gets 300 clicks. What is the CPC?', o: ['₹5', '₹20', '₹50', '₹200'], a: 1, why: 'CPC is cost divided by clicks: 6,000 ÷ 300 = ₹20.' },
+  { q: '40 conversions come from 800 clicks. What is the conversion rate?', o: ['2%', '5%', '20%', '50%'], a: 1, why: '40 ÷ 800 × 100 = 5%.' },
+  { q: 'Which is the correct ROAS for ₹12,000 ad spend that produced ₹60,000 revenue?', o: ['2', '4', '5', '500'], a: 2, why: 'ROAS is revenue divided by ad cost: 60,000 ÷ 12,000 = 5.' },
+  { q: 'Marketing cost ₹20,000 and revenue ₹80,000. What is the ROI?', o: ['75%', '200%', '300%', '400%'], a: 2, why: '(80,000 − 20,000) ÷ 20,000 × 100 = 300%.' },
+  { q: 'In the four PPC stages, adding negative keywords belongs to which stage?', o: ['Goals', 'Setup', 'Manage', 'Analyze'], a: 2, why: 'Manage covers ongoing keyword optimisation, bid management and negative keywords.' },
+  { q: 'Who earns money from Google AdSense?', o: ['Advertisers', 'Publishers who display the ads', 'Google users', 'Search engines only'], a: 1, why: 'AdSense lets publishers monetise their pages. Advertisers use AdWords (Google Ads).' },
+  { q: 'Prior consent, an unsubscribe link and a clearly identified sender are rules from which area?', o: ['Cookies law', 'Intellectual property', 'Email marketing law', 'Influencer law'], a: 2, why: 'Those three are the core of email marketing rules.' },
+  { q: 'Which of these is NOT an advantage of digital over traditional marketing?', o: ['Real-time measurement', 'Precise targeting', 'One-way communication', 'Lower entry cost'], a: 2, why: 'Digital marketing is two-way and interactive. One-way communication is the traditional pattern.' },
+  { q: 'Geo-targeting a customer when they are near a store is part of which mobile marketing type?', o: ['In-game advertising', 'Location-based marketing', 'Voice search optimisation', 'Mobile wallet marketing'], a: 1, why: 'Location-based marketing uses GPS or beacons to deliver offers when users are near a place.' },
+  { q: 'Which email reminds shoppers who left items in their basket?', o: ['Welcome email', 'Newsletter', 'Cart abandonment email', 'Holiday email'], a: 2, why: 'Cart abandonment emails recover lost sales by prompting customers to complete checkout.' },
+  { q: 'Bounce rate is calculated as…', o: ['Total visits ÷ pages × 100', 'Single-page visits ÷ total visits × 100', 'Conversions ÷ clicks × 100', 'Clicks ÷ impressions × 100'], a: 1, why: 'Bounce rate is the share of visits that leave after viewing only one page.' },
+  { q: 'Which is the best description of a webinar compared with a webcast?', o: ['A webinar is one-way broadcast', 'A webinar is interactive, with Q&A and polls', 'A webinar is only pre-recorded', 'There is no difference'], a: 1, why: 'Webinars are interactive and good for capturing leads; webcasts are mainly one-way broadcasts to a large audience.' },
+  { q: 'Which three factors make up Quality Score?', o: ['Bid, budget, location', 'Expected CTR, ad relevance, landing page quality', 'Impressions, clicks, conversions', 'Keywords, device, language'], a: 1, why: 'Quality Score reflects expected CTR, ad relevance and landing page quality.' }
+];
+</script>
+<script>
+(function () {
+  var ids = ['imp', 'clk', 'cost', 'conv', 'rev'];
+  function g(id) { return parseFloat(document.getElementById(id).value) || 0; }
+  function f(n, d) { return isFinite(n) ? n.toLocaleString('en-IN', { maximumFractionDigits: d === undefined ? 2 : d }) : 'n/a'; }
+  function set(id, t) { document.getElementById(id).textContent = t; }
+  function calc() {
+    var imp = g('imp'), clk = g('clk'), cost = g('cost'), conv = g('conv'), rev = g('rev');
+    set('o-ctr', imp ? f(clk / imp * 100) + '%' : 'n/a');
+    set('o-cpc', clk ? '₹' + f(cost / clk) : 'n/a');
+    set('o-cr', clk ? f(conv / clk * 100) + '%' : 'n/a');
+    set('o-cpa', conv ? '₹' + f(cost / conv) : 'n/a');
+    set('o-roas', cost ? f(rev / cost) : 'n/a');
+    set('o-roi', cost ? f((rev - cost) / cost * 100) + '%' : 'n/a');
+  }
+  ids.forEach(function (id) { document.getElementById(id).addEventListener('input', calc); });
+  calc();
+})();
+</script>
+
+</main>
+</div>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var MID = window.MODULE_ID || 'm';
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+
+  /* theme */
+  var root = document.documentElement;
+  var savedTheme = store.get('dm-theme');
+  if (savedTheme) { root.setAttribute('data-theme', savedTheme); }
+  var themeBtn = $('#themeBtn');
+  function isDark() {
+    var t = root.getAttribute('data-theme');
+    if (t) { return t === 'dark'; }
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function syncTheme() { if (themeBtn) { themeBtn.textContent = isDark() ? 'Light mode' : 'Dark mode'; } }
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function () {
+      var next = isDark() ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      store.set('dm-theme', next);
+      syncTheme();
+    });
+  }
+  syncTheme();
+
+  /* sidebar drawer on small screens */
+  var side = $('#side');
+  var menuBtn = $('#menuBtn');
+  if (menuBtn && side) { menuBtn.addEventListener('click', function () { side.classList.toggle('open'); }); }
+  if (side) {
+    side.addEventListener('click', function (e) {
+      var t = e.target;
+      while (t && t !== side) { if (t.tagName === 'A') { side.classList.remove('open'); break; } t = t.parentNode; }
+    });
+  }
+
+  /* build topic list */
+  var toc = $('#toc');
+  $$('section.topic').forEach(function (sec) {
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = '#' + sec.id;
+    a.setAttribute('data-for', sec.id);
+    var dot = document.createElement('span'); dot.className = 'dot r' + sec.getAttribute('data-rank');
+    var lbl = document.createElement('span'); lbl.className = 'lbl'; lbl.textContent = sec.getAttribute('data-title');
+    var tick = document.createElement('span'); tick.className = 'tick'; tick.setAttribute('aria-hidden', 'true');
+    a.appendChild(dot); a.appendChild(lbl); a.appendChild(tick);
+    li.appendChild(a); toc.appendChild(li);
+  });
+
+  /* progress, saved in this browser only */
+  var KEY = 'dm-' + MID + '-done';
+  var done = {};
+  try { done = JSON.parse(store.get(KEY) || '{}') || {}; } catch (e) { done = {}; }
+  var boxes = $$('input[data-done]');
+  function refresh() {
+    var n = 0;
+    boxes.forEach(function (b) {
+      var id = b.getAttribute('data-done');
+      b.checked = !!done[id];
+      if (done[id]) { n++; }
+      var link = $('a[data-for="' + id + '"]');
+      if (link) { if (done[id]) { link.classList.add('is-done'); } else { link.classList.remove('is-done'); } }
+    });
+    var tot = boxes.length;
+    var pt = $('#progTxt'); if (pt) { pt.textContent = n + ' of ' + tot + ' topics'; }
+    var bf = $('#barFill'); if (bf) { bf.style.width = (tot ? Math.round(n * 100 / tot) : 0) + '%'; }
+  }
+  boxes.forEach(function (b) {
+    b.addEventListener('change', function () {
+      var id = b.getAttribute('data-done');
+      if (b.checked) { done[id] = 1; } else { delete done[id]; }
+      store.set(KEY, JSON.stringify(done));
+      refresh();
+    });
+  });
+  refresh();
+
+  /* highlight current section in the list */
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          $$('#side a').forEach(function (a) { a.classList.remove('cur'); });
+          var l = $('#side a[href="#' + en.target.id + '"]');
+          if (l) { l.classList.add('cur'); }
+        }
+      });
+    }, { rootMargin: '-15% 0px -75% 0px' });
+    $$('section.topic, section.block').forEach(function (s) { if (s.id) { io.observe(s); } });
+  }
+
+  /* quiz */
+  var Q = window.QUIZ || [];
+  var qbox = $('#quiz');
+  var scoreEl = $('#score');
+  var score = 0, answered = 0;
+  function upd() {
+    if (scoreEl) { scoreEl.textContent = score + ' correct out of ' + answered + ' answered (' + Q.length + ' questions)'; }
+  }
+  function buildQuiz() {
+    if (!qbox) { return; }
+    qbox.innerHTML = '';
+    score = 0; answered = 0;
+    Q.forEach(function (item, i) {
+      var card = document.createElement('div'); card.className = 'qcard';
+      var p = document.createElement('p'); p.className = 'qq'; p.textContent = (i + 1) + '. ' + item.q;
+      var opts = document.createElement('div'); opts.className = 'opts';
+      var why = document.createElement('p'); why.className = 'why'; why.hidden = true;
+      item.o.forEach(function (text, j) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'opt'; b.textContent = text;
+        b.addEventListener('click', function () {
+          if (card.getAttribute('data-answered')) { return; }
+          card.setAttribute('data-answered', '1');
+          answered++;
+          $$('button', opts).forEach(function (x, k) {
+            x.disabled = true;
+            if (k === item.a) { x.classList.add('right'); }
+          });
+          if (j === item.a) { score++; } else { b.classList.add('wrong'); }
+          why.textContent = (j === item.a ? 'Correct. ' : 'Not quite. ') + item.why;
+          why.hidden = false;
+          upd();
+        });
+        opts.appendChild(b);
+      });
+      card.appendChild(p); card.appendChild(opts); card.appendChild(why);
+      qbox.appendChild(card);
+    });
+    upd();
+  }
+  var rq = $('#quizReset');
+  if (rq) { rq.addEventListener('click', buildQuiz); }
+  buildQuiz();
+
+  /* print only the cheat sheet */
+  var pb = $('#printSheet');
+  if (pb) {
+    pb.addEventListener('click', function () { document.body.classList.add('print-sheet'); window.print(); });
+    window.addEventListener('afterprint', function () { document.body.classList.remove('print-sheet'); });
+  }
+})();
+
+</script>
+</body>
+</html>

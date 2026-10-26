@@ -12,8 +12,15 @@ Instead of relying solely on static PDFs, these notes are designed to provide a 
 
 | Module | Topics | Study Notes |
 |:---:|---|:---:|
-| Module 1 | Testing Methodology | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/STQA_Module1_Testing_Methodology.html) |
-| Module 2 | Testing Techniques | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/STQA_Module2_Testing_Techniques.html) |
+| Module 1 | Testing Methodology | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/stqa/STQA_Module1_Testing_Methodology.html) |
+| Module 2 | Testing Techniques | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/stqa/STQA_Module2_Testing_Techniques.html) |
+
+### Digital Marketing (DiM)
+
+| Module | Topics | Study Notes |
+|:---:|---|:---:|
+| Module 1 | Digital Marketing | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim) |
+| Module 2 | Search Engine Optimization | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim) |
 
 ## 📋 University Syllabus
 
@@ -22,6 +29,10 @@ Reference images of the official syllabuses are provided below to help map the s
 ### Software Testing and Quality Assurance (STQA)
 
 ![STQA Syllabus](syllabus/STQA%2026-27%20Syllabus.png)
+
+### Digital Marketing (DiM)
+
+![DiM Syllabus](syllabus/DiM%2026-27%Syllabus.png)
 
 <!-- ### Software Testing and Quality Assurance (STQA)      clickable image instead of embedded
 
