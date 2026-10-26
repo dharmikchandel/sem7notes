@@ -19,8 +19,8 @@ Instead of relying solely on static PDFs, these notes are designed to provide a 
 
 | Module | Topics | Study Notes |
 |:---:|---|:---:|
-| Module 1 | Digital Marketing | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim) |
-| Module 2 | Search Engine Optimization | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim) |
+| Module 1 | Digital Marketing | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-1-digital-marketing.html) |
+| Module 2 | Search Engine Optimization | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-2-seo.html) |
 
 ## 📋 University Syllabus
 
