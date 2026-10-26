@@ -26,21 +26,21 @@ Instead of relying solely on static PDFs, these notes are designed to provide a 
 
 Reference images of the official syllabuses are provided below to help map the study notes to the university curriculum.
 
-### Software Testing and Quality Assurance (STQA)
+<!-- ### Software Testing and Quality Assurance (STQA)
 
 ![STQA Syllabus](syllabus/STQA%2026-27%20Syllabus.png)
 
 ### Digital Marketing (DiM)
 
-![DiM Syllabus](syllabus/DiM%2026-27%20Syllabus.png)
+![DiM Syllabus](syllabus/DiM%2026-27%20Syllabus.png) -->
 
 ### Software Testing and Quality Assurance (STQA)
 
-[![STQA Syllabus](syllabus/STQA%2026-27%20Syllabus.png)](syllabus/STQA%2026-27%20Syllabus.png)
+[STQA Syllabus](syllabus/STQA%2026-27%20Syllabus.png)
 
 ### Digital Marketing (DiM)
 
-[![DiM Syllabus](syllabus/DiM%2026-27%20Syllabus.png)](syllabus/DiM%2026-27%20Syllabus.png)
+[DiM Syllabus](syllabus/DiM%2026-27%20Syllabus.png)
 
 <!-- Add more subjects using the same format -->
 
