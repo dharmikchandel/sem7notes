@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>DevOps Module 2: Pillars of Effective DevOps</title>
+<style>
+:root{
+  color-scheme:dark;
+  --paper:#0a0f1d; --sheet:#111a2e; --ink:#e9eefb; --ink2:#a3aec9; --rule:#27324f; --tint:#19243f;
+  --blue:#8fb0ff; --blue-t:#1a2b58;
+  --crit:#ff8d9c; --crit-t:#3b1b26;
+  --major:#f2b865; --major-t:#3a2c14;
+  --minor:#a9b4c9; --minor-t:#232c44;
+  --pass:#62d69c; --pass-t:#13362a;
+  --answer:#151e35; --lines:#25325a; --margin:#a8545e;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Noto Serif",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 var(--sans)}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:3px}
+.shell{display:grid;grid-template-columns:304px minmax(0,1fr);min-height:100vh}
+
+/* ---------- outline sidebar ---------- */
+.outline{position:sticky;top:0;height:100vh;overflow:auto;padding:24px 20px 40px;background:var(--sheet);border-right:1px solid var(--rule);font-size:.92rem;line-height:1.35}
+.outline .brand{font:700 1.05rem/1.25 var(--serif);margin:0 0 4px}
+.outline .sub{color:var(--ink2);margin:0 0 14px}
+.mods{display:grid;gap:6px;margin:0 0 16px}
+.mods a{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;color:var(--ink);text-decoration:none;font-weight:600;font-size:.88rem}
+.mods a:hover{border-color:var(--blue)}
+.mods a.cur{background:var(--blue-t);border-color:var(--blue)}
+.mods a small{color:var(--ink2);font-weight:500;white-space:nowrap}
+.outline .bar{height:6px;background:var(--tint);border-radius:3px;overflow:hidden}
+.outline .bar i{display:block;height:100%;width:0;background:var(--pass);transition:width .25s}
+.outline .count{margin:6px 0 12px;color:var(--ink2);font-size:.85rem}
+.focus{display:flex;gap:8px;align-items:flex-start;padding:9px 10px;margin:0 0 6px;border:1px dashed var(--rule);border-radius:8px;font-size:.86rem;color:var(--ink2);cursor:pointer}
+.focus input{margin-top:3px;accent-color:var(--blue)}
+.outline h6{margin:18px 0 6px;font:650 .85rem/1.3 var(--sans);color:var(--ink2)}
+.outline ol{list-style:none;margin:0;padding:0}
+.outline li a{display:grid;grid-template-columns:24px 1fr;gap:6px;padding:7px 8px;margin:0 -8px;border-radius:6px;color:var(--ink);text-decoration:none}
+.outline li a:hover{background:var(--tint)}
+.outline li a.on{background:var(--blue-t);font-weight:600}
+.outline li a .n{color:var(--ink2);font-variant-numeric:tabular-nums}
+.outline li a.done .t::after{content:"  ✓";color:var(--pass);font-weight:700}
+.topbar{display:none}
+body.focusmode section.lesson[data-tier="2"],body.focusmode section.lesson[data-tier="3"]{display:none}
+body.focusmode .outline li.t2,body.focusmode .outline li.t3,body.focusmode .outline h6.h2,body.focusmode .outline h6.h3{display:none}
+
+/* ---------- main ---------- */
+main{padding:56px clamp(20px,5vw,72px) 140px}
+.col{max-width:720px}
+h1{font:700 clamp(2rem,5vw,3.1rem)/1.1 var(--serif);letter-spacing:-.015em;margin:0 0 10px}
+.lede{font-size:1.15rem;color:var(--ink2);margin:0 0 28px;max-width:48ch}
+h2{font:700 clamp(1.55rem,3.4vw,2rem)/1.2 var(--serif);letter-spacing:-.01em;margin:0}
+h3{font:650 1.15rem/1.35 var(--sans);margin:34px 0 6px}
+h4{font:650 1rem/1.4 var(--sans);margin:22px 0 4px}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:1.3em}
+li{margin:0 0 5px}
+li>ul,li>ol{margin-top:5px}
+code{font:.88em var(--mono);background:var(--tint);padding:1px 5px;border-radius:4px}
+pre{font:.88rem/1.5 var(--mono);background:var(--tint);padding:14px 16px;border-radius:8px;overflow:auto;margin:0 0 16px}
+pre code{background:none;padding:0}
+sup,sub{line-height:0}
+
+/* lesson head */
+.lesson{padding-top:56px;scroll-margin-top:8px;margin-top:56px;border-top:1px solid var(--rule)}
+.intro{margin-top:8px}
+.lh{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:start;margin-bottom:22px}
+.lh .no{font:700 2.6rem/1 var(--serif);color:var(--ink2);opacity:.55;min-width:1.3ch;text-align:right}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;font-size:.88rem;color:var(--ink2)}
+.sev{font-weight:700;padding:1px 9px;border-radius:99px;font-size:.84rem}
+.sev.crit{background:var(--crit-t);color:var(--crit)}
+.sev.major{background:var(--major-t);color:var(--major)}
+.sev.minor{background:var(--minor-t);color:var(--minor)}
+
+/* callouts */
+.note{margin:18px 0;padding:12px 16px 4px;border-left:4px solid var(--blue);background:var(--blue-t);border-radius:0 8px 8px 0}
+.note>b:first-child{display:block;margin-bottom:3px}
+.note.tip{border-color:var(--pass);background:var(--pass-t)}
+.note.warn{border-color:var(--crit);background:var(--crit-t)}
+.note.src{border-color:var(--major);background:var(--major-t)}
+.note.plain{border-color:var(--minor);background:var(--minor-t)}
+
+/* tables */
+.scroll{overflow-x:auto;margin:14px 0 20px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet)}
+table{border-collapse:collapse;width:100%;font-size:.93rem;line-height:1.45}
+th,td{padding:8px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+th{background:var(--tint);font-weight:650}
+tr:last-child td{border-bottom:0}
+td.c,th.c{text-align:center}
+.num{font-variant-numeric:tabular-nums}
+td.ok{color:var(--pass);font-weight:600}
+td.no{color:var(--crit);font-weight:600}
+.plan td:first-child,.plan th:first-child{width:1%;white-space:nowrap}
+
+/* diagrams made of boxes */
+.fig{margin:22px 0;padding:16px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px}
+.fig figcaption{margin-top:10px;font-size:.86rem;color:var(--ink2)}
+.flow{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.flow.mid{justify-content:center}
+.box{padding:7px 12px;border:1.5px solid var(--ink2);border-radius:8px;background:var(--sheet);font-size:.9rem;line-height:1.3;text-align:center;font-weight:600}
+.box small{display:block;font-weight:400;color:var(--ink2);font-size:.78rem}
+.box.hl{background:var(--blue-t);border-color:var(--blue)}
+.box.ok{background:var(--pass-t);border-color:var(--pass)}
+.box.bad{background:var(--crit-t);border-color:var(--crit)}
+.box.mid{background:var(--major-t);border-color:var(--major)}
+.box.dim{background:var(--tint);border-color:var(--rule);font-weight:500}
+.ar{color:var(--ink2);font-weight:700}
+.lane{font-size:.8rem;font-weight:700;color:var(--ink2);margin:10px 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.lane:first-child{margin-top:0}
+.stack{display:grid;gap:0;justify-items:stretch}
+.stack .box{border-radius:8px;text-align:left;padding:10px 14px}
+.stack .link{text-align:center;color:var(--ink2);font-size:.8rem;padding:3px 0;font-weight:600}
+.svc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.svc .box{font-size:.84rem}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cols2>div{border:1px solid var(--rule);border-radius:10px;background:var(--sheet);padding:12px 14px 4px}
+.cols2 h4{margin:0 0 6px}
+.cols2 ul{padding-left:1.1em;font-size:.95rem}
+
+/* problem + reveal */
+.prob{margin:18px 0 10px;padding:14px 18px 2px;background:var(--sheet);border:1px solid var(--rule);border-left:4px solid var(--blue);border-radius:0 8px 8px 0}
+.prob>b:first-child{display:block;margin-bottom:4px}
+details.try{margin:0 0 24px;border:1px dashed var(--ink2);border-radius:10px;background:transparent}
+details.try>summary{cursor:pointer;padding:11px 16px;font-weight:650;list-style:none;display:flex;align-items:center;gap:10px}
+details.try>summary::-webkit-details-marker{display:none}
+details.try>summary::before{content:"+";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#0a1020;font-weight:700;line-height:1;flex:none}
+details.try[open]>summary::before{content:"–"}
+details.try>.in{padding:2px 18px 6px;border-top:1px dashed var(--rule)}
+
+/* answer sheet (ruled paper) */
+details.sheet{margin:26px 0 30px}
+details.sheet>summary{cursor:pointer;list-style:none;padding:12px 16px;background:#22315f;color:var(--ink);border:1px solid #394b88;border-radius:8px;font-weight:650;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+details.sheet>summary::-webkit-details-marker{display:none}
+details.sheet>summary::before{content:"✎";color:var(--major)}
+details.sheet>summary small{font-weight:400;opacity:.8}
+details.sheet[open]>summary{border-radius:8px 8px 0 0}
+.sbody{--ln:28px;position:relative;padding:var(--ln) 22px 14px 66px;background-color:var(--answer);background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ln) - 1px),var(--lines) calc(var(--ln) - 1px),var(--lines) var(--ln));border:1px solid var(--rule);border-top:0;border-radius:0 0 8px 8px;font:16.5px/var(--ln) var(--serif)}
+.sbody::before{content:"";position:absolute;top:0;bottom:0;left:50px;width:2px;background:var(--margin)}
+.sbody h4{margin:0;font:700 16.5px/var(--ln) var(--serif)}
+.sbody p{margin:0 0 var(--ln);line-height:var(--ln)}
+.sbody ul,.sbody ol{margin:0 0 var(--ln);padding-left:1.25em}
+.sbody li{margin:0;line-height:var(--ln)}
+.sbody li>ul,.sbody li>ol{margin:0}
+.sbody code{line-height:1;font-size:.85em}
+.sbody .draw{color:var(--blue);font-style:italic}
+.sbody b{font-weight:700}
+.sbody table{font:15px/1.4 var(--sans);margin:0 0 var(--ln)}
+
+/* quiz */
+.quiz{margin:26px 0 0;padding-top:6px}
+.quiz>h3{margin-top:0}
+.mcq{margin:0 0 20px}
+.mcq .q{font-weight:600;margin:0 0 8px}
+.mcq .opts{display:grid;gap:6px}
+.mcq button{all:unset;box-sizing:border-box;cursor:pointer;display:block;padding:8px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet);font-size:.96rem;line-height:1.45}
+.mcq button:hover{border-color:var(--blue)}
+.mcq button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.mcq.done button{cursor:default}
+.mcq.done button:hover{border-color:var(--rule)}
+.mcq button.right{background:var(--pass-t);border-color:var(--pass)}
+.mcq button.wrong{background:var(--crit-t);border-color:var(--crit)}
+.mcq .why{margin:8px 0 0;font-size:.93rem;color:var(--ink2)}
+.score{margin:6px 0 0;font-size:.92rem;color:var(--ink2)}
+
+/* done button */
+.donebar{margin:34px 0 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.donebtn{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 16px;border-radius:8px;border:1px solid var(--blue);color:var(--blue);font-weight:650;font-size:.95rem}
+.donebtn:hover{background:var(--blue-t)}
+.donebtn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.donebtn[aria-pressed="true"]{background:var(--pass);border-color:var(--pass);color:#07130d}
+
+/* helpers */
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--rule);border-radius:10px;background:var(--sheet);overflow:hidden;margin:16px 0 22px}
+.grid3.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid3.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grid3>div{padding:14px 16px 6px;border-right:1px solid var(--rule)}
+.grid3>div:last-child{border-right:0}
+.grid3 h4{margin:0 0 6px}
+.grid3 ul{padding-left:1.1em;margin-bottom:8px;font-size:.95rem}
+.steps{counter-reset:s;list-style:none;padding:0;margin:14px 0 20px}
+.steps li{counter-increment:s;position:relative;padding:2px 0 12px 46px;margin:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:700 .9rem var(--sans)}
+.steps li::after{content:"";position:absolute;left:14px;top:32px;bottom:2px;width:2px;background:var(--rule)}
+.steps li:last-child::after{display:none}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:12px 0 18px}
+.kv dt{font-weight:650}.kv dd{margin:0}
+.pill{display:inline-block;padding:0 8px;border-radius:99px;background:var(--tint);font-size:.86rem;font-weight:600;white-space:nowrap}
+.ok{color:var(--pass)} .no{color:var(--crit)}
+.pager{display:flex;gap:12px;flex-wrap:wrap;margin:72px 0 0;padding-top:24px;border-top:1px solid var(--rule)}
+.pager a{flex:1 1 240px;padding:14px 16px;border:1px solid var(--rule);border-radius:10px;background:var(--sheet);color:var(--ink);text-decoration:none;font-weight:650}
+.pager a:hover{border-color:var(--blue)}
+.pager a small{display:block;color:var(--ink2);font-weight:500}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .shell{display:block}
+  .topbar{display:flex;position:sticky;top:0;z-index:20;align-items:center;gap:12px;padding:10px 16px;background:var(--sheet);border-bottom:1px solid var(--rule)}
+  .topbar button{all:unset;cursor:pointer;padding:6px 12px;border:1px solid var(--rule);border-radius:8px;font-weight:650;font-size:.92rem}
+  .topbar button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  .topbar span{font:700 .98rem var(--serif);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .outline{position:fixed;z-index:30;left:0;top:0;bottom:0;width:min(88vw,330px);height:auto;transform:translateX(-102%);transition:transform .2s;box-shadow:0 0 0 100vmax transparent}
+  body.menu .outline{transform:none;box-shadow:0 0 0 100vmax rgba(2,4,10,.6)}
+  main{padding:28px 16px 100px}
+  .lesson{padding-top:40px;scroll-margin-top:64px}
+  .grid3,.grid3.two,.grid3.four{grid-template-columns:1fr}
+  .grid3>div{border-right:0;border-bottom:1px solid var(--rule)}
+  .grid3>div:last-child{border-bottom:0}
+  .sbody{padding-left:50px;padding-right:14px}
+  .sbody::before{left:36px}
+  .lh .no{font-size:2rem}
+  .cols2,.svc{grid-template-columns:1fr}
+}
+@media (max-width:640px){.kv{grid-template-columns:1fr;gap:2px}.kv dt{margin-top:10px}.kv dd{margin-bottom:2px}}
+@media print{
+  .outline,.topbar,.donebar,.pager{display:none!important}
+  .shell{display:block} body{background:#fff;color:#000;font-size:12pt}
+  main{padding:0} .lesson{break-inside:auto}
+  .sbody{background-image:none;background-color:#fff;color:#000}
+}
+
+</style>
+</head>
+<body>
+<div class="topbar"><button type="button" id="menubtn" aria-label="Open the lesson outline">Outline</button><span>Module 2: Pillars of Effective DevOps</span></div>
+<div class="shell">
+<nav class="outline" id="outline" aria-label="Course outline"></nav>
+<main><div class="col">
+<h1>Module 2: Pillars of Effective DevOps</h1>
+<p class="lede">Collaboration, affinity, tools and scaling. Affinity alone has appeared in four of your five papers.</p>
+<section class="intro" id="plan">
+<h3>What your past papers actually ask</h3>
+<p>Question 2 of the paper has come from this module in every paper, and Question 3 in 2023 did too. When a question says "explain any two", each part is worth 5 marks. This table lists the Module 2 questions already set. The full ranked hit list for the whole course is in <a href="DevOps_Module1_Foundations.html#plan">Module 1</a>.</p>
+<div class="scroll"><table class="plan">
+<thead><tr><th>Paper</th><th>Module 2 questions asked</th></tr></thead>
+<tbody>
+<tr><td>Oct 2022</td><td>Q2: what is affinity, and explain the requirements for affinity in detail.</td></tr>
+<tr><td>Sep 2023</td><td>Q2 any one included: requirements for affinity. Q3: judge of Smart India Hackathon, explain the pillars of DevOps to pick 3 winners out of 20 teams, considering "some teams are smarter than others".</td></tr>
+<tr><td>Sep 2024</td><td>Q2 any two: measures to outcomes of affinity; terminologies related to infrastructure management; vampire and zombie projects.</td></tr>
+<tr><td>Sep 2025</td><td>Q2: define collaboration and mentorship, and how they help cultivate a growth mindset. Option: compare conflict resolution styles and say which is least effective in DevOps.</td></tr>
+<tr><td>Oct 2025 (re-exam)</td><td>Q2 any two: scaling for organizations; measuring affinity; types of build automation.</td></tr>
+</tbody></table></div>
+
+<h3>How the labels work</h3>
+<ul>
+<li><span class="sev crit">Critical</span> has already appeared as a question, or is half of an "any two" question. Learn these first.</li>
+<li><span class="sev major">Major</span> is in the syllabus and has not been asked yet. Read once, quickly.</li>
+<li><span class="sev minor">Minor</span> is filler. Skim.</li>
+</ul>
+
+<h3>How to study each lesson</h3>
+<ol>
+<li>Read the lesson once.</li>
+<li>Close the answer sheet and try to write the answer from memory on paper, then open the sheet and fix the gaps.</li>
+<li>Take the short quiz, then press "Mark this lesson as done".</li>
+</ol>
+<div class="note tip"><b>Plan for about 3½ to 4 hours</b><p>Ten Critical lessons: collaboration, mindset, conflict, the three affinity lessons, automation, scaling, scaling for organizations and the pillars question. Affinity (lessons 5 to 7) is the single most valuable block. If you are short on time, tick "Critical-only mode" in the sidebar.</p></div>
+<div class="note src"><b>One judgement call to know about</b><p>The 2025 question "which conflict style is least effective in DevOps" has no single answer printed in your slides. Lesson 3 recommends one, explains why, and tells you how to protect yourself in the exam. Also, the word "pillars" is not defined in your slides. Lesson 14 explains how to answer it from your syllabus.</p></div>
+</section>
+
+<!-- ============ LESSON 1 ============ -->
+<section class="lesson" id="collab" data-tier="1">
+<header class="lh"><span class="no">1</span><div><h2>Collaboration, what makes teams smarter, and mentorship</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2025, Sep 2023 (smarter teams)</span><span>About 20 min</span><span>Syllabus 2.1</span></p></div></header>
+
+<p>This lesson gives you the definitions for the Sep 2025 question and the "smarter teams" idea for the Sep 2023 hackathon question. The second half of the 2025 question, how they build a growth mindset, is answered in lesson 2.</p>
+
+<h3>Collaboration</h3>
+<p>Collaboration is the <b>intentional process of building toward a shared outcome through the interactions, input and support of multiple people</b>. Examples:</p>
+<ul>
+<li>Asynchronous code review.</li>
+<li>Documentation and bug reports.</li>
+<li>Weekly progress demos.</li>
+<li>Pair programming.</li>
+<li>Regular status updates.</li>
+</ul>
+
+<h3>What makes teams "smarter"</h3>
+<p>From the New York Times article "Why Some Teams Are Smarter Than Others", three things:</p>
+<div class="flow"><span class="box hl">1. Communication<small>open, frequent exchange of ideas and context</small></span><span class="box hl">2. Equal participation<small>everyone gets similar time to contribute</small></span><span class="box hl">3. Theory of mind<small>knowing others hold a distinct perspective shaped by their context</small></span></div>
+<p>Teams that score high on these, and that talk about non-work topics too, are more creative, more productive and build higher trust and empathy.</p>
+
+<h3>Mentorship</h3>
+<div class="scroll"><table>
+<thead><tr><th>Direction</th><th>What it gives</th></tr></thead>
+<tbody>
+<tr><td><b>Senior to junior</b></td><td>Classic mentoring. Builds junior skills through patient teaching.</td></tr>
+<tr><td><b>Senior to senior</b></td><td>Deep knowledge sharing between peers.</td></tr>
+<tr><td><b>Junior to senior</b></td><td>Reinforces learning from everyone. A junior may know more than a senior on a given topic.</td></tr>
+<tr><td><b>Junior to junior</b></td><td>Peers learn together on fast-growing teams.</td></tr>
+</tbody></table></div>
+<p><b>Sponsors go further than mentors.</b> A mentor advises. A sponsor actively advocates for the protégé's promotion.</p>
+<p>Example: a senior pairs with a new hire on their first on-call shift, then later asks them to demo a tool the senior has not used.</p>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">Which is NOT one of the three traits of smarter teams?</p><div class="opts"><button type="button" data-k="a">Communication</button><button type="button" data-k="b">Equal participation</button><button type="button" data-k="c">A single strong leader</button><button type="button" data-k="d">Theory of mind</button></div><p class="why" hidden>The three are communication, equal participation and theory of mind.</p></div>
+<div class="mcq" data-a="b"><p class="q">A sponsor differs from a mentor because a sponsor:</p><div class="opts"><button type="button" data-k="a">Only gives advice</button><button type="button" data-k="b">Actively advocates for the protégé's promotion</button><button type="button" data-k="c">Pays for training</button><button type="button" data-k="d">Replaces the manager</button></div><p class="why" hidden>Sponsors go further than mentors.</p></div>
+<div class="mcq" data-a="d"><p class="q">"Theory of mind" means:</p><div class="opts"><button type="button" data-k="a">Believing your idea is best</button><button type="button" data-k="b">Reading minds</button><button type="button" data-k="c">A formal psychology exam</button><button type="button" data-k="d">Recognising that others hold a distinct perspective shaped by their own context</button></div><p class="why" hidden>It is about understanding others' viewpoints.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 2 ============ -->
+<section class="lesson" id="mindset" data-tier="1">
+<header class="lh"><span class="no">2</span><div><h2>Mindsets, learning organizations and the role of feedback</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2025 (growth mindset), Sep 2024 (structural errors)</span><span>About 25 min</span><span>Syllabus 2.1</span></p></div></header>
+
+<p>Mindsets are the personal beliefs we hold about ourselves and how we approach challenges. This lesson finishes the 2025 question, and the blameless culture here links back to the human-error question in Module 1.</p>
+
+<div class="cols2">
+<div><h4>Fixed mindset</h4>
+<ul><li>Talent is innate and unchangeable.</li><li>Avoids challenges to escape failure.</li><li>Compares self to peers to prove worth.</li></ul>
+<p><i>"I'm just not a math person."</i></p></div>
+<div><h4>Growth mindset</h4>
+<ul><li>Skills develop through effort and practice.</li><li>Treats failure as a learning opportunity.</li><li>Takes more risks and grows more.</li></ul>
+<p><i>"I haven't mastered this proof technique yet."</i></p></div>
+</div>
+
+<h3>Six steps to cultivate a growth mindset</h3>
+<ol class="steps">
+<li><b>Learn the fundamentals.</b> The core skills your role and team need, not just industry experience.</li>
+<li><b>Develop your niche.</b> Build knowledge in a gap area beyond your current responsibilities.</li>
+<li><b>Recognise strengths and progress.</b> Assess your own performance honestly, independent of outside validation.</li>
+<li><b>Deliberate, quality practice.</b> Keep challenging yourself so you do not coast as technology changes.</li>
+<li><b>Develop your working style.</b> Find which tools, techniques and habits work best for you.</li>
+<li><b>Enhance the team style.</b> Align personal preferences with team norms.</li>
+</ol>
+
+<h3>Mindsets and learning organizations</h3>
+<div class="cols2">
+<div><h4>Blameful culture</h4><ul><li>Hunts for who "caused" the failure, to remove them.</li><li>Views mistakes as proof of inadequacy.</li><li>The organization stagnates and avoids risk.</li></ul></div>
+<div><h4>Blameless culture</h4><ul><li>Assumes people and teams can improve.</li><li>Treats mistakes as learning opportunities.</li><li>Enables frequent feedback and communication.</li></ul></div>
+</div>
+
+<h3>The role of feedback</h3>
+<ul>
+<li><b>Praise effort, not traits.</b> "You're so smart" (fixed-mindset praise) discourages future challenges. "You worked so hard" (growth-mindset praise) encourages future effort.</li>
+<li><b>Frequency.</b> Annual reviews delay problem-solving. Shorter feedback cycles make adjustments smaller and easier.</li>
+<li><b>Ranking.</b> Stack ranking ("rank and yank") labels the top 20% most productive and the middle 70% adequate, and the bottom 10% risk being cut. It pits employees against each other. GE retired it after finding it hurt collaboration more than it helped performance.</li>
+</ul>
+
+<h3>How collaboration and mentorship build a growth mindset</h3>
+<div class="scroll"><table>
+<thead><tr><th>Practice</th><th>How it grows the mindset</th></tr></thead>
+<tbody>
+<tr><td><b>Collaboration</b></td><td>Code review, pairing and demos give constant feedback and make asking for help normal. Open communication and equal participation mean mistakes are discussed, not hidden.</td></tr>
+<tr><td><b>Mentorship</b></td><td>Mentors model learning from failure, give deliberate practice and honest feedback on effort. Junior to senior mentoring shows that anyone can teach, which breaks the idea that talent is fixed.</td></tr>
+<tr><td><b>Together</b></td><td>They create a blameless, learning organization where skills are seen as developable, which is the growth mindset.</td></tr>
+</tbody></table></div>
+<div class="note src"><b>Not in your slides</b><p>The slides define collaboration, mentorship and mindset separately. The table that joins them is the reasoning the question asks for, built from those definitions.</p></div>
+
+<details class="sheet"><summary>Answer sheet: define collaboration and mentorship, and how they cultivate a growth mindset <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Collaboration and mentorship in DevOps</h4>
+<p><b>Collaboration</b> is the intentional process of building toward a shared outcome through the interactions, input and support of multiple people. Examples: code review, pair programming, demos, documentation. Smarter teams have communication, equal participation and theory of mind.</p>
+<p><b>Mentorship</b> is passing on knowledge in any direction: senior to junior, senior to senior, junior to senior, junior to junior. Sponsors go further and advocate for promotion.</p>
+<p><b>Growth mindset:</b> belief that skills develop through effort; failure is learning. A fixed mindset believes talent is innate.</p>
+<p><b>How they help:</b></p>
+<ul>
+<li>Feedback from review and pairing makes learning continuous.</li>
+<li>Mentors model learning from mistakes and praise effort, not talent.</li>
+<li>Junior to senior mentoring shows anyone can teach.</li>
+<li>Both support a blameless culture, where mistakes are opportunities.</li>
+</ul>
+<p>Six steps: fundamentals, niche, recognise progress, deliberate practice, working style, team style.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="a"><p class="q">Which praise encourages a growth mindset?</p><div class="opts"><button type="button" data-k="a">"Good job, you worked so hard."</button><button type="button" data-k="b">"Good job, you're so smart."</button><button type="button" data-k="c">"You're a natural."</button><button type="button" data-k="d">"You beat everyone else."</button></div><p class="why" hidden>Praise effort and actions, not innate traits.</p></div>
+<div class="mcq" data-a="d"><p class="q">Stack ranking is criticised mainly because it:</p><div class="opts"><button type="button" data-k="a">Is too frequent</button><button type="button" data-k="b">Rewards teamwork</button><button type="button" data-k="c">Is too cheap</button><button type="button" data-k="d">Pits employees against each other</button></div><p class="why" hidden>GE dropped it because it hurt collaboration.</p></div>
+<div class="mcq" data-a="b"><p class="q">A blameless culture treats mistakes as:</p><div class="opts"><button type="button" data-k="a">Proof of inadequacy</button><button type="button" data-k="b">Learning opportunities</button><button type="button" data-k="c">Reasons to remove people</button><button type="button" data-k="d">Things to hide</button></div><p class="why" hidden>A blameful culture hunts for who caused the failure.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 3 ============ -->
+<section class="lesson" id="conflict" data-tier="1">
+<header class="lh"><span class="no">3</span><div><h2>Conflict resolution styles</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2025 (option)</span><span>About 20 min</span><span>Syllabus 2.1</span></p></div></header>
+
+<p>There are five styles. The question has two parts: compare them, then pick the one that is least effective in DevOps and defend it.</p>
+
+<div class="scroll"><table>
+<thead><tr><th>Style</th><th>What it is</th><th>Example</th><th>Fit with DevOps</th></tr></thead>
+<tbody>
+<tr><td><b>Competition</b></td><td>Pursue your own needs at others' expense. Win-lose. It ends the conflict only in the narrow sense that someone's needs win, decided by one side and not by mutual agreement.</td><td>Insisting on your library choice</td><td>Poor. Builds silos and rivalry.</td></tr>
+<tr><td><b>Accommodation</b></td><td>Give in to build goodwill.</td><td>Deferring on a naming convention</td><td>Fine for small things; your needs are lost if overused.</td></tr>
+<tr><td><b>Avoidance</b></td><td>Dodge the conflict. Breeds passive-aggression.</td><td>Skipping the retro where it would come up</td><td>Worst. Nothing is resolved or learned.</td></tr>
+<tr><td><b>Compromise</b></td><td>Everyone gives up a little for a fair deal.</td><td>Splitting the sprint across two priorities</td><td>Acceptable when time is short.</td></tr>
+<tr><td><b>Collaboration</b></td><td>Win-win. Builds mutual understanding.</td><td>Pairing to design an approach both teams need</td><td>Best. Matches shared goals and trust.</td></tr>
+</tbody></table></div>
+<p>Collaborative teams are more productive as a whole, and are viewed more favourably by their own members.</p>
+
+<h3>Which is least effective in DevOps?</h3>
+<p><b>Recommended answer: avoidance.</b></p>
+<ol>
+<li>It resolves nothing. The problem stays and grows.</li>
+<li>It breeds passive-aggression and hides issues, which destroys the transparency and trust DevOps depends on.</li>
+<li>DevOps relies on facing problems openly: retrospectives, blameless postmortems, feedback. Avoidance means skipping exactly those.</li>
+<li>Teams that avoid conflict also produce homogeneous thinking and less creativity.</li>
+</ol>
+<div class="note warn"><b>Protect yourself in the exam</b><p>Your slides never state which style is "least effective". Competition is a strong alternative: win-lose, against shared ownership, the same spirit as stack ranking. Pick one, defend it in four lines, and add one sentence naming the other as the close runner-up. The marks come from tying your choice to DevOps values.</p></div>
+
+<details class="sheet"><summary>Answer sheet: compare conflict resolution styles, and which is least effective in DevOps <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Conflict resolution styles</h4>
+<p class="draw">Draw the five-row table: style, meaning, example, fit.</p>
+<ul>
+<li><b>Competition:</b> own needs at others' expense; win-lose.</li>
+<li><b>Accommodation:</b> give in to build goodwill.</li>
+<li><b>Avoidance:</b> dodge the conflict; breeds passive-aggression.</li>
+<li><b>Compromise:</b> everyone gives up a little.</li>
+<li><b>Collaboration:</b> win-win; builds mutual understanding. The best fit for DevOps.</li>
+</ul>
+<p><b>Least effective: avoidance.</b></p>
+<ul>
+<li>It resolves nothing and the problem grows.</li>
+<li>It hides issues and damages trust and transparency.</li>
+<li>It blocks retrospectives, feedback and blameless learning.</li>
+</ul>
+<p>Competition is next worst because it is win-lose and builds silos.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="a"><p class="q">"Pairing to design an approach both teams need" is which style?</p><div class="opts"><button type="button" data-k="a">Collaboration</button><button type="button" data-k="b">Compromise</button><button type="button" data-k="c">Accommodation</button><button type="button" data-k="d">Avoidance</button></div><p class="why" hidden>Win-win and mutual understanding.</p></div>
+<div class="mcq" data-a="c"><p class="q">"Skipping the retro where the issue would come up" is:</p><div class="opts"><button type="button" data-k="a">Competition</button><button type="button" data-k="b">Compromise</button><button type="button" data-k="c">Avoidance</button><button type="button" data-k="d">Collaboration</button></div><p class="why" hidden>Avoidance dodges the conflict.</p></div>
+<div class="mcq" data-a="d"><p class="q">Compromise means:</p><div class="opts"><button type="button" data-k="a">One side wins</button><button type="button" data-k="b">Nobody speaks up</button><button type="button" data-k="c">Giving in completely</button><button type="button" data-k="d">Everyone gives up a little for a fair deal</button></div><p class="why" hidden>Splitting the sprint across two priorities is an example.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 4 ============ -->
+<section class="lesson" id="empathy" data-tier="2">
+<header class="lh"><span class="no">4</span><div><h2>Effective communication, empathy and trust</h2>
+<p class="meta"><span class="sev major">Major</span><span>Not asked yet</span><span>About 15 min</span><span>Syllabus 2.1</span></p></div></header>
+
+<h3>Effective communication: four purposes</h3>
+<dl class="kv">
+<dt>Increasing understanding</dt><dd>Build shared context, for example explain the "why" behind a decision.</dd>
+<dt>Asserting influence</dt><dd>Present ideas constructively, for example propose an alternative in a design review.</dd>
+<dt>Giving recognition</dt><dd>Acknowledge contributions, for example a shout-out in standup.</dd>
+<dt>Building community</dt><dd>Connect beyond work topics, for example a five-minute non-work check-in.</dd>
+</dl>
+
+<h3>Developing empathy: four skills</h3>
+<div class="grid3 four">
+<div><h4>Listening</h4><p>Truly hear others before responding.</p></div>
+<div><h4>Asking questions</h4><p>Clarify meaning and build understanding.</p></div>
+<div><h4>Imagining perspectives</h4><p>Picture how others feel and why.</p></div>
+<div><h4>Appreciating differences</h4><p>Value diverse working styles and backgrounds.</p></div>
+</div>
+
+<h3>Developing trust: four ways</h3>
+<dl class="kv">
+<dt>Swift trust</dt><dd>Assume trust early and verify over time. Example: give a new hire deploy access on day one.</dd>
+<dt>Self-disclosure</dt><dd>Share appropriately to build intimacy.</dd>
+<dt>Trust but verify</dt><dd>Share responsibility first, then confirm as you go, for example through code review.</dd>
+<dt>Perception of fairness</dt><dd>Transparent roles, pay and promotion criteria.</dd>
+</dl>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">Giving a new hire deploy access on day one and checking through code review shows:</p><div class="opts"><button type="button" data-k="a">Avoidance</button><button type="button" data-k="b">Swift trust plus trust but verify</button><button type="button" data-k="c">Stack ranking</button><button type="button" data-k="d">Competition</button></div><p class="why" hidden>Assume trust early, then verify.</p></div>
+<div class="mcq" data-a="a"><p class="q">A five-minute non-work check-in serves which purpose?</p><div class="opts"><button type="button" data-k="a">Building community</button><button type="button" data-k="b">Asserting influence</button><button type="button" data-k="c">Increasing understanding</button><button type="button" data-k="d">Giving recognition</button></div><p class="why" hidden>It connects people beyond work topics.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 5 ============ -->
+<section class="lesson" id="affinity" data-tier="1">
+<header class="lh"><span class="no">5</span><div><h2>Affinity: what it is, tie strength and benefits</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022 (what is affinity), and it is the base of 3 more questions</span><span>About 20 min</span><span>Syllabus 2.2</span></p></div></header>
+
+<p>Affinity has been tested in four of your five papers. Lessons 5, 6 and 7 are one block: what it is (this lesson), what it needs (lesson 6), and how to measure it (lesson 7). Read them in order.</p>
+
+<h3>Work has five familiar categories</h3>
+<div class="scroll"><table>
+<thead><tr><th>Category</th><th>Meaning</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><b>Reactionary</b></td><td>Responding to something</td><td>Replying to a Slack ping, emails, tickets</td></tr>
+<tr><td><b>Planning</b></td><td>Scheduling and prioritising other work</td><td>Sprint planning</td></tr>
+<tr><td><b>Procedural</b></td><td>Maintenance work</td><td>Follow-ups, expense reports</td></tr>
+<tr><td><b>Insecurity</b></td><td>Checking your own reputation and online status</td><td>Checking how a post was received</td></tr>
+<tr><td><b>Problem solving</b></td><td>Work that needs creativity and focus</td><td>Designing a fix</td></tr>
+</tbody></table></div>
+
+<h3>The sixth category: relationship work</h3>
+<p>Relationship work is the social catalyst for all other work. It shortens the time to get other work done, reduces communication barriers between people, and builds trust based on regard for each other. A quick chat that unblocks a stuck ticket is relationship work in action.</p>
+
+<h3>What is affinity?</h3>
+<div class="note"><b>Definition</b><p>Affinity is the <b>measure of relationship strength</b> between individuals, teams, business units, even companies. It is incredibly hard to measure accurately. Example: how much Dev and Ops trust each other before an incident is a sign of affinity.</p></div>
+
+<h3>Interpersonal ties within a team</h3>
+<ul>
+<li><b>Too much conflict:</b> not enough internal stability to reach goals.</li>
+<li><b>Too much avoidance:</b> homogeneous thought and less creativity.</li>
+<li>Balance both. That is what makes a team resilient.</li>
+</ul>
+
+<h3>Four factors of a strong tie</h3>
+<div class="grid3 four">
+<div><h4>1. Shared time</h4><p>Working together strengthens relationships.</p></div>
+<div><h4>2. Intensity</h4><p>Overcoming a crisis together, like an outage.</p></div>
+<div><h4>3. Shared stories</h4><p>Opening up about wins and struggles.</p></div>
+<div><h4>4. Shared support</h4><p>Covering on-call, helping with an issue.</p></div>
+</div>
+<p>Pairing through a two-week outage builds intensity faster than months of routine work.</p>
+
+<h3>Benefits of improved affinity</h3>
+<div class="grid3">
+<div><h4>1. Shortened cycle time</h4><ul><li>Cycle time is work start to delivery.</li><li>Shorter cycles mean less wasted time.</li><li>Teams iterate faster. A trust-based code review gets features out in days, not weeks.</li></ul></div>
+<div><h4>2. Fewer communication barriers</h4><ul><li>Miscommunication is a hidden cost.</li><li>Direct, honest conversation.</li><li>Less passive-aggression and less duplicated work.</li></ul></div>
+<div><h4>3. Trust and innovation</h4><ul><li>Trust: less duplication, higher quality, better retention.</li><li>Innovation needs trust and blamelessness.</li><li>People take creative risks without fear.</li></ul></div>
+</div>
+
+<details class="sheet"><summary>Answer sheet: what is affinity, and its benefits <small>5 marks</small></summary>
+<div class="sbody">
+<h4>Affinity</h4>
+<p>Affinity is the measure of relationship strength between individuals, teams, business units and even companies. It comes from <b>relationship work</b>, the sixth category of work beside reactionary, planning, procedural, insecurity and problem-solving work.</p>
+<p>Tie strength depends on shared time, intensity, shared stories and shared support. Teams need a balance of conflict and avoidance.</p>
+<p><b>Benefits:</b></p>
+<ul>
+<li>Shortened cycle time.</li>
+<li>Reduced communication barriers.</li>
+<li>More trust and innovation.</li>
+</ul>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">The sixth category of work is:</p><div class="opts"><button type="button" data-k="a">Problem-solving work</button><button type="button" data-k="b">Relationship work</button><button type="button" data-k="c">Reactionary work</button><button type="button" data-k="d">Procedural work</button></div><p class="why" hidden>It is the social catalyst for all other work.</p></div>
+<div class="mcq" data-a="d"><p class="q">Which is NOT one of the four factors of a strong tie?</p><div class="opts"><button type="button" data-k="a">Shared time</button><button type="button" data-k="b">Intensity</button><button type="button" data-k="c">Shared stories</button><button type="button" data-k="d">Shared salary</button></div><p class="why" hidden>The four are shared time, intensity, shared stories and shared support.</p></div>
+<div class="mcq" data-a="a"><p class="q">"Cycle time" means:</p><div class="opts"><button type="button" data-k="a">Time from work start to delivery</button><button type="button" data-k="b">Time between meetings</button><button type="button" data-k="c">Time a server is down</button><button type="button" data-k="d">Duration of a sprint review</button></div><p class="why" hidden>Better affinity shortens it.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 6 ============ -->
+<section class="lesson" id="affreq" data-tier="1">
+<header class="lh"><span class="no">6</span><div><h2>Requirements for affinity</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022, Sep 2023</span><span>About 20 min</span><span>Syllabus 2.2</span></p></div></header>
+
+<p>The most repeated Module 2 question: four requirements. Write all four, each with a definition and a one-line example, and you have the 10 marks.</p>
+
+<div class="note tip"><b>Memory hook: S, E, S, C</b><p><b>S</b>lack, <b>E</b>xplicit values and goals, <b>S</b>pace, <b>C</b>ollaboration and cooperation.</p></div>
+<details class="try"><summary>Try first: say the four aloud with one detail each</summary><div class="in"><p>Slack: a planned buffer, not idle time. Explicit values: relationship work must be stated and celebrated. Space: shared spots for ad hoc collaboration. Collaboration and cooperation: the culture rewards relationship-building.</p></div></details>
+
+<h3>1. Slack</h3>
+<ul>
+<li>Not idle time. It is an intentional buffer.</li>
+<li>Prevents over-assigning work to people.</li>
+<li>Absorbs unplanned or longer-than-expected work.</li>
+<li>Example: a team sees 20 hours of unplanned work a week, so it plans for 20 or more hours of buffer.</li>
+</ul>
+
+<h3>2. Explicit values and goals</h3>
+<ul>
+<li>What is not planned for often does not happen.</li>
+<li>Relationship work must be explicitly valued.</li>
+<li>Managers should state the outcomes they want, then celebrate them.</li>
+<li>Example: a skills matrix that scores mentoring and communication, not only code shipped.</li>
+</ul>
+
+<h3>3. Space</h3>
+<ul>
+<li>Shared spaces for ad hoc collaboration, never at the cost of individual workspace.</li>
+<li>In-house coffee bars offer a mental break.</li>
+<li>Helps teams gather information on their own.</li>
+<li>Example: a shared coffee bar where Dev and Ops swap stories most mornings, unplanned.</li>
+</ul>
+
+<h3>4. Collaboration and cooperation</h3>
+<ul>
+<li>The culture must reward relationship-building work, not just tolerate it.</li>
+<li>Actively promote it.</li>
+<li>Avoid fostering a competitive environment.</li>
+<li>Example: reward a pair-programmed fix instead of praising a solo "hero" save.</li>
+</ul>
+<p>A team with plenty of slack but no shared space still struggles to build affinity, so all four are needed.</p>
+
+<details class="sheet"><summary>Answer sheet: what is affinity? Explain the requirements for affinity in detail <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Affinity and its requirements</h4>
+<p>Affinity is the measure of relationship strength between individuals, teams, business units and companies. It grows through relationship work, the sixth category of work. It shortens cycle time, reduces communication barriers and builds trust and innovation.</p>
+<p><b>Four requirements:</b></p>
+<ul>
+<li><b>Slack:</b> an intentional buffer, not idle time. It stops over-assignment and absorbs unplanned work. E.g. plan 20 hours of buffer for 20 hours of weekly unplanned work.</li>
+<li><b>Explicit values and goals:</b> what is not planned often does not happen. Managers state and celebrate relationship work. E.g. a skills matrix that scores mentoring.</li>
+<li><b>Space:</b> shared spaces for ad hoc collaboration without taking away individual workspace. E.g. a coffee bar.</li>
+<li><b>Collaboration and cooperation:</b> the culture rewards relationship-building and avoids competition. E.g. reward pair programming over solo heroics.</li>
+</ul>
+<p>All four are needed together.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">In the context of affinity, "slack" is:</p><div class="opts"><button type="button" data-k="a">Idle time</button><button type="button" data-k="b">The messaging app</button><button type="button" data-k="c">An intentional buffer that absorbs unplanned work</button><button type="button" data-k="d">Missed deadlines</button></div><p class="why" hidden>It prevents over-assigning work to people.</p></div>
+<div class="mcq" data-a="a"><p class="q">A skills matrix that scores mentoring and communication shows which requirement?</p><div class="opts"><button type="button" data-k="a">Explicit values and goals</button><button type="button" data-k="b">Space</button><button type="button" data-k="c">Slack</button><button type="button" data-k="d">Competition</button></div><p class="why" hidden>Relationship work must be explicitly valued.</p></div>
+<div class="mcq" data-a="d"><p class="q">Rewarding a pair-programmed fix instead of a solo "hero" save shows:</p><div class="opts"><button type="button" data-k="a">Slack</button><button type="button" data-k="b">Space</button><button type="button" data-k="c">Measurement</button><button type="button" data-k="d">Collaboration and cooperation</button></div><p class="why" hidden>The culture rewards relationship-building and avoids competition.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 7 ============ -->
+<section class="lesson" id="affmeasure" data-tier="1">
+<header class="lh"><span class="no">7</span><div><h2>Measuring affinity</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2025, Sep 2024 ("measures to outcomes of affinity")</span><span>About 15 min</span><span>Syllabus 2.2</span></p></div></header>
+
+<p>Affinity itself is hard to measure, so you measure its <b>outcomes</b>. There are three. Both the 2024 and 2025 questions are this list.</p>
+<div class="note tip"><b>Memory hook: S, I, G</b><p><b>S</b>kills and evaluations, <b>I</b>nterteam interaction, <b>G</b>iving back to the community.</p></div>
+
+<h3>1. Employee skills and evaluations</h3>
+<p>Questions to ask:</p>
+<ul>
+<li>Do people know who to ask for help?</li>
+<li>Will they ask outside their own team?</li>
+<li>Do they avoid asking, even if it slows others down?</li>
+<li>Do they derail meetings with needless arguments?</li>
+</ul>
+<p>Example: a junior engineer everyone quietly turns to first with Kubernetes questions.</p>
+
+<h3>2. Interteam interaction</h3>
+<ul>
+<li>How many teams touch a given project?</li>
+<li>How evenly was the work divided?</li>
+<li>Did one team or person seem overworked?</li>
+<li>How much time went into planning?</li>
+<li>How often did misunderstandings occur?</li>
+</ul>
+<p>Example: a launch slips because planning-stage ownership between two teams was never clear.</p>
+
+<h3>3. Giving back to the community</h3>
+<ul>
+<li>DevOps thrives on an open, sharing community.</li>
+<li>Aim for at least one community contribution per year.</li>
+<li>Only taking and never giving is not cooperative.</li>
+</ul>
+<p>Example: Etsy's engineering blog and open-sourced tools.</p>
+
+<details class="sheet"><summary>Answer sheet: measuring affinity <small>5 marks</small></summary>
+<div class="sbody">
+<h4>Measuring affinity</h4>
+<p>Affinity cannot be measured directly, only through its outcomes. Three are watched:</p>
+<ul>
+<li><b>Employee skills and evaluations:</b> do people know who to ask; do they ask outside their team; do they avoid asking; do they derail meetings.</li>
+<li><b>Interteam interaction:</b> how many teams touch a project, how evenly work is divided, whether anyone is overworked, planning time, how often misunderstandings occur.</li>
+<li><b>Giving back to the community:</b> at least one contribution a year, such as blogs or open-source tools.</li>
+</ul>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">How is affinity measured?</p><div class="opts"><button type="button" data-k="a">With a direct affinity score</button><button type="button" data-k="b">Through its outcomes</button><button type="button" data-k="c">By counting meetings</button><button type="button" data-k="d">By salary</button></div><p class="why" hidden>You can measure outcomes, not affinity itself.</p></div>
+<div class="mcq" data-a="d"><p class="q">"How many teams touch a given project?" belongs to:</p><div class="opts"><button type="button" data-k="a">Skills and evaluations</button><button type="button" data-k="b">Giving back</button><button type="button" data-k="c">Slack</button><button type="button" data-k="d">Interteam interaction</button></div><p class="why" hidden>It is one of the interteam interaction questions.</p></div>
+<div class="mcq" data-a="a"><p class="q">The suggested minimum community contribution is:</p><div class="opts"><button type="button" data-k="a">One per year</button><button type="button" data-k="b">One per month</button><button type="button" data-k="c">One per day</button><button type="button" data-k="d">None; only take</button></div><p class="why" hidden>Only taking, never giving, is not cooperative.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 8 ============ -->
+<section class="lesson" id="tools" data-tier="2">
+<header class="lh"><span class="no">8</span><div><h2>Tools ecosystem: software development and monitoring</h2>
+<p class="meta"><span class="sev major">Major</span><span>Not asked on its own yet</span><span>About 25 min</span><span>Syllabus 2.3</span></p></div></header>
+
+<p>Tools enhance culture. They do not replace it. There is no "DevOps in a box". The ecosystem has three pillars, and DevOps tools stress "we" over "me". Your tool choice becomes your team's common language. A hammer does not make you a carpenter; how you use it does. Two teams can both use Git, but one reviews every pull request and the other merges blindly: same tool, different culture.</p>
+<div class="flow mid"><span class="box hl">Software development</span><span class="box hl">Automation <small>lesson 9</small></span><span class="box hl">Monitoring</span></div>
+
+<h3>Software development tools</h3>
+<dl class="kv">
+<dt>Local development environment</dt><dd>A consistent setup lets new hires contribute from day one. Balance shared standards with personal choice. Too much customisation means "only Rahul can build this". Document it. Example: a shared Docker image, with your own editor theme.</dd>
+<dt>Version control</dt><dd>Commit, compare, merge and restore any version. Git is the standard (GitHub, GitLab, Bitbucket). Encourages forking, pull request review and shared rights.</dd>
+<dt>Artifact management</dt><dd>An artifact is the output of a build step (.jar, Docker image). The repository stores, versions and controls access. Dev, test and prod all pull the <b>same</b> artifact, with no rebuilding. This removes "it works on my laptop".</dd>
+</dl>
+<div class="scroll"><table>
+<thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><b>Commit</b></td><td>A snapshot of changes saved to the repository history</td></tr>
+<tr><td><b>Conflict</b></td><td>Two people edited the same line, so Git cannot decide. You compare and pick</td></tr>
+<tr><td><b>Pull request</b></td><td>A request to review your code before it is merged into the main branch</td></tr>
+<tr><td><b>Cherry pick</b></td><td>Apply one specific commit from another branch</td></tr>
+<tr><td><b>Dependency management</b></td><td>Managing how much your project relies on external libraries and their versions</td></tr>
+<tr><td><b>Pinning</b></td><td>Locking a library to one exact version, such as numpy==1.24.3, so an update cannot break you overnight</td></tr>
+<tr><td><b>Promotion</b></td><td>Moving an artifact closer to production after it passes tests (test, then staging, then prod)</td></tr>
+</tbody></table></div>
+
+<h3>Monitoring</h3>
+<p>Monitoring tracks the <b>current state against the desired state</b> of your system, using metrics (numbers over time) and logs (event records).</p>
+<ul>
+<li><b>System level:</b> is the server alive, CPU %, memory %, disk I/O.</li>
+<li><b>Application level:</b> request latency, error rate (5xx), queue depth, page load speed.</li>
+</ul>
+<div class="scroll"><table>
+<thead><tr><th>Metric type</th><th>Meaning</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><b>Counter</b></td><td>Always increasing</td><td>Total requests = 1,042,883</td></tr>
+<tr><td><b>Gauge</b></td><td>Goes up and down</td><td>Current CPU = 72%</td></tr>
+<tr><td><b>Histogram</b></td><td>Distribution of values</td><td>90% of requests under 200 ms</td></tr>
+<tr><td><b>Summary</b></td><td>Pre-calculated percentiles</td><td>p99 latency = 450 ms</td></tr>
+</tbody></table></div>
+<p>Typical stack: Prometheus (collection) with Grafana (visualisation). For logs, the ELK stack (Elasticsearch, Logstash, Kibana) or Loki with Grafana. Log levels, from least to most serious: DEBUG, INFO, WARN, ERROR, CRITICAL.</p>
+
+<h4>Alerting: five factors to weigh</h4>
+<p>Impact (how many users, how much revenue), urgency (two minutes or two days), who is notified, resources (is someone available), cost (worth waking an engineer at 3am?). Bad alerts cause fatigue. A good alert is "payment errors above 1% for 5 minutes". A bad one is "CPU above 50%".</p>
+<div class="note warn"><b>Real case</b><p>HealthCare.gov launched in 2013 with no monitoring. Servers crashed and outages went unnoticed for hours. Engineers learned of them from news reports. The cost was about $600 million.</p></div>
+
+<div class="scroll"><table>
+<thead><tr><th></th><th>Problem exists</th><th>No problem</th></tr></thead>
+<tbody>
+<tr><td><b>Alert fires</b></td><td class="ok">True positive. Act on it.</td><td class="no">False positive. Alert fatigue.</td></tr>
+<tr><td><b>No alert</b></td><td class="no">False negative. A silent outage, the worst case.</td><td class="ok">True negative. All good.</td></tr>
+</tbody></table></div>
+<p>Event handlers can respond automatically to known conditions. Example: Nagios sees Apache down and restarts it, so no one is paged (self-healing).</p>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="a"><p class="q">Locking a library to numpy==1.24.3 is called:</p><div class="opts"><button type="button" data-k="a">Pinning</button><button type="button" data-k="b">Promotion</button><button type="button" data-k="c">Cherry picking</button><button type="button" data-k="d">Forking</button></div><p class="why" hidden>Pinning stops a future update from silently breaking your code.</p></div>
+<div class="mcq" data-a="c"><p class="q">A real problem exists but no alert fires. This is a:</p><div class="opts"><button type="button" data-k="a">True positive</button><button type="button" data-k="b">False positive</button><button type="button" data-k="c">False negative</button><button type="button" data-k="d">True negative</button></div><p class="why" hidden>A silent outage is the most dangerous case.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 9 ============ -->
+<section class="lesson" id="automation" data-tier="1">
+<header class="lh"><span class="no">9</span><div><h2>Automation: build automation, infrastructure automation, deployment terms</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2025 (types of build automation), Sep 2024 (infrastructure terminology)</span><span>About 30 min</span><span>Syllabus 2.3</span></p></div></header>
+
+<p>Two asked questions are here. Learn the three kinds of build automation, and the infrastructure terms. The deployment and testing terms at the end are quick extras.</p>
+
+<h3>Three kinds of build automation</h3>
+<div class="grid3">
+<div><h4>On-demand</h4><p><b>Triggered by a human.</b> You click "Run build" or type a command. Useful for one-off or exploratory builds.</p></div>
+<div><h4>Scheduled</h4><p><b>Triggered by a clock.</b> Runs at a fixed time, for example nightly at 2 am. Useful for batch jobs and nightly test suites.</p></div>
+<div><h4>Triggered</h4><p><b>Triggered by an event.</b> Fires on git push, a pull request or a file change. The heart of CI/CD.</p></div>
+</div>
+<p>Example of a triggered build: you push a bug fix to GitHub, GitHub Actions detects the push and runs the build, tests and Docker image build, with results in about three minutes.</p>
+
+<h3>Server installation and provisioning</h3>
+<p>Automates the operating system, packages, users and network configuration on machines. Without it you SSH into 50 servers one by one, which is error-prone. Tools: Kickstart, Cobbler, cloud-init, AWS CloudFormation. Cloud provisioning is faster and cheaper than hardware.</p>
+
+<h3>Infrastructure automation (infrastructure as code)</h3>
+<p>Provision infrastructure through code, not clicks. Treat infrastructure code like software: version it, test it, review it. Tools: Terraform (cloud), Ansible (configuration), Helm (Kubernetes).</p>
+<div class="flow"><span class="box hl">Write Terraform code</span><span class="ar">→</span><span class="box hl">terraform plan (preview)</span><span class="ar">→</span><span class="box ok">terraform apply (execute)</span><span class="ar">→</span><span class="box ok">Cloud infrastructure created</span><span class="ar">→</span><span class="box dim">Destroy and recreate any time</span></div>
+<dl class="kv">
+<dt>Configuration drift</dt><dd>Servers slowly change away from the desired state through manual patches and one-off fixes, until no two are alike.</dd>
+<dt>Snowflake server</dt><dd>A server so uniquely hand-configured that nobody else understands it. Fragile and irreplaceable.</dd>
+<dt>MTBF</dt><dd>Mean time between failures. Higher means more reliable.</dd>
+<dt>MTTR</dt><dd>Mean time to repair. IaC lowers it, because you re-run the script.</dd>
+<dt>Availability</dt><dd>MTBF ÷ (MTBF + MTTR). 99.99% ("four nines") is under an hour of downtime a year.</dd>
+</dl>
+<p><b>What infrastructure automation should provide:</b> management of configuration drift; elimination of snowflake servers; versioned infrastructure code; minimised complexity. The result is repeatable, consistent, auditable and resilient infrastructure.</p>
+
+<h3>Testing and deployment terms</h3>
+<div class="scroll"><table>
+<thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><b>Smoke test</b></td><td>Quick sanity check that the app starts and answers a basic request</td></tr>
+<tr><td><b>Regression test</b></td><td>Confirms a new change did not break old features</td></tr>
+<tr><td><b>Usability test</b></td><td>Real users try the product to see it is actually usable</td></tr>
+<tr><td><b>A/B test</b></td><td>Half the users see version A, half see B. Measure which converts better</td></tr>
+<tr><td><b>Blue-green deploy</b></td><td>Run old (blue) and new (green) side by side. Switch traffic when ready. Zero downtime and instant rollback</td></tr>
+<tr><td><b>Canary</b></td><td>Roll out to about 5% of users first, monitor, then expand to 100%</td></tr>
+</tbody></table></div>
+
+<details class="sheet"><summary>Answer sheet: types of build automation <small>5 marks</small></summary>
+<div class="sbody">
+<h4>Types of build automation</h4>
+<p>Build automation compiles, tests and packages code without manual steps. There are three kinds:</p>
+<ul>
+<li><b>On-demand:</b> started by a human, for one-off or exploratory builds.</li>
+<li><b>Scheduled:</b> started by a clock, such as a nightly build and test run.</li>
+<li><b>Triggered:</b> started by an event, such as a git push or pull request. This is the heart of CI/CD.</li>
+</ul>
+<p>Example: a push to GitHub triggers build, tests and a Docker image build in minutes.</p>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: terminologies related to infrastructure management <small>5 marks</small></summary>
+<div class="sbody">
+<h4>Infrastructure terminology</h4>
+<ul>
+<li><b>Infrastructure as code:</b> provisioning through versioned code (Terraform, Ansible).</li>
+<li><b>Configuration drift:</b> servers drifting from the desired state through manual changes.</li>
+<li><b>Snowflake server:</b> a hand-built, irreplaceable server.</li>
+<li><b>MTBF and MTTR:</b> mean time between failures and mean time to repair.</li>
+<li><b>Availability:</b> MTBF divided by (MTBF + MTTR); four nines is under an hour a year.</li>
+<li><b>Provisioning, configuration management, artifact management, containers, cloud:</b> see Module 1, lesson 10.</li>
+</ul>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">A build that fires on every git push is:</p><div class="opts"><button type="button" data-k="a">On-demand</button><button type="button" data-k="b">Scheduled</button><button type="button" data-k="c">Triggered</button><button type="button" data-k="d">Manual</button></div><p class="why" hidden>Triggered builds are event-driven and are the heart of CI/CD.</p></div>
+<div class="mcq" data-a="b"><p class="q">A nightly 2 am test run is:</p><div class="opts"><button type="button" data-k="a">On-demand</button><button type="button" data-k="b">Scheduled</button><button type="button" data-k="c">Triggered</button><button type="button" data-k="d">A canary</button></div><p class="why" hidden>Scheduled means triggered by a clock.</p></div>
+<div class="mcq" data-a="d"><p class="q">Rolling a new version out to 5% of users first is a:</p><div class="opts"><button type="button" data-k="a">Blue-green deploy</button><button type="button" data-k="b">Smoke test</button><button type="button" data-k="c">A/B test</button><button type="button" data-k="d">Canary release</button></div><p class="why" hidden>Blue-green switches all traffic between two environments.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 10 ============ -->
+<section class="lesson" id="accel" data-tier="2">
+<header class="lh"><span class="no">10</span><div><h2>Tools as accelerators of culture: choosing, standardising and retiring tools</h2>
+<p class="meta"><span class="sev major">Major</span><span>Not asked yet</span><span>About 20 min</span><span>Syllabus 2.3</span></p></div></header>
+
+<p>This part of unit 2.3 is about how an organization chooses tools. Read it once. The main message: a tool survives only if it solves a real, felt problem, and the people who will use it are part of the decision.</p>
+
+<dl class="kv">
+<dt>Right tools for real problems</dt><dd>Ask: does it save time, reduce errors, and will the team use it daily? "It looked cool at a conference" is not a reason. Bad: a 5-person startup runs 3 microservices on a full Kubernetes cluster. Good: on-call engineers asked for a tracing tool, and Jaeger now finds slow queries in seconds.</dd>
+<dt>Embracing open source</dt><dd>Forces real collaboration with small, reviewable commits. Avoid "Not Invented Here" syndrome. Benefits: transparency (security researchers find bugs), community (features you would never build), no licence cost, customisable and no vendor lock-in. Netflix, Etsy and Google open-sourced tools.</dd>
+<dt>Standardisation of tools</dt><dd>One authoritative tool per category, used by all teams. Improves communication, cuts onboarding time and licence cost. Five teams on five trackers makes handoffs a nightmare.</dd>
+<dt>Consistent process for tool analysis</dt><dd>Six steps: identify the real problem; audit existing tools; evaluate candidates; pilot with one team; train and migrate all; retire the old tool. Confirm every required feature exists in the replacement and include a training and migration plan.</dd>
+<dt>Exceptions to standardisation</dt><dd>Decide case by case with justification. <b>Valid:</b> regulatory mandate (PCI, HIPAA), technical impossibility (GPU tooling), legal isolation, vendor contract. <b>Invalid:</b> "we have always done it this way", "our team is special", "it has a learning curve", "we like our tool better".</dd>
+<dt>Selecting a tool</dt><dd>Weigh product development (is it actively patched?), community health (PR response time, issue resolution, release cadence, forum activity, code of conduct) and in-house customisation (open source is easiest to read, fix and extend). Also feature availability, budget, interoperability and vendor lock-in.</dd>
+<dt>Auditing and eliminating tools</dt><dd>Regular audits prevent tool sprawl. Ask users: what delights or frustrates you, what refuels or drains you, what should we stop doing, what should we start? Process: identify all tools, check usage, interview users, find overlaps, decide keep or retire, plan migration, execute.</dd>
+<dt>Impact of tools on culture</dt><dd>Tools that cut friction make talking more likely. Moving from email to Slack can cut decisions from two days to ten minutes. Monitoring tools create an observability culture; code review tools create a quality culture.</dd>
+</dl>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="d"><p class="q">Which is a VALID exception to tool standardisation?</p><div class="opts"><button type="button" data-k="a">"We have always done it this way"</button><button type="button" data-k="b">"Our team is special"</button><button type="button" data-k="c">"It has a learning curve"</button><button type="button" data-k="d">A regulatory mandate such as PCI</button></div><p class="why" hidden>Regulatory, technical, legal or contractual reasons are valid.</p></div>
+<div class="mcq" data-a="a"><p class="q">The first step of a consistent process for tool analysis is:</p><div class="opts"><button type="button" data-k="a">Identify the real problem</button><button type="button" data-k="b">Retire the old tool</button><button type="button" data-k="c">Buy licences</button><button type="button" data-k="d">Train everyone</button></div><p class="why" hidden>Then audit existing tools, evaluate, pilot, train and migrate, retire.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 11 ============ -->
+<section class="lesson" id="scaling" data-tier="1">
+<header class="lh"><span class="no">11</span><div><h2>Understanding scaling and planning for it</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2024 (vampire and zombie projects); Oct 2025 (scaling for organizations)</span><span>About 25 min</span><span>Syllabus 2.4</span></p></div></header>
+
+<p>Scaling has three parts in your slides. This lesson is the first: what "scale" means and how to plan for it. Lesson 12 is scaling for <b>teams</b>, lesson 13 is scaling for <b>organizations</b>.</p>
+<div class="flow mid"><span class="box hl">Planning for scaling <small>this lesson</small></span><span class="box">Scaling for teams <small>lesson 12</small></span><span class="box hl">Scaling for organizations <small>lesson 13</small></span></div>
+
+<h3>"Scale" means different things</h3>
+<ul>
+<li>Expanding the customer base.</li>
+<li>Growing revenue.</li>
+<li>Expanding a project or team to meet demand.</li>
+<li>Keeping a good ratio of people to systems or spend.</li>
+<li>Growing faster than competitors.</li>
+</ul>
+<p>Etsy (about 800 staff) and Target (about 347,000 staff) both scale, just at very different sizes. There is <b>no one-size-fits-all solution</b>: complex systems have no single root cause, and what works in one environment can be wrong in another. First, clarify which meaning of scale you are talking about.</p>
+
+<h3>Planning for scaling: six things to plan</h3>
+<dl class="kv">
+<dt>1. Organizational structure</dt><dd>Cross-functional teams give high bandwidth on one product. Single-function teams give deeper specialisation. Do not reorganise just for the sake of it. Too flat an org is as harmful as too hierarchical. Example: one squad of a designer, two developers and an ops engineer.</dd>
+<dt>2. Locality</dt><dd>Multiple locations expose communication gaps fast. Written communication matters more when people are distributed. Each site brings new IT and infrastructure needs. Uneven access creates "second-class" offices. Example: only headquarters has the fast internet link.</dd>
+<dt>3. Team size</dt><dd>Too small: not enough person-hours or knowledge. Too large (9 to 10 and up): slow decisions and groupthink over dissent. <b>Sweet spot: 5 to 7 people.</b> Beyond that, split into a new team. Example: a team of 12 becomes two teams of 6.</dd>
+<dt>4. Growth and decline pressures</dt><dd><b>Internal:</b> natural hiring to grow, or voluntary downsizing when things slow. <b>External:</b> economics, competition or acquisition force the organization to change. How a company handles being acquired shapes its future.</dd>
+<dt>5. Release cycles</dt><dd>Faster releases mean faster response to bugs and pressure. But "fail forward fast" is not right for every release. Ask: how easy is it to release, and how critical is this release? Example: a car's embedded software may need a costly recall, not a push update.</dd>
+<dt>6. Complexity and change</dt><dd>Bigger, older organizations carry more existing constraints, in large enterprises and the public sector alike. Long-standing bureaucracy limits collaboration and affinity. Example: a government agency needs legal sign-off before adopting what a startup ships the same day.</dd>
+</dl>
+
+<div class="note tip"><b>Memory hook for the six</b><p><b>S</b>tructure, <b>L</b>ocality, <b>T</b>eam size, <b>P</b>ressures (growth/decline), <b>R</b>elease cycles, <b>C</b>omplexity. "Some Large Teams Prefer Regular Calm."</p></div>
+
+<h3>Vampire and zombie projects</h3>
+<p>These are part of the organizational life cycle. Asked in Sep 2024.</p>
+<div class="grid3 two">
+<div><h4>Zombie project</h4><ul><li>"Walking dead".</li><li>Nobody feels empowered to shut it down.</li><li>Keeps consuming effort, though it delivers little.</li><li>Example: a reporting tool nobody uses anymore, kept alive because its one maintainer built it.</li></ul></div>
+<div><h4>Vampire project</h4><ul><li>Feeds off the time and energy of other projects.</li><li>Pulls people and attention away from healthy work.</li><li>Example: a pet side project that borrows engineers from the main product every week.</li></ul></div>
+</div>
+<p><b>What to do:</b> talk to the people involved first. Most of them just want to work on something meaningful.</p>
+<div class="note src"><b>Not in your slides</b><p>The slide gives only the definitions, the "talk to the people involved" advice and the zombie example. The vampire example above and the idea of ending a project and moving its people to meaningful work are my elaboration. They are the natural way to finish a 5-mark answer, so use them.</p></div>
+
+<details class="sheet"><summary>Answer sheet: vampire and zombie projects <small>5 marks</small></summary>
+<div class="sbody">
+<h4>Vampire and zombie projects</h4>
+<p>As an organization grows or declines, some projects stop serving it. Two kinds are common.</p>
+<ul>
+<li><b>Zombie project:</b> the "walking dead". It keeps running because nobody feels empowered to shut it down. Example: a reporting tool nobody uses, kept alive because its single maintainer built it.</li>
+<li><b>Vampire project:</b> it feeds off the time and energy of other projects, draining people and attention from healthy work.</li>
+</ul>
+<p>Both waste effort and harm affinity. <b>Handling:</b> talk to the people involved first, since most only want to work on something meaningful. Then stop the project and move people to work that matters.</p>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: explain scaling and planning for scaling <small>5 or 10 marks</small></summary>
+<div class="sbody">
+<h4>Scaling</h4>
+<p>"Scale" means different things: more customers, more revenue, bigger teams, a good ratio of people to systems, or growing faster than competitors. No one solution fits everyone.</p>
+<p><b>Planning for scaling covers:</b></p>
+<ul>
+<li><b>Structure:</b> cross-functional for bandwidth, single-function for depth.</li>
+<li><b>Locality:</b> multiple sites; written communication; avoid second-class offices.</li>
+<li><b>Team size:</b> 5 to 7; split beyond 9 to 10.</li>
+<li><b>Growth and decline pressures:</b> internal (hiring, downsizing) and external (economics, competition, acquisition).</li>
+<li><b>Release cycles:</b> match cadence to how critical and how easy the release is.</li>
+<li><b>Complexity and change:</b> older and larger organizations carry more constraints.</li>
+<li><b>Life cycle:</b> deal with vampire and zombie projects.</li>
+</ul>
+<p>For the team and organization levels, see lessons 12 and 13.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">The sweet spot for team size in your slides is:</p><div class="opts"><button type="button" data-k="a">2 to 3</button><button type="button" data-k="b">5 to 7</button><button type="button" data-k="c">9 to 10</button><button type="button" data-k="d">12 to 15</button></div><p class="why" hidden>Beyond that, split into a new team instead of growing one.</p></div>
+<div class="mcq" data-a="a"><p class="q">A project nobody feels empowered to shut down is a:</p><div class="opts"><button type="button" data-k="a">Zombie project</button><button type="button" data-k="b">Vampire project</button><button type="button" data-k="c">Pilot project</button><button type="button" data-k="d">Canary project</button></div><p class="why" hidden>A vampire project feeds off the time and energy of other projects.</p></div>
+<div class="mcq" data-a="d"><p class="q">An acquisition forcing an organization to change is an example of:</p><div class="opts"><button type="button" data-k="a">Internal growth pressure</button><button type="button" data-k="b">Locality</button><button type="button" data-k="c">Release cycle</button><button type="button" data-k="d">External pressure</button></div><p class="why" hidden>Economics, competition or acquisition are external pressures.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 12 ============ -->
+<section class="lesson" id="teams" data-tier="2">
+<header class="lh"><span class="no">12</span><div><h2>Scaling for teams: hiring, retention, heroes</h2>
+<p class="meta"><span class="sev major">Major</span><span>Not asked on its own yet</span><span>About 25 min</span><span>Syllabus 2.4</span></p></div></header>
+
+<p>Read this once. If the examiner asks about "scaling" in general, this is the middle layer of your answer. The main idea: <b>teams scale on shared purpose</b>, not on individual heroics.</p>
+<div class="note"><b>Drucker</b><p>"The leaders who work most effectively never say 'I.' They think 'we'; they think 'team.'" Role-locking and fear-driven structures optimise for "me", not "we".</p></div>
+
+<h3>Growing a team</h3>
+<dl class="kv">
+<dt>Hiring as scaling</dt><dd>Hiring only for stack experience is a narrow, short-term bet. Look at interpersonal and cultural fit. Strong learning and critical-thinking skills adapt furthest. Example: a developer with strong learning skills picks up a new stack within weeks.</dd>
+<dt>The real cost of growth</dt><dd>New hires need ramp-up time. Existing staff spend time getting them up to speed. Communication overhead grows fast with headcount. Not every task splits cleanly. Example: adding two juniors mid-sprint slows the team before it speeds it.</dd>
+<dt>Subcontracted work</dt><dd>Outsourcing IT or ops as "cost centers" is common. The dollar savings hide a cost: lost collaboration and affinity. Mixed in-house and outsourced teams can become a conflict source. Example: outsourced ops never invited to planning, so handoffs keep breaking.</dd>
+</dl>
+
+<h3>Retention: four things together</h3>
+<div class="grid3 four">
+<div><h4>Compensation</h4><ul><li>Feel paid fairly.</li><li>Staying nets about 3% (about 1% after inflation); switching often nets 10 to 30%.</li><li>Pay transparency and clear bands build trust.</li></ul></div>
+<div><h4>Non-monetary</h4><ul><li>Remote work.</li><li>Flexible hours.</li><li>Education.</li><li>Paid leave, health insurance, daycare.</li></ul></div>
+<div><h4>Growth</h4><ul><li>Lack of advancement is a top reason people leave.</li><li>People want more independence and trust over time.</li><li>Example: 25% of the week to explore a new area.</li></ul></div>
+<div><h4>Workload and burnout</h4><ul><li>Challenging but doable.</li><li>Check in regularly.</li><li>Burnout is long-term exhaustion and lost interest.</li></ul></div>
+</div>
+<p><b>Culture and culture fit</b> has three layers: <b>ideas</b> (what the organization values), <b>customs</b> (how work, promotions and news are handled) and <b>social behaviors</b> (how people really talk and listen). Example: do seniors talk over juniors in meetings?</p>
+
+<h3>Hero culture is a problem</h3>
+<ul>
+<li>One hero is a <b>single point of failure</b>.</li>
+<li>Heroics hide the real, unsustainable size of the workload.</li>
+<li>What happens when that person leaves or burns out? Example: only one engineer knows the deploy process, and she is on vacation during an outage.</li>
+</ul>
+
+<h3>Three strategies to strengthen a team</h3>
+<div class="grid3">
+<div><h4>1. Keep teams small and flexible</h4><ul><li>Large teams share knowledge less.</li><li>Tasks locked to individuals create bottlenecks.</li><li>Watch for single points of knowledge, like the one person who knows billing.</li></ul></div>
+<div><h4>2. Foster collaboration</h4><ul><li>Positive interdependence.</li><li>Effective communication.</li><li>Individual and group accountability.</li></ul></div>
+<div><h4>3. Manage conflict</h4><ul><li>Unaddressed conflict hurts the whole organization.</li><li>Building relationships turns competition into cooperation.</li><li>Talk directly instead of routing through managers.</li></ul></div>
+</div>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">Which is NOT one of the three team-strengthening strategies?</p><div class="opts"><button type="button" data-k="a">Keep teams small and flexible</button><button type="button" data-k="b">Foster collaboration</button><button type="button" data-k="c">Hire a hero</button><button type="button" data-k="d">Manage conflict</button></div><p class="why" hidden>Hero culture is a problem, not a strategy.</p></div>
+<div class="mcq" data-a="a"><p class="q">Outsourcing ops as a cost center often hides a cost in:</p><div class="opts"><button type="button" data-k="a">Collaboration and affinity</button><button type="button" data-k="b">Server hardware</button><button type="button" data-k="c">Licences</button><button type="button" data-k="d">Office rent</button></div><p class="why" hidden>It also invites conflict between in-house and outsourced teams.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 13 ============ -->
+<section class="lesson" id="orgs" data-tier="1">
+<header class="lh"><span class="no">13</span><div><h2>Scaling for organizations</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2025 (scaling for organizations)</span><span>About 15 min</span><span>Syllabus 2.4</span></p></div></header>
+
+<p>This is the short, high-value part. It has four points plus an example. Memorise the four headings.</p>
+<div class="note tip"><b>Memory hook: D, C, B, F</b><p><b>D</b>ecisions near data, <b>C</b>entralized vs ad hoc, <b>B</b>uild out leadership, <b>F</b>lexibility questions.</p></div>
+
+<ol class="steps">
+<li><b>Decisions need to live close to the data.</b> Push decisions down to where the knowledge is. This needs real coordination and data transparency. Isolated teams build tools that mostly serve themselves. Example: a platform team ships a tool only they can configure.</li>
+<li><b>Centralized vs ad hoc teams.</b> A centralized team can burn out trying to be everything to everyone. Ad hoc cross-functional groups ease change and cross tribal lines. Example: an unrecognised support team quietly burns out keeping everyone else's systems running.</li>
+<li><b>Build out leadership.</b> Spread daily change, opportunities and critical paths across leaders. Model accountability, focus and follow-through. Pair clear expectations with consequences, good and bad. Move from blameful to blameless, or people hide real problems. Example: a team that once hid outages now reports them openly.</li>
+<li><b>Organizational flexibility. Questions to ask:</b> How do people communicate across teams? Does a decision need a formal meeting? How far up the hierarchy must someone go to make a change? Bigger, older organizations change more slowly, but shorter feedback loops still help.</li>
+</ol>
+
+<h3>Scaling in practice</h3>
+<div class="grid3 two">
+<div><h4>Culture</h4><p>Explicit culture and planning helped a huge public organization move fast.</p></div>
+<div><h4>Target</h4><p>Focused on desired outcomes to build enterprise-wide affinity (about 347,000 staff).</p></div>
+</div>
+
+<details class="sheet"><summary>Answer sheet: scaling for organizations <small>5 marks</small></summary>
+<div class="sbody">
+<h4>Scaling for organizations</h4>
+<p>As organizations grow, structure and communication have to be designed. Four ideas:</p>
+<ul>
+<li><b>Decisions close to the data:</b> push decisions to where knowledge lives, with coordination and data transparency. Isolated teams build tools that serve only themselves.</li>
+<li><b>Centralized vs ad hoc teams:</b> centralized teams can burn out serving everyone; ad hoc cross-functional groups ease change and cross tribal lines.</li>
+<li><b>Build out leadership:</b> spread change and critical paths across leaders; model accountability; pair expectations with consequences; move from blameful to blameless.</li>
+<li><b>Organizational flexibility:</b> ask how teams communicate, whether decisions need a formal meeting, and how far up the hierarchy changes go. Shorter feedback loops help.</li>
+</ul>
+<p>Example: Target focused on desired outcomes to build enterprise-wide affinity.</p>
+</div></details>
+
+<div class="note src"><b>If the question is just "scaling" (10 marks)</b><p>Your Oct 2025 paper asked "scaling for organizations". If a paper simply says "explain scaling", cover three levels: planning (lesson 11), teams (lesson 12 in short: hiring, retention, hero culture, three strategies) and organizations (this lesson). Using that three-level structure is my suggestion; the slides present the three parts but never name that structure.</p></div>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">"Push decisions down to where the knowledge is" is:</p><div class="opts"><button type="button" data-k="a">Centralisation</button><button type="button" data-k="b">Decisions close to the data</button><button type="button" data-k="c">Hero culture</button><button type="button" data-k="d">A release cycle</button></div><p class="why" hidden>It needs coordination and data transparency.</p></div>
+<div class="mcq" data-a="d"><p class="q">Which question tests organizational flexibility?</p><div class="opts"><button type="button" data-k="a">How big is the budget?</button><button type="button" data-k="b">Which language do we use?</button><button type="button" data-k="c">How many servers do we have?</button><button type="button" data-k="d">How far up the hierarchy must someone go to make a change?</button></div><p class="why" hidden>The other two flexibility questions are about cross-team communication and formal meetings.</p></div>
+<div class="mcq" data-a="c"><p class="q">Moving from blameful to blameless is part of:</p><div class="opts"><button type="button" data-k="a">Locality</button><button type="button" data-k="b">Hiring</button><button type="button" data-k="c">Building out leadership</button><button type="button" data-k="d">Release cycles</button></div><p class="why" hidden>Otherwise people hide real problems.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 14 ============ -->
+<section class="lesson" id="pillars" data-tier="1">
+<header class="lh"><span class="no">14</span><div><h2>The "pillars of DevOps" hackathon-judge question</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2023 (Q3)</span><span>About 25 min</span><span>Syllabus 2.1 to 2.4, plus Module 1 culture</span></p></div></header>
+
+<div class="prob"><b>The question (Sep 2023, 10 marks)</b><p>You are a judge at the Smart India Hackathon. Explain the pillars of DevOps you would use to pick 3 winners out of 20 teams, considering that some teams are smarter than others.</p></div>
+
+<div class="note src"><b>Not in your slides: read this first</b><p>Your slides never use the word "pillars" for a list. So the answer is built from your syllabus, and it has to be a <b>judging method</b>, not a definition. The safe approach is to show that the four units of Module 2 are the pillars, resting on the culture foundation of Module 1. The rubric and the selection method below are my own design: they are not printed in your slides, but each criterion comes from a slide.</p></div>
+
+<h3>The structure of the answer</h3>
+<div class="stack">
+<div class="box hl">Pillar 1: Collaboration, mindset and trust <small>2.1</small></div>
+<div class="box hl">Pillar 2: Affinity <small>2.2</small></div>
+<div class="box hl">Pillar 3: Tools and automation <small>2.3</small></div>
+<div class="box hl">Pillar 4: Scaling <small>2.4</small></div>
+<div class="link">resting on</div>
+<div class="box ok">Foundation: culture (Module 1). Generative, blameless, outcomes over outputs</div>
+</div>
+
+<h3>What "smarter teams" means for judging</h3>
+<p>The phrase comes from lesson 1: the New York Times article "Why Some Teams Are Smarter Than Others". A smarter team is <b>not</b> the team with the star coder. It has three traits: communication, equal participation and theory of mind. So the judge should watch how the whole team behaves, not only the demo. One way: ask each member a question and see whether everyone can answer.</p>
+
+<h3>The rubric: score each team 0 to 5 per pillar</h3>
+<div class="scroll"><table>
+<thead><tr><th>Pillar</th><th>Slide idea it comes from</th><th>What the judge looks for</th></tr></thead>
+<tbody>
+<tr><td><b>1. Collaboration, mindset, trust</b></td><td>Smarter teams (communication, equal participation, theory of mind); growth mindset; conflict handled openly; empathy</td><td>Do all members speak? Did they learn from a failed attempt? Do they praise effort? Can they describe a disagreement and how it was settled?</td></tr>
+<tr><td><b>2. Affinity</b></td><td>Relationship work; shared time, intensity, shared stories, shared support; outcomes of affinity</td><td>Smooth handoffs between members, little rework, quick recovery from blockers, people who know whom to ask</td></tr>
+<tr><td><b>3. Tools and automation</b></td><td>Version control, automated builds triggered on push, infrastructure as code, monitoring</td><td>Shared repo with several contributors and reviews, a pipeline that builds and tests, a running deployment, some monitoring or logs</td></tr>
+<tr><td><b>4. Scaling</b></td><td>Team size 5 to 7, shared purpose, no hero or single point of knowledge, collaboration</td><td>Could another member give the demo? Is the workload shared? Is there a plan to grow the idea?</td></tr>
+<tr><td><b>Foundation: culture</b></td><td>Generative culture, blamelessness, outcomes not outputs</td><td>Does the solution deliver a real outcome for users, rather than a list of features?</td></tr>
+</tbody></table></div>
+
+<h3>Selecting the three winners</h3>
+<ol class="steps">
+<li><b>Score.</b> Give each of the 20 teams 0 to 5 on each of the four pillars, plus the culture foundation.</li>
+<li><b>Verify.</b> Do not trust the demo alone. Ask different members questions and read the commit history (trust but verify).</li>
+<li><b>Rank.</b> Total the scores and take the top three.</li>
+<li><b>Break ties on outcome.</b> Prefer the team whose solution delivers a real result for users over the one with more features (outcome over output, from Module 1).</li>
+</ol>
+
+<div class="note"><b>Optional hedge: CAMS</b><p>Many textbooks list the pillars of DevOps as <b>C</b>ulture, <b>A</b>utomation, <b>M</b>easurement and <b>S</b>haring. If you remember this, add one line mapping it onto your rubric: Culture = pillars 1 and 2; Automation = pillar 3; Measurement = monitoring and outcomes; Sharing = collaboration and giving back. See <a href="DevOps_Module1_Foundations.html#compact">Module 1, lesson 8</a>. It is not in your slides, so treat it as a bonus line, not the core.</p></div>
+
+<details class="sheet"><summary>Answer sheet: pillars of DevOps to pick 3 winners <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Judging the hackathon with the pillars of DevOps</h4>
+<p>DevOps rests on a culture of shared ownership, generative and blameless, where outcomes matter more than outputs. On top of that culture stand four pillars, which I would use as my judging criteria.</p>
+<p><b>1. Collaboration, mindset and trust.</b> Smarter teams are not teams with one star. They have <i>communication</i>, <i>equal participation</i> and <i>theory of mind</i>. I would watch whether all members contribute, whether they treat failure as learning (growth mindset), and whether they handle conflict openly.</p>
+<p><b>2. Affinity.</b> The strength of relationships. I would look for smooth handoffs, little rework, and quick recovery from a blocker. These show shorter cycle time and fewer communication barriers.</p>
+<p><b>3. Tools and automation.</b> A shared repository with reviews, an automated build and test pipeline triggered on each push, a deployed running solution, and monitoring.</p>
+<p><b>4. Scaling.</b> A right-sized team (5 to 7), shared purpose and no hero. Another member should be able to present the work, so there is no single point of knowledge.</p>
+<p><b>Method.</b> Score every team 0 to 5 per pillar, verify by questioning different members and reading commit history, rank by total, and break ties by the team whose solution delivers the better real outcome.</p>
+<p>The three highest-scoring teams win, because they show the behaviours that make teams smarter, not just clever code.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">In the hackathon answer, a "smarter" team is one that:</p><div class="opts"><button type="button" data-k="a">Has the strongest individual coder</button><button type="button" data-k="b">Communicates well, shares participation equally and has theory of mind</button><button type="button" data-k="c">Ships the most features</button><button type="button" data-k="d">Has the largest team</button></div><p class="why" hidden>These are the three traits from the New York Times article in your slides.</p></div>
+<div class="mcq" data-a="c"><p class="q">To break a tie between two teams, prefer the one with better:</p><div class="opts"><button type="button" data-k="a">Output (features shipped)</button><button type="button" data-k="b">Slides</button><button type="button" data-k="c">Outcome (real result for users)</button><button type="button" data-k="d">Team size</button></div><p class="why" hidden>Outcome over output, from Module 1.</p></div>
+<div class="mcq" data-a="d"><p class="q">"Could another member give the demo?" tests which pillar?</p><div class="opts"><button type="button" data-k="a">Tools</button><button type="button" data-k="b">Affinity</button><button type="button" data-k="c">Trust</button><button type="button" data-k="d">Scaling (no single point of knowledge)</button></div><p class="why" hidden>Hero culture is a single point of failure.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 15 ============ -->
+<section class="lesson" id="mock" data-tier="4">
+<header class="lh"><span class="no">15</span><div><h2>Mock paper for Module 2</h2>
+<p class="meta"><span>22 minutes per question</span><span>Paper and pen only</span></p></div></header>
+<p>Set a timer and answer from memory. Check yourself against the marking points under each one.</p>
+
+<div class="prob"><b>Q1 (10 marks), attempt any one</b><p>A. What is affinity? Explain the requirements for affinity in detail.<br>B. Define collaboration and mentorship, and explain how they help cultivate a growth mindset.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>A:</b> definition (relationship strength; relationship work as the sixth category); tie strength factors; four requirements (slack, explicit values and goals, space, collaboration and cooperation) each with an example; benefits. <b>B:</b> collaboration definition with examples; mentorship in four directions and the sponsor; growth vs fixed mindset; praise effort; feedback.</p></div></details>
+
+<div class="prob"><b>Q2 (10 marks), attempt any two</b><p>a) Explain the measures of the outcomes of affinity.<br>b) Explain the types of build automation.<br>c) Explain vampire and zombie projects.<br>d) Explain scaling for organizations.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>a:</b> measured through outcomes; employee skills and evaluations, interteam interaction, giving back (one a year). <b>b:</b> on-demand (human), scheduled (clock), triggered (event); example. <b>c:</b> zombie = nobody empowered to shut it down; vampire = feeds on other projects; talk to people first. <b>d:</b> decisions near the data, centralized vs ad hoc, build out leadership, flexibility questions; Target.</p></div></details>
+
+<div class="prob"><b>Q3 (10 marks), attempt any one</b><p>A. You are a judge at a hackathon with 20 teams. Explain the pillars of DevOps you would use to pick 3 winners, given that some teams are smarter than others.<br>B. Compare conflict resolution styles and say which is least effective in DevOps. Explain terminologies related to infrastructure management.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>A:</b> culture foundation; four pillars with rubric; smarter-team traits; scoring and tie-break on outcome. <b>B:</b> four styles (competition, accommodation, avoidance, compromise) plus collaboration; one chosen as least effective and tied to DevOps values; infrastructure as code, drift, snowflake, MTBF, MTTR, availability.</p></div></details>
+
+<h3>Not asked yet, but fair game</h3>
+<ul>
+<li>Tool ecosystem and its three pillars; version control and artifact management terms.</li>
+<li>Monitoring: metric types, log levels, alerting, false positives and negatives.</li>
+<li>Tool selection, standardisation and the exceptions.</li>
+<li>Retention (compensation, growth, burnout, culture fit) and hero culture.</li>
+<li>Empathy skills (listening, questioning, imagining perspectives, appreciating differences) and the four ways to develop trust.</li>
+</ul>
+<p>Quiz scores are for you only and are not saved.</p>
+<p class="score" id="score">Quiz score so far: no questions answered yet.</p>
+</section>
+
+<!-- ============ LESSON 16 ============ -->
+<section class="lesson" id="cheat" data-tier="4">
+<header class="lh"><span class="no">16</span><div><h2>Last-hour sheet</h2>
+<p class="meta"><span>Read this just before the exam</span></p></div></header>
+<dl class="kv">
+<dt>Collaboration</dt><dd>Intentional process of building toward a shared outcome through the input and support of many people. Smarter teams: communication, equal participation, theory of mind.</dd>
+<dt>Mentorship</dt><dd>Senior to junior, senior to senior, junior to senior, junior to junior. Sponsor advocates for promotion; mentor advises.</dd>
+<dt>Growth mindset</dt><dd>Abilities grow with effort. Praise effort and actions, not "you're so smart". Feedback and failure are learning.</dd>
+<dt>Conflict styles</dt><dd>Competition (win-lose), accommodation (give in), avoidance (dodge), compromise (both give a little), collaboration (win-win, best). Least effective: avoidance (runner-up: competition).</dd>
+<dt>Empathy / trust</dt><dd>Empathy: listen, ask questions, imagine perspectives, appreciate differences. Trust: swift trust, trust but verify, and the other two ways in lesson 4.</dd>
+<dt>Affinity</dt><dd>Measure of relationship strength; comes from relationship work (the sixth category). Ties: shared time, intensity, shared stories, shared support. Benefits: shorter cycle time, fewer barriers, trust and innovation.</dd>
+<dt>Requirements</dt><dd>S-E-S-C: Slack, Explicit values and goals, Space, Collaboration and cooperation.</dd>
+<dt>Measures</dt><dd>S-I-G: skills and evaluations, interteam interaction, giving back (one a year).</dd>
+<dt>Tools</dt><dd>Three pillars: development, automation, monitoring. Monitoring: counter, gauge, histogram, summary; alert on impact; false negative is worst.</dd>
+<dt>Build automation</dt><dd>On-demand (human), scheduled (clock), triggered (event, heart of CI/CD).</dd>
+<dt>Infrastructure</dt><dd>IaC (Terraform plan then apply), drift, snowflake, MTBF, MTTR, availability = MTBF / (MTBF + MTTR).</dd>
+<dt>Scaling: plan</dt><dd>Structure, locality, team size 5 to 7, growth/decline pressures, release cycles, complexity. Zombie: nobody can shut it down. Vampire: feeds on other projects.</dd>
+<dt>Scaling: teams</dt><dd>Shared purpose; hire for fit and learning; cost of growth; retention = pay, benefits, growth, workload, culture; hero = single point of failure; keep small, collaborate, manage conflict.</dd>
+<dt>Scaling: orgs</dt><dd>D-C-B-F: decisions near data, centralized vs ad hoc, build out leadership, flexibility questions. Target.</dd>
+<dt>Pillars</dt><dd>Culture foundation + collaboration/mindset/trust + affinity + tools/automation + scaling. Judge teams by behaviour, not star coders. Tie-break on outcome.</dd>
+</dl>
+<p>Next: <a href="DevOps_Module3_Architecture.html#plan">Module 3 · Architecture</a>.</p>
+</section>
+
+<nav class="pager" aria-label="Other modules"><a href="DevOps_Module1_Foundations.html"><small>Previous</small>Module 1 · Foundations</a><a href="DevOps_Module3_Architecture.html"><small>Next</small>Module 3 · Architecture</a></nav>
+</div></main>
+</div>
+<script>window.COURSE={"id": "m2", "title": "Module 2: Pillars of Effective DevOps", "sub": "DevOps, syllabus units 2.1 to 2.4", "tiers": {"1": "Critical: already asked", "2": "Major: in syllabus, not asked yet", "3": "Minor: skim", "4": "Finish line"}, "modules": [{"id": "m1", "href": "DevOps_Module1_Foundations.html", "label": "Module 1 \u00b7 Foundations", "total": 13}, {"id": "m2", "href": "DevOps_Module2_Pillars.html", "label": "Module 2 \u00b7 Pillars", "total": 16}, {"id": "m3", "href": "DevOps_Module3_Architecture.html", "label": "Module 3 \u00b7 Architecture", "total": 12}]};</script>
+<script>
+(function(){
+  var C = window.COURSE || {};
+  function load(id){ try { return JSON.parse(localStorage.getItem('devops:' + id + ':done') || '{}') || {}; } catch(e) { return {}; } }
+  var done = load(C.id);
+  function save(){ try { localStorage.setItem('devops:' + C.id + ':done', JSON.stringify(done)); } catch(e) {} }
+
+  var lessons = Array.prototype.slice.call(document.querySelectorAll('section.lesson'));
+  var nav = document.getElementById('outline');
+
+  /* ---- focus mode (critical only) ---- */
+  var FOCUS_KEY = 'devops:focus';
+  var focus = false;
+  try { focus = localStorage.getItem(FOCUS_KEY) === '1'; } catch(e) {}
+  function applyFocus(){ document.body.classList.toggle('focusmode', focus); }
+  applyFocus();
+
+  /* ---- build outline ---- */
+  if (nav) {
+    var html = '<p class="brand">' + C.title + '</p><p class="sub">' + (C.sub || '') + '</p>';
+    html += '<div class="mods">';
+    (C.modules || []).forEach(function(m){
+      var d = m.id === C.id ? done : load(m.id);
+      var n = 0; Object.keys(d).forEach(function(k){ if (d[k]) n++; });
+      html += '<a href="' + m.href + '" class="' + (m.id === C.id ? 'cur' : '') + '" data-mod="' + m.id + '"><span>' + m.label + '</span><small>' + n + '/' + m.total + '</small></a>';
+    });
+    html += '</div>';
+    html += '<div class="bar" aria-hidden="true"><i id="barfill"></i></div><p class="count" id="barcount"></p>';
+    html += '<label class="focus"><input type="checkbox" id="focusbox"><span>Critical-only mode: hide Major and Minor lessons (use this if you are short on time)</span></label>';
+    var tiers = C.tiers || {};
+    Object.keys(tiers).forEach(function(t){
+      var inTier = lessons.filter(function(s){ return s.dataset.tier === t; });
+      if (!inTier.length) return;
+      html += '<h6 class="h' + t + '">' + tiers[t] + '</h6><ol>';
+      inTier.forEach(function(s){
+        var n = s.querySelector('.no'), h = s.querySelector('h2');
+        html += '<li class="t' + t + '"><a href="#' + s.id + '" data-id="' + s.id + '"><span class="n">' + (n ? n.textContent : '') + '</span><span class="t">' + h.textContent + '</span></a></li>';
+      });
+      html += '</ol>';
+    });
+    nav.innerHTML = html;
+    var fb = document.getElementById('focusbox');
+    if (fb) { fb.checked = focus; fb.addEventListener('change', function(){ focus = fb.checked; try { localStorage.setItem(FOCUS_KEY, focus ? '1' : '0'); } catch(e) {} applyFocus(); refresh(); }); }
+  }
+
+  function visible(s){ return !(focus && (s.dataset.tier === '2' || s.dataset.tier === '3')); }
+
+  function refresh(){
+    var n = 0, tot = 0;
+    lessons.forEach(function(s){
+      var d = !!done[s.id];
+      if (visible(s)) { tot++; if (d) n++; }
+      var a = document.querySelector('.outline a[data-id="' + s.id + '"]');
+      if (a) a.classList.toggle('done', d);
+      var b = s.querySelector('.donebtn');
+      if (b) { b.setAttribute('aria-pressed', d ? 'true' : 'false'); b.textContent = d ? 'Done. Click to undo' : 'Mark this lesson as done'; }
+    });
+    var f = document.getElementById('barfill'), c = document.getElementById('barcount');
+    if (f) f.style.width = (tot ? Math.round(100 * n / tot) : 0) + '%';
+    if (c) c.textContent = n + ' of ' + tot + ' lessons done' + (focus ? ' (critical-only mode)' : '');
+    var cur = document.querySelector('.mods a.cur small');
+    if (cur) { var k = 0; Object.keys(done).forEach(function(x){ if (done[x]) k++; }); cur.textContent = k + '/' + (C.modules.filter(function(m){ return m.id === C.id; })[0].total); }
+  }
+
+  /* ---- done buttons ---- */
+  lessons.forEach(function(s){
+    var bar = document.createElement('div'); bar.className = 'donebar';
+    bar.innerHTML = '<button type="button" class="donebtn" aria-pressed="false"></button>';
+    s.appendChild(bar);
+    bar.firstChild.addEventListener('click', function(){ done[s.id] = !done[s.id]; save(); refresh(); });
+  });
+  refresh();
+
+  /* ---- MCQs ---- */
+  var mcqs = Array.prototype.slice.call(document.querySelectorAll('.mcq'));
+  var total = mcqs.length, right = 0, answered = 0;
+  mcqs.forEach(function(q){
+    var ans = q.dataset.a;
+    q.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (q.classList.contains('done')) return;
+        q.classList.add('done'); answered++;
+        var ok = btn.dataset.k === ans;
+        if (ok) right++;
+        btn.classList.add(ok ? 'right' : 'wrong');
+        if (!ok) { var r = q.querySelector('button[data-k="' + ans + '"]'); if (r) r.classList.add('right'); }
+        var w = q.querySelector('.why'); if (w) w.hidden = false;
+        var sc = document.getElementById('score');
+        if (sc) sc.textContent = 'Quiz score so far: ' + right + ' correct out of ' + answered + ' answered (' + total + ' questions on this page).';
+      });
+    });
+  });
+
+  /* ---- mobile menu ---- */
+  var mb = document.getElementById('menubtn');
+  if (mb) mb.addEventListener('click', function(){ document.body.classList.toggle('menu'); });
+  if (nav) nav.addEventListener('click', function(e){ if (e.target.closest('a[data-id]')) document.body.classList.remove('menu'); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') document.body.classList.remove('menu'); });
+  document.addEventListener('click', function(e){
+    if (document.body.classList.contains('menu') && !e.target.closest('#outline') && !e.target.closest('#menubtn')) document.body.classList.remove('menu');
+  });
+
+  /* ---- scrollspy ---- */
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if (en.isIntersecting) {
+          document.querySelectorAll('.outline a.on').forEach(function(a){ a.classList.remove('on'); });
+          var a = document.querySelector('.outline a[data-id="' + en.target.id + '"]');
+          if (a) a.classList.add('on');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    lessons.forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---- print: open every reveal ---- */
+  window.addEventListener('beforeprint', function(){ document.querySelectorAll('details').forEach(function(d){ d.open = true; }); });
+})();
+
+</script>
+</body>
+</html>

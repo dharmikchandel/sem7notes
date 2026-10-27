@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>DevOps Module 3: Software Architecture and Code Control</title>
+<style>
+:root{
+  color-scheme:dark;
+  --paper:#0a0f1d; --sheet:#111a2e; --ink:#e9eefb; --ink2:#a3aec9; --rule:#27324f; --tint:#19243f;
+  --blue:#8fb0ff; --blue-t:#1a2b58;
+  --crit:#ff8d9c; --crit-t:#3b1b26;
+  --major:#f2b865; --major-t:#3a2c14;
+  --minor:#a9b4c9; --minor-t:#232c44;
+  --pass:#62d69c; --pass-t:#13362a;
+  --answer:#151e35; --lines:#25325a; --margin:#a8545e;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Noto Serif",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 var(--sans)}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:3px}
+.shell{display:grid;grid-template-columns:304px minmax(0,1fr);min-height:100vh}
+
+/* ---------- outline sidebar ---------- */
+.outline{position:sticky;top:0;height:100vh;overflow:auto;padding:24px 20px 40px;background:var(--sheet);border-right:1px solid var(--rule);font-size:.92rem;line-height:1.35}
+.outline .brand{font:700 1.05rem/1.25 var(--serif);margin:0 0 4px}
+.outline .sub{color:var(--ink2);margin:0 0 14px}
+.mods{display:grid;gap:6px;margin:0 0 16px}
+.mods a{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;color:var(--ink);text-decoration:none;font-weight:600;font-size:.88rem}
+.mods a:hover{border-color:var(--blue)}
+.mods a.cur{background:var(--blue-t);border-color:var(--blue)}
+.mods a small{color:var(--ink2);font-weight:500;white-space:nowrap}
+.outline .bar{height:6px;background:var(--tint);border-radius:3px;overflow:hidden}
+.outline .bar i{display:block;height:100%;width:0;background:var(--pass);transition:width .25s}
+.outline .count{margin:6px 0 12px;color:var(--ink2);font-size:.85rem}
+.focus{display:flex;gap:8px;align-items:flex-start;padding:9px 10px;margin:0 0 6px;border:1px dashed var(--rule);border-radius:8px;font-size:.86rem;color:var(--ink2);cursor:pointer}
+.focus input{margin-top:3px;accent-color:var(--blue)}
+.outline h6{margin:18px 0 6px;font:650 .85rem/1.3 var(--sans);color:var(--ink2)}
+.outline ol{list-style:none;margin:0;padding:0}
+.outline li a{display:grid;grid-template-columns:24px 1fr;gap:6px;padding:7px 8px;margin:0 -8px;border-radius:6px;color:var(--ink);text-decoration:none}
+.outline li a:hover{background:var(--tint)}
+.outline li a.on{background:var(--blue-t);font-weight:600}
+.outline li a .n{color:var(--ink2);font-variant-numeric:tabular-nums}
+.outline li a.done .t::after{content:"  ✓";color:var(--pass);font-weight:700}
+.topbar{display:none}
+body.focusmode section.lesson[data-tier="2"],body.focusmode section.lesson[data-tier="3"]{display:none}
+body.focusmode .outline li.t2,body.focusmode .outline li.t3,body.focusmode .outline h6.h2,body.focusmode .outline h6.h3{display:none}
+
+/* ---------- main ---------- */
+main{padding:56px clamp(20px,5vw,72px) 140px}
+.col{max-width:720px}
+h1{font:700 clamp(2rem,5vw,3.1rem)/1.1 var(--serif);letter-spacing:-.015em;margin:0 0 10px}
+.lede{font-size:1.15rem;color:var(--ink2);margin:0 0 28px;max-width:48ch}
+h2{font:700 clamp(1.55rem,3.4vw,2rem)/1.2 var(--serif);letter-spacing:-.01em;margin:0}
+h3{font:650 1.15rem/1.35 var(--sans);margin:34px 0 6px}
+h4{font:650 1rem/1.4 var(--sans);margin:22px 0 4px}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:1.3em}
+li{margin:0 0 5px}
+li>ul,li>ol{margin-top:5px}
+code{font:.88em var(--mono);background:var(--tint);padding:1px 5px;border-radius:4px}
+pre{font:.88rem/1.5 var(--mono);background:var(--tint);padding:14px 16px;border-radius:8px;overflow:auto;margin:0 0 16px}
+pre code{background:none;padding:0}
+sup,sub{line-height:0}
+
+/* lesson head */
+.lesson{padding-top:56px;scroll-margin-top:8px;margin-top:56px;border-top:1px solid var(--rule)}
+.intro{margin-top:8px}
+.lh{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:start;margin-bottom:22px}
+.lh .no{font:700 2.6rem/1 var(--serif);color:var(--ink2);opacity:.55;min-width:1.3ch;text-align:right}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;font-size:.88rem;color:var(--ink2)}
+.sev{font-weight:700;padding:1px 9px;border-radius:99px;font-size:.84rem}
+.sev.crit{background:var(--crit-t);color:var(--crit)}
+.sev.major{background:var(--major-t);color:var(--major)}
+.sev.minor{background:var(--minor-t);color:var(--minor)}
+
+/* callouts */
+.note{margin:18px 0;padding:12px 16px 4px;border-left:4px solid var(--blue);background:var(--blue-t);border-radius:0 8px 8px 0}
+.note>b:first-child{display:block;margin-bottom:3px}
+.note.tip{border-color:var(--pass);background:var(--pass-t)}
+.note.warn{border-color:var(--crit);background:var(--crit-t)}
+.note.src{border-color:var(--major);background:var(--major-t)}
+.note.plain{border-color:var(--minor);background:var(--minor-t)}
+
+/* tables */
+.scroll{overflow-x:auto;margin:14px 0 20px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet)}
+table{border-collapse:collapse;width:100%;font-size:.93rem;line-height:1.45}
+th,td{padding:8px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+th{background:var(--tint);font-weight:650}
+tr:last-child td{border-bottom:0}
+td.c,th.c{text-align:center}
+.num{font-variant-numeric:tabular-nums}
+td.ok{color:var(--pass);font-weight:600}
+td.no{color:var(--crit);font-weight:600}
+.plan td:first-child,.plan th:first-child{width:1%;white-space:nowrap}
+
+/* diagrams made of boxes */
+.fig{margin:22px 0;padding:16px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px}
+.fig figcaption{margin-top:10px;font-size:.86rem;color:var(--ink2)}
+.flow{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.flow.mid{justify-content:center}
+.box{padding:7px 12px;border:1.5px solid var(--ink2);border-radius:8px;background:var(--sheet);font-size:.9rem;line-height:1.3;text-align:center;font-weight:600}
+.box small{display:block;font-weight:400;color:var(--ink2);font-size:.78rem}
+.box.hl{background:var(--blue-t);border-color:var(--blue)}
+.box.ok{background:var(--pass-t);border-color:var(--pass)}
+.box.bad{background:var(--crit-t);border-color:var(--crit)}
+.box.mid{background:var(--major-t);border-color:var(--major)}
+.box.dim{background:var(--tint);border-color:var(--rule);font-weight:500}
+.ar{color:var(--ink2);font-weight:700}
+.lane{font-size:.8rem;font-weight:700;color:var(--ink2);margin:10px 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.lane:first-child{margin-top:0}
+.stack{display:grid;gap:0;justify-items:stretch}
+.stack .box{border-radius:8px;text-align:left;padding:10px 14px}
+.stack .link{text-align:center;color:var(--ink2);font-size:.8rem;padding:3px 0;font-weight:600}
+.svc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.svc .box{font-size:.84rem}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cols2>div{border:1px solid var(--rule);border-radius:10px;background:var(--sheet);padding:12px 14px 4px}
+.cols2 h4{margin:0 0 6px}
+.cols2 ul{padding-left:1.1em;font-size:.95rem}
+
+/* problem + reveal */
+.prob{margin:18px 0 10px;padding:14px 18px 2px;background:var(--sheet);border:1px solid var(--rule);border-left:4px solid var(--blue);border-radius:0 8px 8px 0}
+.prob>b:first-child{display:block;margin-bottom:4px}
+details.try{margin:0 0 24px;border:1px dashed var(--ink2);border-radius:10px;background:transparent}
+details.try>summary{cursor:pointer;padding:11px 16px;font-weight:650;list-style:none;display:flex;align-items:center;gap:10px}
+details.try>summary::-webkit-details-marker{display:none}
+details.try>summary::before{content:"+";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#0a1020;font-weight:700;line-height:1;flex:none}
+details.try[open]>summary::before{content:"–"}
+details.try>.in{padding:2px 18px 6px;border-top:1px dashed var(--rule)}
+
+/* answer sheet (ruled paper) */
+details.sheet{margin:26px 0 30px}
+details.sheet>summary{cursor:pointer;list-style:none;padding:12px 16px;background:#22315f;color:var(--ink);border:1px solid #394b88;border-radius:8px;font-weight:650;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+details.sheet>summary::-webkit-details-marker{display:none}
+details.sheet>summary::before{content:"✎";color:var(--major)}
+details.sheet>summary small{font-weight:400;opacity:.8}
+details.sheet[open]>summary{border-radius:8px 8px 0 0}
+.sbody{--ln:28px;position:relative;padding:var(--ln) 22px 14px 66px;background-color:var(--answer);background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ln) - 1px),var(--lines) calc(var(--ln) - 1px),var(--lines) var(--ln));border:1px solid var(--rule);border-top:0;border-radius:0 0 8px 8px;font:16.5px/var(--ln) var(--serif)}
+.sbody::before{content:"";position:absolute;top:0;bottom:0;left:50px;width:2px;background:var(--margin)}
+.sbody h4{margin:0;font:700 16.5px/var(--ln) var(--serif)}
+.sbody p{margin:0 0 var(--ln);line-height:var(--ln)}
+.sbody ul,.sbody ol{margin:0 0 var(--ln);padding-left:1.25em}
+.sbody li{margin:0;line-height:var(--ln)}
+.sbody li>ul,.sbody li>ol{margin:0}
+.sbody code{line-height:1;font-size:.85em}
+.sbody .draw{color:var(--blue);font-style:italic}
+.sbody b{font-weight:700}
+.sbody table{font:15px/1.4 var(--sans);margin:0 0 var(--ln)}
+
+/* quiz */
+.quiz{margin:26px 0 0;padding-top:6px}
+.quiz>h3{margin-top:0}
+.mcq{margin:0 0 20px}
+.mcq .q{font-weight:600;margin:0 0 8px}
+.mcq .opts{display:grid;gap:6px}
+.mcq button{all:unset;box-sizing:border-box;cursor:pointer;display:block;padding:8px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet);font-size:.96rem;line-height:1.45}
+.mcq button:hover{border-color:var(--blue)}
+.mcq button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.mcq.done button{cursor:default}
+.mcq.done button:hover{border-color:var(--rule)}
+.mcq button.right{background:var(--pass-t);border-color:var(--pass)}
+.mcq button.wrong{background:var(--crit-t);border-color:var(--crit)}
+.mcq .why{margin:8px 0 0;font-size:.93rem;color:var(--ink2)}
+.score{margin:6px 0 0;font-size:.92rem;color:var(--ink2)}
+
+/* done button */
+.donebar{margin:34px 0 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.donebtn{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 16px;border-radius:8px;border:1px solid var(--blue);color:var(--blue);font-weight:650;font-size:.95rem}
+.donebtn:hover{background:var(--blue-t)}
+.donebtn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.donebtn[aria-pressed="true"]{background:var(--pass);border-color:var(--pass);color:#07130d}
+
+/* helpers */
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--rule);border-radius:10px;background:var(--sheet);overflow:hidden;margin:16px 0 22px}
+.grid3.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid3.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grid3>div{padding:14px 16px 6px;border-right:1px solid var(--rule)}
+.grid3>div:last-child{border-right:0}
+.grid3 h4{margin:0 0 6px}
+.grid3 ul{padding-left:1.1em;margin-bottom:8px;font-size:.95rem}
+.steps{counter-reset:s;list-style:none;padding:0;margin:14px 0 20px}
+.steps li{counter-increment:s;position:relative;padding:2px 0 12px 46px;margin:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:700 .9rem var(--sans)}
+.steps li::after{content:"";position:absolute;left:14px;top:32px;bottom:2px;width:2px;background:var(--rule)}
+.steps li:last-child::after{display:none}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:12px 0 18px}
+.kv dt{font-weight:650}.kv dd{margin:0}
+.pill{display:inline-block;padding:0 8px;border-radius:99px;background:var(--tint);font-size:.86rem;font-weight:600;white-space:nowrap}
+.ok{color:var(--pass)} .no{color:var(--crit)}
+.pager{display:flex;gap:12px;flex-wrap:wrap;margin:72px 0 0;padding-top:24px;border-top:1px solid var(--rule)}
+.pager a{flex:1 1 240px;padding:14px 16px;border:1px solid var(--rule);border-radius:10px;background:var(--sheet);color:var(--ink);text-decoration:none;font-weight:650}
+.pager a:hover{border-color:var(--blue)}
+.pager a small{display:block;color:var(--ink2);font-weight:500}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .shell{display:block}
+  .topbar{display:flex;position:sticky;top:0;z-index:20;align-items:center;gap:12px;padding:10px 16px;background:var(--sheet);border-bottom:1px solid var(--rule)}
+  .topbar button{all:unset;cursor:pointer;padding:6px 12px;border:1px solid var(--rule);border-radius:8px;font-weight:650;font-size:.92rem}
+  .topbar button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  .topbar span{font:700 .98rem var(--serif);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .outline{position:fixed;z-index:30;left:0;top:0;bottom:0;width:min(88vw,330px);height:auto;transform:translateX(-102%);transition:transform .2s;box-shadow:0 0 0 100vmax transparent}
+  body.menu .outline{transform:none;box-shadow:0 0 0 100vmax rgba(2,4,10,.6)}
+  main{padding:28px 16px 100px}
+  .lesson{padding-top:40px;scroll-margin-top:64px}
+  .grid3,.grid3.two,.grid3.four{grid-template-columns:1fr}
+  .grid3>div{border-right:0;border-bottom:1px solid var(--rule)}
+  .grid3>div:last-child{border-bottom:0}
+  .sbody{padding-left:50px;padding-right:14px}
+  .sbody::before{left:36px}
+  .lh .no{font-size:2rem}
+  .cols2,.svc{grid-template-columns:1fr}
+}
+@media (max-width:640px){.kv{grid-template-columns:1fr;gap:2px}.kv dt{margin-top:10px}.kv dd{margin-bottom:2px}}
+@media print{
+  .outline,.topbar,.donebar,.pager{display:none!important}
+  .shell{display:block} body{background:#fff;color:#000;font-size:12pt}
+  main{padding:0} .lesson{break-inside:auto}
+  .sbody{background-image:none;background-color:#fff;color:#000}
+}
+
+</style>
+</head>
+<body>
+<div class="topbar"><button type="button" id="menubtn" aria-label="Open the lesson outline">Outline</button><span>Module 3: Software Architecture and Code Control</span></div>
+<div class="shell">
+<nav class="outline" id="outline" aria-label="Course outline"></nav>
+<main><div class="col">
+<h1>Module 3: Software Architecture and Code Control</h1>
+<p class="lede">Monolith, three-tier, microservices, Conway's Law and resilience. Question 3 is nearly always an architecture scenario from here.</p>
+<section class="intro" id="plan">
+<h3>What your past papers actually ask</h3>
+<p>Question 3 has been an <b>architecture scenario</b> in four of your five papers. It gives you a made-up system (an e-commerce site, an inventory system, a learning platform, a result system) and asks you to apply the Module 3 ideas to it. The other paper's Question 3 came from Module 2. The full ranked hit list for the whole course is in <a href="DevOps_Module1_Foundations.html#plan">Module 1</a>.</p>
+<div class="scroll"><table class="plan">
+<thead><tr><th>Paper</th><th>Module 3 question asked</th><th>Lesson</th></tr></thead>
+<tbody>
+<tr><td>Oct 2022</td><td>Result Automation System: (a) the three-tier architecture, (b) how to upgrade the database without downtime, (c) how to deliver features faster.</td><td><a href="#threetier">6</a>, <a href="#migration">7</a>, <a href="#microservices">8</a></td></tr>
+<tr><td>Sep 2024</td><td>Learning management system: functional and non-functional requirements.</td><td><a href="#nfr">1</a></td></tr>
+<tr><td>Sep 2025</td><td>Inventory system: architecture rules of thumb (separation of concerns, cohesion, coupling) and three design principles.</td><td><a href="#thumb">3</a></td></tr>
+<tr><td>Oct 2025 (re-exam)</td><td>E-commerce company with separate teams: Conway's Law and how team structure maps to microservices.</td><td><a href="#conway">9</a></td></tr>
+</tbody></table></div>
+
+<div class="note src"><b>Wording note</b><p>The table gives the gist of each scenario, not the exact printed wording. So each lesson gives a general answer you can adapt to whatever system the examiner names. If a paper names different design principles, use the method in lesson 3.</p></div>
+
+<h3>The recipe for any scenario question</h3>
+<ol class="steps">
+<li><b>Name the style.</b> Monolithic, three-tier or microservices. Draw it in a few boxes.</li>
+<li><b>Link it to the DevOps need.</b> DevOps wants small changes deployed often, with high confidence and rare rollbacks.</li>
+<li><b>Use the rules of thumb.</b> Separation of concerns, high cohesion, low coupling.</li>
+<li><b>Give the trade-off.</b> Every style has a cost. Say what you gain and what you pay.</li>
+<li><b>Close with resilience.</b> More parts means more failures, so add monitoring and automated action.</li>
+</ol>
+
+<h3>How the labels work</h3>
+<ul>
+<li><span class="sev crit">Critical</span> has already appeared as a question. Learn these first.</li>
+<li><span class="sev major">Major</span> is in the syllabus and has not been asked yet. Read once, quickly.</li>
+<li><span class="sev minor">Minor</span> is slide filler. Skim.</li>
+</ul>
+
+<h3>How to study each lesson</h3>
+<ol>
+<li>Read the lesson once.</li>
+<li>Close the answer sheet and try to write the answer from memory on paper, then open the sheet and fix the gaps.</li>
+<li>Take the short quiz, then press "Mark this lesson as done".</li>
+</ol>
+<div class="note tip"><b>Plan for about 3 hours</b><p>Eight Critical lessons: requirements, rules of thumb, the architecture comparison, three-tier, database migration, microservices and Conway's Law. If you are short on time, tick "Critical-only mode" in the sidebar.</p></div>
+<div class="note src"><b>Where this module goes beyond your slides</b><p>Wherever I add something that is not in the professor's slides, it sits in a box titled "Not in your slides". The main ones: the three-principles mapping in lesson 3, and the standard names for the steps of a database migration in lesson 7.</p></div>
+</section>
+
+<!-- ============ LESSON 1 ============ -->
+<section class="lesson" id="nfr" data-tier="1">
+<header class="lh"><span class="no">1</span><div><h2>Functional and non-functional requirements</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2024 (learning management system)</span><span>About 20 min</span><span>Syllabus 3.1</span></p></div></header>
+
+<p>Every architecture question starts from requirements. The slides split them into two kinds. Learn the split, the pipeline example, and what DevOps demands of an architecture.</p>
+
+<div class="cols2">
+<div><h4>Functional requirements</h4><ul><li>Describe <b>what</b> the system must do.</li><li>Specific services, features and reactions.</li><li>Map directly to use cases.</li><li>Tested by checking the function runs.</li><li>E.g. "Send an irrigation alert via SMS."</li></ul></div>
+<div><h4>Non-functional requirements</h4><ul><li>Describe <b>how well</b> it must behave.</li><li>Quality attributes: performance, security, usability limits.</li><li>Often apply across the whole system.</li><li>Often decide acceptance or rejection.</li><li>E.g. "Alerts delivered within 5 seconds."</li></ul></div>
+</div>
+<p>Slide example: functional is "handle credit card transactions"; non-functional is "handle several per second".</p>
+
+<h3>The slide's DevOps example: an online shop built with a pipeline</h3>
+<div class="cols2">
+<div><h4>Functional</h4><ul>
+<li>Developers push source code to Git.</li>
+<li>A Git push triggers the CI pipeline.</li>
+<li>The pipeline compiles the application.</li>
+<li>The pipeline runs automated tests.</li>
+<li>A successful build creates a Docker image.</li>
+<li>The image is deployed to Kubernetes.</li>
+<li>Prometheus collects metrics.</li>
+<li>Developers are notified when a pipeline fails.</li></ul></div>
+<div><h4>Non-functional</h4><ul>
+<li>The CI pipeline completes within 10 minutes.</li>
+<li>99.9% availability.</li>
+<li>Supports 100 concurrent deployments.</li>
+<li>Deployment credentials are encrypted.</li>
+<li>A failed deployment is recoverable within 5 minutes.</li>
+<li>Pipeline logs are retained for 30 days.</li></ul></div>
+</div>
+<p>A good non-functional requirement has a <b>number</b> in it. Notice how each one above is measurable.</p>
+
+<h3>What continuous delivery demands of architecture</h3>
+<div class="grid3 two">
+<div><h4>1. Deploy small changes often</h4><p>From a developer's machine to production quickly, as the normal case.</p></div>
+<div><h4>2. High confidence in quality</h4><p>Rolling back because of surprise problems should be rare.</p></div>
+</div>
+
+<div class="note src"><b>Not in your slides</b><p>The slides do not show a learning-management-system example. The LMS lists in the sheet below are my own, built in the same style as the slide's pipeline example. Adapt the nouns to whatever system the paper names; the structure stays the same.</p></div>
+
+<details class="sheet"><summary>Answer sheet: functional and non-functional requirements of a learning management system <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Requirements of a learning management system (LMS)</h4>
+<p><b>Functional requirements</b> describe <i>what</i> the system must do: the specific services and behaviours, which map to use cases and are tested by checking that the function runs.</p>
+<ul>
+<li>A student shall register and log in.</li>
+<li>A student shall enrol in a course and view or download materials.</li>
+<li>A student shall submit assignments and take quizzes.</li>
+<li>An instructor shall upload content, grade submissions and publish results.</li>
+<li>The system shall notify users of deadlines and grades.</li>
+</ul>
+<p><b>Non-functional requirements</b> describe <i>how well</i> the system behaves: quality attributes that often apply across the whole system and decide acceptance.</p>
+<ul>
+<li><b>Performance:</b> a page loads within 2 seconds.</li>
+<li><b>Scalability:</b> supports 5,000 concurrent users during an exam.</li>
+<li><b>Availability:</b> 99.9% uptime.</li>
+<li><b>Security:</b> passwords and student records are encrypted; role-based access.</li>
+<li><b>Usability:</b> works on mobile screens.</li>
+<li><b>DevOps-related:</b> a failed deployment is recoverable within 5 minutes; small changes can be released often without taking the whole LMS down.</li>
+</ul>
+<p><b>Why it matters for DevOps:</b> continuous delivery needs small changes deployed often, with high confidence in quality. The non-functional requirements are what push the design towards modular architecture.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">"The application shall provide 99.9% availability" is:</p><div class="opts"><button type="button" data-k="a">Functional</button><button type="button" data-k="b">Non-functional</button><button type="button" data-k="c">A use case</button><button type="button" data-k="d">A deployment step</button></div><p class="why" hidden>It says how well the system behaves, with a number.</p></div>
+<div class="mcq" data-a="a"><p class="q">"A Git push shall trigger the CI pipeline" is:</p><div class="opts"><button type="button" data-k="a">Functional</button><button type="button" data-k="b">Non-functional</button><button type="button" data-k="c">A constraint</button><button type="button" data-k="d">A metric</button></div><p class="why" hidden>It describes a behaviour the system must perform.</p></div>
+<div class="mcq" data-a="d"><p class="q">Continuous delivery demands from architecture:</p><div class="opts"><button type="button" data-k="a">Large yearly releases</button><button type="button" data-k="b">One big deployment unit</button><button type="button" data-k="c">Frequent rollbacks</button><button type="button" data-k="d">Small changes often, with high confidence</button></div><p class="why" hidden>Rolling back because of surprise problems should be rare.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 2 ============ -->
+<section class="lesson" id="monolith" data-tier="2">
+<header class="lh"><span class="no">2</span><div><h2>The monolithic scenario: one typo, one giant archive</h2>
+<p class="meta"><span class="sev major">Major</span><span>Not asked on its own yet</span><span>About 10 min</span><span>Syllabus 3.1</span></p></div></header>
+
+<p>This is the story that motivates the whole module. A large web application has many functions, plus a static website inside it. It deploys as <b>a single Java EE application archive</b>. To fix one typo on the static site, you rebuild and redeploy everything. Example: correcting "Wellcome" to "Welcome" in a footer means rebuilding a business-critical system.</p>
+
+<h3>The "simple" fix, in four steps</h3>
+<ol class="steps">
+<li>Branch the monolith's code to match what is running in production.</li>
+<li>Make the change on the branch: correct the spelling.</li>
+<li>Build a new artifact with the correction, and version it.</li>
+<li>Deploy the new artifact to production.</li>
+</ol>
+
+<h3>The hidden costs of "just a typo"</h3>
+<ul>
+<li>If something breaks during deployment, the whole business loses revenue.</li>
+<li>Real mental energy goes into proving a trivial change is safe ("we also touched some version strings, is that safe too?").</li>
+<li>Every change to a monolith needs the full manual verification chain. Example: a five-minute spelling fix triggers a two-hour regression test of an unrelated checkout flow.</li>
+</ul>
+
+<h3>What went wrong</h3>
+<p>There was <b>no modularisation, at least from a deployment point of view</b>. The fix belongs to a frontend web component, which could be deployed on its own life cycle, alone. A standalone frontend deployment pipeline would fix the typo in minutes, untouched by the backend.</p>
+<div class="note tip"><b>One-line takeaway</b><p>A monolith turns even a spelling fix into a full, risky redeploy. That is the opposite of "small changes, deployed often, with confidence".</p></div>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">What was the main architectural problem in the typo story?</p><div class="opts"><button type="button" data-k="a">A slow database</button><button type="button" data-k="b">Too many developers</button><button type="button" data-k="c">No modularisation from a deployment point of view</button><button type="button" data-k="d">A missing load balancer</button></div><p class="why" hidden>The static website could have deployed on its own.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 3 ============ -->
+<section class="lesson" id="thumb" data-tier="1">
+<header class="lh"><span class="no">3</span><div><h2>Architecture rules of thumb: separation of concerns, cohesion, coupling</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2025 (inventory system)</span><span>About 25 min</span><span>Syllabus 3.1</span></p></div></header>
+
+<p>Three connected ideas. The key insight ties them together, and it is the line examiners want to see.</p>
+
+<h3>Separation of concerns</h3>
+<p>Consider different aspects of a system separately from one another. Divide the system into distinct concerns, each with one specific responsibility.</p>
+<div class="stack">
+<div class="box hl">User interface <small>displays products, accepts input</small></div>
+<div class="box hl">Business logic <small>ordering, pricing, discounts</small></div>
+<div class="box hl">Database <small>customers, products, orders</small></div>
+<div class="box">Security <small>authentication and authorisation</small></div>
+<div class="box">Logging <small>records activity and errors</small></div>
+<div class="box">Monitoring <small>tracks health and performance</small></div>
+</div>
+<p>The slide's example is an online shopping application with exactly these six concerns.</p>
+
+<div class="grid3 two">
+<div><h4>Cohesion</h4><ul><li>The degree to which the elements of a module belong together.</li><li>How strongly related a module's functions really are.</li><li>We want it <b>high</b>.</li><li>E.g. a SpellChecker module that only checks spelling.</li></ul></div>
+<div><h4>Coupling</h4><ul><li>The degree of dependency between two separate modules.</li><li>We want it as <b>low</b> as we can make it.</li><li>E.g. the static website module should not need to know about the payments module.</li></ul></div>
+</div>
+
+<div class="note"><b>The key insight</b><p><b>High cohesion + low coupling = separation of concerns</b>, automatically, and it works in reverse too. The monolith failed because it had low cohesion and high coupling: concerns were never separated.</p></div>
+
+<h3>Applying it to an inventory system</h3>
+<div class="flow mid"><span class="box hl">Stock UI</span><span class="ar">→</span><span class="box hl">Stock logic <small>add, remove, reorder</small></span><span class="ar">→</span><span class="box hl">Inventory database</span></div>
+<p>Separate concerns: user interface, stock logic, database, security, logging and monitoring. Keep each module cohesive (the reorder module only handles reordering) and loosely coupled (reports read stock through one interface and never touch the database tables directly).</p>
+
+<div class="note src"><b>Not in your slides: the "three principles" mapping</b><p>If the question asks for three design principles (for example "optimise for change, design for operations, automate everything repeatable"), your slides do not define them. Use this method: say what the principle means in one line, then tie it back to the slide ideas.</p>
+<p><b>Optimise for change:</b> small, independently deployable modules (low coupling). <b>Design for operations:</b> monitoring and logging as their own concerns, so the system can be run and observed. <b>Automate everything repeatable:</b> build, test and deploy through a pipeline. If your paper names other principles, the method is the same.</p></div>
+
+<details class="sheet"><summary>Answer sheet: architecture rules of thumb for an inventory system <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Architecture rules of thumb</h4>
+<p>DevOps asks architecture for small changes deployed often, with high confidence. Three rules of thumb support that.</p>
+<p><b>1. Separation of concerns.</b> Consider different aspects of the system separately, each with a specific responsibility. For an inventory system: user interface (stock screens), business logic (adding, removing, reordering stock), database (items, suppliers, stock levels), security (authentication and authorisation), logging (activity and errors) and monitoring (health and performance).</p>
+<p><b>2. Cohesion.</b> The degree to which the elements of a module belong together. It should be high. E.g. a reorder module handles only reordering, as a SpellChecker only checks spelling.</p>
+<p><b>3. Coupling.</b> The degree of dependency between modules. It should be as low as possible. E.g. the reporting module reads stock through an interface and does not depend on how the stock module stores data.</p>
+<p><b>Key insight:</b> high cohesion plus low coupling is separation of concerns, and vice versa. A monolith where everything is tangled has low cohesion and high coupling, so even a small change needs a full redeploy.</p>
+<p><b>Benefit:</b> the stock UI can be changed and deployed on its own life cycle in minutes, without touching the backend.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="a"><p class="q">The desirable combination is:</p><div class="opts"><button type="button" data-k="a">High cohesion, low coupling</button><button type="button" data-k="b">Low cohesion, high coupling</button><button type="button" data-k="c">High cohesion, high coupling</button><button type="button" data-k="d">Low cohesion, low coupling</button></div><p class="why" hidden>This is separation of concerns.</p></div>
+<div class="mcq" data-a="c"><p class="q">Coupling is:</p><div class="opts"><button type="button" data-k="a">How related a module's functions are</button><button type="button" data-k="b">How fast a module runs</button><button type="button" data-k="c">The degree of dependency between two modules</button><button type="button" data-k="d">The number of developers</button></div><p class="why" hidden>The first option describes cohesion.</p></div>
+<div class="mcq" data-a="b"><p class="q">The monolith in the typo story had:</p><div class="opts"><button type="button" data-k="a">High cohesion and low coupling</button><button type="button" data-k="b">Low cohesion and high coupling</button><button type="button" data-k="c">Many databases</button><button type="button" data-k="d">Clear tiers</button></div><p class="why" hidden>Concerns were never separated.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 4 ============ -->
+<section class="lesson" id="modularity" data-tier="3">
+<header class="lh"><span class="no">4</span><div><h2>Modularity, information hiding and types of cohesion</h2>
+<p class="meta"><span class="sev minor">Minor</span><span>Not asked yet</span><span>About 10 min</span><span>Syllabus 3.1</span></p></div></header>
+
+<p>Skim this. It is a short extension of lesson 3, and it introduces the running example, Matangle.</p>
+
+<h3>Meet Matangle</h3>
+<p>A SaaS provider that sells access to educational games for school children. Like any such provider, it holds a database of customer information. The module uses this system to build up its architecture story.</p>
+
+<h3>Modularity has a sweet spot</h3>
+<ul>
+<li>More modules mean smaller, cheaper individual pieces.</li>
+<li>But more modules mean more effort spent integrating them.</li>
+<li>The total cost curve has a minimum around a right-sized number. We cannot predict the number exactly, so avoid both extremes.</li>
+<li>Example: splitting Matangle's database layer into 50 tiny services would cost more than it saves.</li>
+</ul>
+
+<h3>Information hiding</h3>
+<ul>
+<li>Each module hides its own design decisions from the others.</li>
+<li>Other modules see only what they truly need.</li>
+<li>Errors made during changes are less likely to spread elsewhere.</li>
+<li>Example: the customer database exposes one lookup API, never its internal schema.</li>
+</ul>
+
+<h3>Common types of cohesion</h3>
+<div class="grid3">
+<div><h4>Functional</h4><p>One targeted computation, then a result is returned. E.g. a TaxCalculator: give it an order, get back a tax total.</p></div>
+<div><h4>Layer</h4><p>A higher layer uses a lower layer, never the reverse.</p></div>
+<div><h4>Communicational</h4><p>All operations act on the very same data.</p></div>
+</div>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="d"><p class="q">"All operations act on the very same data" is which type of cohesion?</p><div class="opts"><button type="button" data-k="a">Functional</button><button type="button" data-k="b">Layer</button><button type="button" data-k="c">Sequential</button><button type="button" data-k="d">Communicational</button></div><p class="why" hidden>Functional is one targeted computation; layer is higher uses lower.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 5 ============ -->
+<section class="lesson" id="compare" data-tier="1">
+<header class="lh"><span class="no">5</span><div><h2>Monolithic vs three-tier vs microservices</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: the base of the scenario questions (Oct 2022, Oct 2025)</span><span>About 30 min</span><span>Syllabus 3.1</span></p></div></header>
+
+<p>Your second Module 3 deck compares the three styles using one e-commerce application with six functions: <b>product catalog, shopping cart, user authentication, payment, order management, notifications</b>. The same six functions are built three ways. This table is the most reusable thing in Module 3.</p>
+
+<h3>The three styles</h3>
+<div class="grid3">
+<div><h4>1. Monolithic</h4><ul><li>All six functions in one project, one process, one shared database, one deployment unit.</li><li>Any change, even to notifications, needs a full redeploy.</li><li>Example stack: Django + PostgreSQL.</li></ul></div>
+<div><h4>2. Three-tier</h4><ul><li><b>Presentation:</b> React or Angular UI.</li><li><b>Application:</b> Node.js or Django business logic.</li><li><b>Data:</b> PostgreSQL or MySQL, one shared database.</li></ul></div>
+<div><h4>3. Microservices</h4><ul><li>An API gateway in front of six services, each with its <b>own database</b>.</li><li>Services talk through an event bus or message queue (Kafka, RabbitMQ).</li><li>Each service can be its own three-tier system.</li></ul></div>
+</div>
+
+<h3>Comparison at a glance (memorise this table)</h3>
+<div class="scroll"><table>
+<thead><tr><th>Aspect</th><th>Monolithic</th><th>Three-tier</th><th>Microservices</th></tr></thead>
+<tbody>
+<tr><td><b>Codebase</b></td><td>One project</td><td>Frontend + backend</td><td>Many small repos</td></tr>
+<tr><td><b>Database</b></td><td>One shared DB</td><td>One shared DB</td><td>Each service its own DB</td></tr>
+<tr><td><b>Deployment</b></td><td>Full redeploy</td><td>Backend redeploy</td><td>Per-service deploy</td></tr>
+<tr><td><b>Scaling</b></td><td>All or none</td><td>Scale the backend</td><td>Scale per service</td></tr>
+<tr><td><b>Fault impact</b></td><td>Whole app fails</td><td>Backend goes down</td><td>Only that service</td></tr>
+<tr><td><b>Best for</b></td><td>MVP, startups</td><td>Mid-scale apps</td><td>Large-scale systems</td></tr>
+</tbody></table></div>
+
+<h3>Pros and cons</h3>
+<div class="scroll"><table>
+<thead><tr><th></th><th>Advantages</th><th>Disadvantages</th></tr></thead>
+<tbody>
+<tr><td><b>Monolithic</b></td><td>Simple to build; easy end-to-end testing; no network latency between modules; one artifact to deploy; fine for small teams and MVPs</td><td>Can only scale the whole app; one bug in notifications can crash the store; slower deploys as it grows; locked tech stack; hard for large teams to work at once</td></tr>
+<tr><td><b>Three-tier</b></td><td>Clear separation of UI, logic and data; frontend and backend teams work independently; backend scales separately from UI; DB changes do not affect the frontend directly</td><td>The backend is still one large block; a payment bug can break the whole backend; cannot pick a different DB for different needs; not ideal at very large scale</td></tr>
+<tr><td><b>Microservices</b></td><td>Scale only what is needed (payment during a sale); independently deployable; different teams own different services; mixed technologies; one service failing does not crash the store</td><td>Complex setup (gateway, service discovery); network latency adds up; distributed tracing and debugging are hard; more DevOps effort (Docker, Kubernetes); data consistency across databases is tricky</td></tr>
+</tbody></table></div>
+
+<h3>When to use which</h3>
+<div class="grid3">
+<div><h4>Monolithic</h4><ul><li>Proof of concept.</li><li>Team under 5 developers.</li><li>Limited budget and time.</li><li>Not for high-traffic stores.</li><li>E.g. a local boutique going online.</li></ul></div>
+<div><h4>Three-tier</h4><ul><li>Separate UI and backend teams.</li><li>Moderate scalability.</li><li>Established mid-size store.</li><li>Not ideal for millions of daily users.</li><li>E.g. a regional retailer.</li></ul></div>
+<div><h4>Microservices</h4><ul><li>High scale, such as Black Friday spikes.</li><li>Independent teams per domain.</li><li>Frequent, safe deployment.</li><li>Overkill for small or simple stores.</li><li>E.g. Amazon, Flipkart, Netflix-scale.</li></ul></div>
+</div>
+<div class="note tip"><b>Two sentences to close any comparison answer</b><p>There is no universal winner: each style fits a team size, traffic level and business need. Complexity grows from monolith to three-tier to microservices: each step adds flexibility and operational overhead. Most platforms (Amazon, Netflix) started monolithic and migrated to microservices as they scaled.</p></div>
+
+<details class="sheet"><summary>Answer sheet: compare monolithic, three-tier and microservices architectures with an example <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Monolithic, three-tier and microservices (e-commerce example)</h4>
+<p>Take an e-commerce application with catalog, cart, authentication, payment, orders and notifications.</p>
+<ul>
+<li><b>Monolithic:</b> all functions in one codebase, one process, one shared database, one deployment unit. Simple to build and test, but any change needs a full redeploy, the whole app scales together and one bug can crash everything. Best for MVPs and small teams.</li>
+<li><b>Three-tier:</b> separates presentation (React), application logic (Node.js or Django) and data (PostgreSQL). Frontend and backend teams work independently and the backend scales alone. But the backend is still one block and a payment bug can break it all. Best for mid-size applications.</li>
+<li><b>Microservices:</b> each function is a service with its own database, behind an API gateway, communicating by messages. Independent deployment and scaling, mixed technologies and fault isolation. The cost is complexity: service discovery, network latency, distributed debugging and data consistency. Best for large systems.</li>
+</ul>
+<p>Comparison table: codebase, database, deployment, scaling, fault impact, best-for (as above).</p>
+<p><b>Conclusion:</b> no universal winner; complexity and flexibility grow together. Many platforms evolve from monolith to microservices.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">In which style does each service have its own database?</p><div class="opts"><button type="button" data-k="a">Monolithic</button><button type="button" data-k="b">Three-tier</button><button type="button" data-k="c">Microservices</button><button type="button" data-k="d">All of them</button></div><p class="why" hidden>Monolithic and three-tier share one database.</p></div>
+<div class="mcq" data-a="b"><p class="q">A start-up with a team under 5 and a tight deadline should pick:</p><div class="opts"><button type="button" data-k="a">Microservices</button><button type="button" data-k="b">Monolithic</button><button type="button" data-k="c">An event bus</button><button type="button" data-k="d">One service per developer</button></div><p class="why" hidden>Microservices would be overkill.</p></div>
+<div class="mcq" data-a="a"><p class="q">"Scale only what is needed, such as payment during a sale" is an advantage of:</p><div class="opts"><button type="button" data-k="a">Microservices</button><button type="button" data-k="b">Monolithic</button><button type="button" data-k="c">Three-tier</button><button type="button" data-k="d">None of them</button></div><p class="why" hidden>Monolithic can only scale all or nothing; three-tier scales the whole backend.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 6 ============ -->
+<section class="lesson" id="threetier" data-tier="1">
+<header class="lh"><span class="no">6</span><div><h2>Three-tier systems: Matangle's customer database</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022 (Result Automation System, part a)</span><span>About 15 min</span><span>Syllabus 3.2</span></p></div></header>
+
+<p>A classic three-tier, CRUD system, a pattern used for decades. <b>CRUD = Create, Read, Update, Delete.</b></p>
+<div class="stack">
+<div class="box hl">Presentation tier <small>React frontend: a set of JavaScript and static HTML files</small></div>
+<div class="link">API calls (JSON over HTTP)</div>
+<div class="box hl">Logic tier <small>Clojure on the Java platform (common in larger organizations)</small></div>
+<div class="link">SQL queries</div>
+<div class="box hl">Data tier <small>PostgreSQL, a robust relational database</small></div>
+</div>
+
+<h3>The catch: tiers tangle back together</h3>
+<ul>
+<li>On paper, each tier should deploy on its own, so small changes propagate easily.</li>
+<li>In practice, the data and logic tiers often end up <b>tightly coupled</b>. The presentation and logic tiers can tangle the same way.</li>
+<li>Without lean interfaces, you rebuild the monolith by accident.</li>
+<li>Example: a Clojure change that also touches PostgreSQL-specific SQL now needs both tiers redeployed together.</li>
+</ul>
+<div class="note tip"><b>Exam line</b><p>Three-tier gives separation of concerns (UI, logic, data). To keep the benefit, keep the interfaces between tiers lean, so that low coupling is real, not just on paper.</p></div>
+
+<details class="sheet"><summary>Answer sheet: three-tier architecture of a result automation system <small>about 4 marks</small></summary>
+<div class="sbody">
+<h4>Three-tier architecture of a Result Automation System</h4>
+<p>A result automation system takes marks, computes results and shows them to students. A three-tier design separates it into:</p>
+<ul>
+<li><b>Presentation tier:</b> web pages where teachers enter marks and students view results (for example React).</li>
+<li><b>Logic tier:</b> the backend that validates marks, calculates totals, grades and ranks, and applies rules (for example Clojure, Java or Django).</li>
+<li><b>Data tier:</b> the relational database (for example PostgreSQL) storing students, subjects, marks and results.</li>
+</ul>
+<p>The tiers communicate through JSON over HTTP (frontend to backend) and SQL (backend to database). It is a CRUD system: create, read, update and delete records.</p>
+<p><b>Benefit:</b> each tier can be changed independently, so the UI can be updated without touching the logic. <b>Caveat:</b> the logic and data tiers can become tightly coupled, so keep interfaces lean.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="d"><p class="q">In the Matangle example, the data tier is:</p><div class="opts"><button type="button" data-k="a">React</button><button type="button" data-k="b">Clojure</button><button type="button" data-k="c">Kafka</button><button type="button" data-k="d">PostgreSQL</button></div><p class="why" hidden>React is the presentation tier; Clojure is the logic tier.</p></div>
+<div class="mcq" data-a="a"><p class="q">The main risk of a three-tier system in practice is:</p><div class="opts"><button type="button" data-k="a">The tiers tangle back together through tight coupling</button><button type="button" data-k="b">It cannot store data</button><button type="button" data-k="c">It has no user interface</button><button type="button" data-k="d">It requires a message queue</button></div><p class="why" hidden>Then you rebuild the monolith by accident.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 7 ============ -->
+<section class="lesson" id="migration" data-tier="1">
+<header class="lh"><span class="no">7</span><div><h2>Database migrations and rolling upgrades</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022 (upgrade the database without downtime, part b)</span><span>About 25 min</span><span>Syllabus 3.2</span></p></div></header>
+
+<p>The Oct 2022 question needs two ideas: why databases are different from binaries, and how a rolling upgrade changes the schema with almost no downtime.</p>
+
+<h3>Databases aren't like binaries</h3>
+<ul>
+<li>Upgrading a binary: stop it, replace it, start it. State lives elsewhere.</li>
+<li>A database holds comparatively little logic but a huge amount of <b>state</b>.</li>
+<li>A schema change is a command that changes structure, not just code.</li>
+<li>Before and after a change, treat the schema as two different versions.</li>
+<li>Swapping an app binary loses nothing; swapping a schema carelessly can lose real customer data.</li>
+</ul>
+
+<h3>How migration tools track versions</h3>
+<ol class="steps">
+<li>Add a table to the database that stores the current schema version.</li>
+<li>Bundle change commands into versioned changesets.</li>
+<li>The tool checks the metadata table and runs whatever changesets are missing.</li>
+</ol>
+<div class="grid3">
+<div><h4>Liquibase</h4><p>XML changesets.</p></div>
+<div><h4>Migratus</h4><p>For the Clojure ecosystem.</p></div>
+<div><h4>Flyway</h4><p>SQL files or Java classes.</p></div>
+</div>
+
+<h3>Rolling upgrade: splitting the name field</h3>
+<p>Starting point: one database, two app servers, one load balancer in front. Goal: change the schema and the servers with little to no user-visible downtime. Example: Matangle must split the "name" field into first name and surname, an incompatible change.</p>
+<div class="scroll"><table>
+<thead><tr><th>Step</th><th>What happens</th><th>Users see</th></tr></thead>
+<tbody>
+<tr><td><b>1</b></td><td>Migrate the DB: add first and last name fields and fill them from the old name field. This is backward compatible, since the old field stays.</td><td>No change; both servers still use the old field</td></tr>
+<tr><td><b>2</b></td><td>Take server two out of the load balancer pool. Server one keeps working with the old field.</td><td>Service continues on server one</td></tr>
+<tr><td><b>3</b></td><td>Upgrade server two to use the new fields, then bring it back online.</td><td>Service continues; server two is on the new version</td></tr>
+<tr><td><b>4</b></td><td>Swap: take server one out, upgrade it too, then restore both servers to the pool.</td><td>Both servers upgraded</td></tr>
+</tbody></table></div>
+<div class="flow"><span class="box hl">1. Migrate DB (add new fields)</span><span class="ar">→</span><span class="box mid">2. Pull server 2 out</span><span class="ar">→</span><span class="box mid">3. Upgrade server 2, return it</span><span class="ar">→</span><span class="box ok">4. Upgrade server 1, restore both</span></div>
+<p>Only the last, unused old "name" field remains to be dropped. The risky part is already done. The trade: rolling upgrades add extra steps but give near-zero downtime.</p>
+
+<div class="note src"><b>Not in your slides</b><p>This pattern has a standard name: <b>expand, migrate, contract</b>. Expand = add the new fields (step 1). Migrate = move servers over (steps 2 to 4). Contract = drop the old field later. The slides do not use these words, but they describe the same thing, so one line with the names can earn an extra mark.</p></div>
+
+<details class="sheet"><summary>Answer sheet: upgrading the database without downtime <small>about 4 marks</small></summary>
+<div class="sbody">
+<h4>Upgrading the database of a Result Automation System without downtime</h4>
+<p>A database is not like a binary. A binary can be stopped, replaced and started, with state kept elsewhere. A database holds a huge amount of state, so a careless schema change can lose real data. Therefore treat the schema as two versions, before and after, and use a migration tool (Liquibase, Flyway or Migratus) that stores the current schema version in a table and applies versioned changesets.</p>
+<p><b>Rolling upgrade</b> (one database, two application servers, one load balancer). Example: split the student "name" field into first name and surname.</p>
+<ol>
+<li>Migrate the database: add the new fields and fill them from the old one. The old field stays, so it is backward compatible.</li>
+<li>Remove server two from the load balancer; server one keeps serving using the old field.</li>
+<li>Upgrade server two to use the new fields and bring it back online.</li>
+<li>Swap: remove server one, upgrade it, and restore both servers to the pool.</li>
+</ol>
+<p>Users see almost no downtime. The old field is dropped later.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">In the rolling upgrade, the first step is to:</p><div class="opts"><button type="button" data-k="a">Upgrade both servers at once</button><button type="button" data-k="b">Migrate the database in a backward-compatible way (add new fields, keep old)</button><button type="button" data-k="c">Delete the old field</button><button type="button" data-k="d">Shut down the load balancer</button></div><p class="why" hidden>The old field stays so that servers still on the old version keep working.</p></div>
+<div class="mcq" data-a="c"><p class="q">Which tool uses SQL files or Java classes for changesets?</p><div class="opts"><button type="button" data-k="a">Liquibase</button><button type="button" data-k="b">Migratus</button><button type="button" data-k="c">Flyway</button><button type="button" data-k="d">Kafka</button></div><p class="why" hidden>Liquibase uses XML; Migratus is for Clojure.</p></div>
+<div class="mcq" data-a="a"><p class="q">Why can a schema change not be treated like swapping a binary?</p><div class="opts"><button type="button" data-k="a">A database holds a large amount of state that can be lost</button><button type="button" data-k="b">Databases have no schema</button><button type="button" data-k="c">Binaries cannot be versioned</button><button type="button" data-k="d">The load balancer forbids it</button></div><p class="why" hidden>A binary holds little state, a database holds a lot.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 8 ============ -->
+<section class="lesson" id="microservices" data-tier="1">
+<header class="lh"><span class="no">8</span><div><h2>Microservices and the data tier</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022 (deliver features faster, part c); Oct 2025</span><span>About 20 min</span><span>Syllabus 3.2</span></p></div></header>
+
+<p>In microservices the <b>logic tier is split into many smaller services</b> instead of one. This is the standard answer to "how can we deliver features faster?".</p>
+
+<div class="stack">
+<div class="box hl">Presentation tier <small>React frontend</small></div>
+<div class="link">REST / JSON over HTTP</div>
+<div class="svc"><div class="box ok">Payments service</div><div class="box ok">Orders service</div><div class="box ok">Shipping service</div></div>
+<div class="link">SQL</div>
+<div class="box hl">Data tier <small>one shared database, or one per service</small></div>
+</div>
+
+<ul>
+<li>Services talk over language-agnostic protocols, commonly <b>JSON over HTTP (REST)</b>. REST is not mandatory: other protocols are possible.</li>
+<li>A natural fit for continuous delivery: small standalone services are easier to deploy.</li>
+<li>Example: a payments microservice redeploys on its own, without touching orders or shipping.</li>
+<li>Each microservice is potentially its own three-tier system. You just do not always build it that way.</li>
+</ul>
+
+<h3>Microservices and the data tier</h3>
+<div class="grid3 two">
+<div><h4>Separate data per service</h4><ul><li>More separation between services.</li><li>Harder to model shared data.</li></ul></div>
+<div><h4>One shared database</h4><ul><li>Easier data modelling.</li><li>The more common real-world choice.</li><li>Not necessarily better, just simpler.</li></ul></div>
+</div>
+<div class="note"><b>Tie to Conway</b><p>Small services pair naturally with small cross-functional teams that own them end to end (lesson 9). Quote that link in any "faster features" answer.</p></div>
+
+<details class="sheet"><summary>Answer sheet: how can a result automation system deliver new features faster? <small>about 3 marks</small></summary>
+<div class="sbody">
+<h4>Delivering features faster with microservices</h4>
+<p>Split the logic tier of the three-tier system into several small services, such as marks entry, result calculation, notification and report generation. Each service:</p>
+<ul>
+<li>is small and standalone, so it is easy to build, test and deploy on its own;</li>
+<li>communicates through language-agnostic protocols, typically JSON over HTTP (REST);</li>
+<li>can be owned by a small cross-functional team, so features reach users without waiting for the others.</li>
+</ul>
+<p>Data tier: either one shared database (simpler to model, the common choice) or separate databases per service (more separation but harder to share data).</p>
+<p><b>Fits DevOps:</b> small changes deployed often with confidence. <b>Cost:</b> more services mean more integration points and more failure points, so monitoring is required (lesson 10).</p>
+</div></details>
+
+<details class="sheet"><summary>Full 10-mark answer: the Result Automation System, parts a, b and c together <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Result Automation System</h4>
+<p><b>(a) Architecture.</b> A three-tier system: presentation tier (web pages for marks entry and result viewing), logic tier (validation, totals, grades) and data tier (a relational database for students, subjects and marks). The tiers use JSON over HTTP and SQL. It is a CRUD system. Keep interfaces lean so that the tiers do not tangle together.</p>
+<p><b>(b) Upgrading the database without downtime.</b> A database holds state, so it cannot be swapped like a binary. Use a migration tool (Liquibase, Flyway or Migratus) with versioned changesets. Do a rolling upgrade behind the load balancer: add the new fields while keeping the old (backward compatible); take server two out, upgrade it, return it; then do the same for server one; drop the old field later.</p>
+<p><b>(c) Faster features.</b> Split the logic tier into microservices (marks, results, notifications, reports). Each deploys independently over REST/JSON, owned by a small cross-functional team (Conway's Law). Small changes can then be deployed often and safely. Add monitoring because more services mean more failure points.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="d"><p class="q">In microservices, which tier is split into many services?</p><div class="opts"><button type="button" data-k="a">Presentation</button><button type="button" data-k="b">Data</button><button type="button" data-k="c">Network</button><button type="button" data-k="d">Logic</button></div><p class="why" hidden>The data tier can go either way: shared or separate.</p></div>
+<div class="mcq" data-a="a"><p class="q">The more common real-world choice for the data tier of microservices is:</p><div class="opts"><button type="button" data-k="a">One shared database</button><button type="button" data-k="b">One database per service</button><button type="button" data-k="c">No database</button><button type="button" data-k="d">A file per user</button></div><p class="why" hidden>It is easier to model shared data.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 9 ============ -->
+<section class="lesson" id="conway" data-tier="1">
+<header class="lh"><span class="no">9</span><div><h2>Conway's Law: team structure shapes architecture</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2025 (e-commerce company with separate teams)</span><span>About 20 min</span><span>Syllabus 3.2</span></p></div></header>
+
+<div class="note"><b>The law</b><p>"Organizations design systems that reflect their own communication structures." Melvin Conway, 1968.</p></div>
+
+<h3>Three-tier mirrors the traditional IT department</h3>
+<div class="flow"><span class="box hl">DBA team</span><span class="ar">→</span><span class="box hl">Backend team</span><span class="ar">→</span><span class="box hl">Frontend team</span><span class="ar">→</span><span class="box hl">Operations team</span></div>
+<p>The classic three-tier pattern often mirrors four common IT department teams: a DBA team (data tier), a backend team (logic tier), a frontend team (presentation tier) and an operations team. Each team hands work to the next, so the system gets built in the same layers.</p>
+
+<h3>Cross-functional teams and microservices</h3>
+<ul>
+<li>DevOps' core goal is bringing roles together in <b>cross-functional teams</b>.</li>
+<li>If Conway's Law holds, that team shape gets mirrored in the design.</li>
+<li>The microservice pattern happens to mirror a cross-functional team closely: one team owns a whole service end to end.</li>
+<li><b>Want a certain architecture? Shape the team that will build it first.</b></li>
+<li>Example: a single team owning payments end to end naturally ships one clean payments service.</li>
+</ul>
+
+<h3>The e-commerce example</h3>
+<div class="scroll"><table>
+<thead><tr><th>Team</th><th></th><th>Microservice</th></tr></thead>
+<tbody>
+<tr><td>Payments team</td><td>→</td><td>Payment service</td></tr>
+<tr><td>Orders team</td><td>→</td><td>Order service</td></tr>
+<tr><td>Inventory team</td><td>→</td><td>Inventory service</td></tr>
+<tr><td>Shipping team</td><td>→</td><td>Shipping service</td></tr>
+</tbody></table></div>
+<p>Because each team is independent, the software naturally becomes independent microservices too.</p>
+
+<details class="sheet"><summary>Answer sheet: Conway's Law and e-commerce teams <small>10 marks</small></summary>
+<div class="sbody">
+<h4>Conway's Law applied to an e-commerce company</h4>
+<p><b>Conway's Law</b> (Melvin Conway, 1968): organizations design systems that reflect their own communication structures.</p>
+<p><b>Traditional structure:</b> the three-tier pattern mirrors four common IT teams: a DBA team (database), a backend team (business logic), a frontend team (user interface) and an operations team. A change flows through each team in turn, and the architecture ends up in tiers.</p>
+<p><b>DevOps structure:</b> the core goal of DevOps is bringing roles together in cross-functional teams. By Conway's Law, that shape gets mirrored in the design, and the microservice pattern mirrors a cross-functional team closely.</p>
+<p><b>E-commerce mapping:</b></p>
+<ul>
+<li>Payments team owns the Payment service.</li>
+<li>Orders team owns the Order service.</li>
+<li>Inventory team owns the Inventory service.</li>
+<li>Shipping team owns the Shipping service.</li>
+</ul>
+<p>Each team has all the skills (frontend, backend, database, operations) to build, deploy and run its service. Because the teams are independent, the software becomes independent microservices, deployable separately.</p>
+<p><b>Lesson:</b> if you want a certain architecture, shape the team that will build it first. A company that wants microservices should reorganise into small cross-functional teams, not just rewrite its code.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">Conway's Law says that organizations design systems that:</p><div class="opts"><button type="button" data-k="a">Maximise profit</button><button type="button" data-k="b">Reflect their own communication structures</button><button type="button" data-k="c">Always use microservices</button><button type="button" data-k="d">Avoid databases</button></div><p class="why" hidden>Team structure shapes software structure.</p></div>
+<div class="mcq" data-a="a"><p class="q">The three-tier pattern often mirrors which four teams?</p><div class="opts"><button type="button" data-k="a">DBA, backend, frontend, operations</button><button type="button" data-k="b">Sales, HR, finance, legal</button><button type="button" data-k="c">Payments, orders, inventory, shipping</button><button type="button" data-k="d">Dev, QA, security, audit</button></div><p class="why" hidden>The third option is the microservice mapping from the e-commerce example.</p></div>
+<div class="mcq" data-a="c"><p class="q">To get a microservice architecture, you should first:</p><div class="opts"><button type="button" data-k="a">Buy Kubernetes</button><button type="button" data-k="b">Rewrite the code</button><button type="button" data-k="c">Shape the team that will build it</button><button type="button" data-k="d">Add a message queue</button></div><p class="why" hidden>"Want a certain architecture? Shape the team that will build it first."</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 10 ============ -->
+<section class="lesson" id="resilience" data-tier="2">
+<header class="lh"><span class="no">10</span><div><h2>DevOps, architecture and resilience</h2>
+<p class="meta"><span class="sev major">Major</span><span>Not asked on its own yet</span><span>About 15 min</span><span>Syllabus 3.2</span></p></div></header>
+
+<p>The last part of the module. The idea: faster delivery with more moving parts means more places to fail, so you need monitoring and automated action.</p>
+
+<h3>Faster delivery, more moving parts</h3>
+<ul>
+<li>Goal: put new features in users' hands faster. Microservices help.</li>
+<li>But we want fast deploys <b>and</b> reliable software at the same time.</li>
+<li>More services mean more integration points, so statistically some service failing becomes <b>more</b> likely.</li>
+<li>Example from the slides: ten small services, each 99.9% reliable, are together less reliable than one monolith at 99.9%. (The maths: 0.999 to the power 10 is about 99.0%.)</li>
+</ul>
+
+<h3>Testing isn't enough: you also need eyes on it</h3>
+<ul>
+<li>Automated testing makes sure what you deploy is good quality.</li>
+<li>It does not help when a healthy service suddenly stops working later. Example: a well-tested service fails at 3am from a full disk.</li>
+<li>Mitigation: <b>monitoring, plus automated action</b> when something fails.</li>
+</ul>
+
+<h3>Resilience in practice: the two-server example</h3>
+<ol class="steps">
+<li>Two application servers run the same application.</li>
+<li>The app exposes a special monitoring interface over JSON REST.</li>
+<li>A monitoring daemon polls that interface periodically.</li>
+<li>If a server fails, the load balancer pulls it from the pool automatically.</li>
+</ol>
+<div class="flow"><span class="box hl">Monitoring daemon <small>polls both servers</small></span><span class="ar">→</span><span class="box bad">Server fails</span><span class="ar">→</span><span class="box mid">Load balancer pulls it from the pool</span><span class="ar">→</span><span class="box ok">Users keep being served by the other server</span></div>
+
+<h3>Why not just monitor CPU and memory?</h3>
+<ul>
+<li>Infrastructure checks confirm the server is up, with CPU, disk and memory to spare.</li>
+<li>That is not the same as confirming the <b>service</b> works. A service can be "up" with a silently broken database connection.</li>
+<li>A <b>health probe</b> actively checks that connection and reports the real status.</li>
+<li>Agree one organization-wide probe response format, so every team's monitoring tool understands it.</li>
+</ul>
+<div class="note tip"><b>Link back to Module 2</b><p>Monitoring tools, alerting and automated action (event handlers) are covered in <a href="DevOps_Module2_Pillars.html#tools">Module 2, lesson 8</a>.</p></div>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">Why do more microservices make some failure more likely?</p><div class="opts"><button type="button" data-k="a">Each service is badly written</button><button type="button" data-k="b">There are more services and integration points that can fail</button><button type="button" data-k="c">Testing is banned</button><button type="button" data-k="d">Databases are shared</button></div><p class="why" hidden>Statistically, more parts mean more chances of failure.</p></div>
+<div class="mcq" data-a="d"><p class="q">A health probe is better than CPU and memory checks because it:</p><div class="opts"><button type="button" data-k="a">Uses less CPU</button><button type="button" data-k="b">Replaces testing</button><button type="button" data-k="c">Needs no load balancer</button><button type="button" data-k="d">Checks that the service really works, e.g. its database connection</button></div><p class="why" hidden>A server can look healthy while the service is broken.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 11 ============ -->
+<section class="lesson" id="mock" data-tier="4">
+<header class="lh"><span class="no">11</span><div><h2>Mock paper for Module 3</h2>
+<p class="meta"><span>25 minutes for the question</span><span>Paper and pen only</span></p></div></header>
+<p>The architecture scenario is one 10-mark question. Practise it as a full answer, with a drawing.</p>
+
+<div class="prob"><b>Scenario A (10 marks)</b><p>A university wants a Student Placement Portal where students apply to companies, recruiters post jobs and the placement cell tracks offers.<br>a) State the functional and non-functional requirements.<br>b) Explain how separation of concerns, cohesion and coupling apply to the design.<br>c) Compare a monolithic and a microservices design for it.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>a:</b> functional = what (apply, post a job, track offers, notify); non-functional = how well, with numbers (page in 2 seconds, 99.9% availability, encrypted data, recoverable deployment in 5 minutes). <b>b:</b> concerns (UI, logic, database, security, logging, monitoring); high cohesion, low coupling; the key insight line. <b>c:</b> use the comparison table; pick one with a reason (team size, traffic).</p></div></details>
+
+<div class="prob"><b>Scenario B (10 marks)</b><p>A retail company has a DBA team, a backend team, a frontend team and an operations team. Releases are slow. The CTO wants to move to microservices.<br>a) Explain Conway's Law.<br>b) How should the company reorganise, and why?<br>c) Explain how it can upgrade its database without downtime when a field changes.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>a:</b> the law and the quote; three-tier mirrors the four teams. <b>b:</b> cross-functional teams per service (payments, orders, inventory, shipping); shape the team first. <b>c:</b> databases hold state; migration tool with versioned changesets; four-step rolling upgrade with the name-split example.</p></div></details>
+
+<h3>Not asked yet, but fair game</h3>
+<ul>
+<li>The typo story and what went wrong.</li>
+<li>Types of cohesion; modularity sweet spot; information hiding.</li>
+<li>Resilience: health probe vs CPU and memory; monitoring plus automated action.</li>
+<li>When to use which architecture.</li>
+</ul>
+<p>Quiz scores are for you only and are not saved.</p>
+<p class="score" id="score">Quiz score so far: no questions answered yet.</p>
+</section>
+
+<!-- ============ LESSON 12 ============ -->
+<section class="lesson" id="cheat" data-tier="4">
+<header class="lh"><span class="no">12</span><div><h2>Last-hour sheet</h2>
+<p class="meta"><span>Read this just before the exam</span></p></div></header>
+<dl class="kv">
+<dt>Requirements</dt><dd>Functional = what the system does. Non-functional = how well (performance, security, availability), with numbers.</dd>
+<dt>DevOps demand</dt><dd>Deploy small changes often; high confidence; rare rollbacks.</dd>
+<dt>Monolith story</dt><dd>One typo means rebuild and redeploy everything. No modularisation from a deployment point of view. The fix: deploy the frontend component on its own.</dd>
+<dt>Rules of thumb</dt><dd>Separation of concerns (UI, logic, database, security, logging, monitoring). Cohesion high, coupling low. High cohesion + low coupling = separation of concerns.</dd>
+<dt>Modularity</dt><dd>Sweet spot, not too few or too many modules. Information hiding. Cohesion types: functional, layer, communicational.</dd>
+<dt>Three styles</dt><dd>Monolithic: one codebase, one DB, full redeploy, for MVPs. Three-tier: UI, logic, data; one shared DB; backend redeploy. Microservices: many services, own DB each, per-service deploy and scaling, fault isolated; costs: complexity, latency, debugging, consistency.</dd>
+<dt>Three-tier</dt><dd>React, Clojure, PostgreSQL. CRUD. Tiers tangle if interfaces are not lean.</dd>
+<dt>Database migration</dt><dd>Databases hold state. Versioned changesets in a metadata table: Liquibase (XML), Flyway (SQL/Java), Migratus (Clojure).</dd>
+<dt>Rolling upgrade</dt><dd>1. Migrate DB (add new fields, keep old). 2. Pull server 2. 3. Upgrade it and return it. 4. Swap and upgrade server 1.</dd>
+<dt>Microservices</dt><dd>Split the logic tier; REST/JSON; data tier shared (common) or separate. Each can be its own three-tier system.</dd>
+<dt>Conway's Law</dt><dd>Systems mirror the communication structure of the organization. Three-tier mirrors DBA, backend, frontend, ops. Microservices mirror cross-functional teams. Shape the team first.</dd>
+<dt>Resilience</dt><dd>More services means more failure points. Monitoring plus automated action. Health probe, not just CPU and memory. Load balancer pulls failed server.</dd>
+</dl>
+<p>You have reached the end of the course. Back to <a href="DevOps_Module1_Foundations.html#plan">Module 1</a> or <a href="DevOps_Module2_Pillars.html#plan">Module 2</a> to revise.</p>
+</section>
+
+<nav class="pager" aria-label="Other modules"><a href="DevOps_Module2_Pillars.html"><small>Previous</small>Module 2 · Pillars</a></nav>
+</div></main>
+</div>
+<script>window.COURSE={"id": "m3", "title": "Module 3: Software Architecture and Code Control", "sub": "DevOps, syllabus units 3.1 and 3.2 only", "tiers": {"1": "Critical: already asked", "2": "Major: in syllabus, not asked yet", "3": "Minor: skim", "4": "Finish line"}, "modules": [{"id": "m1", "href": "DevOps_Module1_Foundations.html", "label": "Module 1 \u00b7 Foundations", "total": 13}, {"id": "m2", "href": "DevOps_Module2_Pillars.html", "label": "Module 2 \u00b7 Pillars", "total": 16}, {"id": "m3", "href": "DevOps_Module3_Architecture.html", "label": "Module 3 \u00b7 Architecture", "total": 12}]};</script>
+<script>
+(function(){
+  var C = window.COURSE || {};
+  function load(id){ try { return JSON.parse(localStorage.getItem('devops:' + id + ':done') || '{}') || {}; } catch(e) { return {}; } }
+  var done = load(C.id);
+  function save(){ try { localStorage.setItem('devops:' + C.id + ':done', JSON.stringify(done)); } catch(e) {} }
+
+  var lessons = Array.prototype.slice.call(document.querySelectorAll('section.lesson'));
+  var nav = document.getElementById('outline');
+
+  /* ---- focus mode (critical only) ---- */
+  var FOCUS_KEY = 'devops:focus';
+  var focus = false;
+  try { focus = localStorage.getItem(FOCUS_KEY) === '1'; } catch(e) {}
+  function applyFocus(){ document.body.classList.toggle('focusmode', focus); }
+  applyFocus();
+
+  /* ---- build outline ---- */
+  if (nav) {
+    var html = '<p class="brand">' + C.title + '</p><p class="sub">' + (C.sub || '') + '</p>';
+    html += '<div class="mods">';
+    (C.modules || []).forEach(function(m){
+      var d = m.id === C.id ? done : load(m.id);
+      var n = 0; Object.keys(d).forEach(function(k){ if (d[k]) n++; });
+      html += '<a href="' + m.href + '" class="' + (m.id === C.id ? 'cur' : '') + '" data-mod="' + m.id + '"><span>' + m.label + '</span><small>' + n + '/' + m.total + '</small></a>';
+    });
+    html += '</div>';
+    html += '<div class="bar" aria-hidden="true"><i id="barfill"></i></div><p class="count" id="barcount"></p>';
+    html += '<label class="focus"><input type="checkbox" id="focusbox"><span>Critical-only mode: hide Major and Minor lessons (use this if you are short on time)</span></label>';
+    var tiers = C.tiers || {};
+    Object.keys(tiers).forEach(function(t){
+      var inTier = lessons.filter(function(s){ return s.dataset.tier === t; });
+      if (!inTier.length) return;
+      html += '<h6 class="h' + t + '">' + tiers[t] + '</h6><ol>';
+      inTier.forEach(function(s){
+        var n = s.querySelector('.no'), h = s.querySelector('h2');
+        html += '<li class="t' + t + '"><a href="#' + s.id + '" data-id="' + s.id + '"><span class="n">' + (n ? n.textContent : '') + '</span><span class="t">' + h.textContent + '</span></a></li>';
+      });
+      html += '</ol>';
+    });
+    nav.innerHTML = html;
+    var fb = document.getElementById('focusbox');
+    if (fb) { fb.checked = focus; fb.addEventListener('change', function(){ focus = fb.checked; try { localStorage.setItem(FOCUS_KEY, focus ? '1' : '0'); } catch(e) {} applyFocus(); refresh(); }); }
+  }
+
+  function visible(s){ return !(focus && (s.dataset.tier === '2' || s.dataset.tier === '3')); }
+
+  function refresh(){
+    var n = 0, tot = 0;
+    lessons.forEach(function(s){
+      var d = !!done[s.id];
+      if (visible(s)) { tot++; if (d) n++; }
+      var a = document.querySelector('.outline a[data-id="' + s.id + '"]');
+      if (a) a.classList.toggle('done', d);
+      var b = s.querySelector('.donebtn');
+      if (b) { b.setAttribute('aria-pressed', d ? 'true' : 'false'); b.textContent = d ? 'Done. Click to undo' : 'Mark this lesson as done'; }
+    });
+    var f = document.getElementById('barfill'), c = document.getElementById('barcount');
+    if (f) f.style.width = (tot ? Math.round(100 * n / tot) : 0) + '%';
+    if (c) c.textContent = n + ' of ' + tot + ' lessons done' + (focus ? ' (critical-only mode)' : '');
+    var cur = document.querySelector('.mods a.cur small');
+    if (cur) { var k = 0; Object.keys(done).forEach(function(x){ if (done[x]) k++; }); cur.textContent = k + '/' + (C.modules.filter(function(m){ return m.id === C.id; })[0].total); }
+  }
+
+  /* ---- done buttons ---- */
+  lessons.forEach(function(s){
+    var bar = document.createElement('div'); bar.className = 'donebar';
+    bar.innerHTML = '<button type="button" class="donebtn" aria-pressed="false"></button>';
+    s.appendChild(bar);
+    bar.firstChild.addEventListener('click', function(){ done[s.id] = !done[s.id]; save(); refresh(); });
+  });
+  refresh();
+
+  /* ---- MCQs ---- */
+  var mcqs = Array.prototype.slice.call(document.querySelectorAll('.mcq'));
+  var total = mcqs.length, right = 0, answered = 0;
+  mcqs.forEach(function(q){
+    var ans = q.dataset.a;
+    q.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (q.classList.contains('done')) return;
+        q.classList.add('done'); answered++;
+        var ok = btn.dataset.k === ans;
+        if (ok) right++;
+        btn.classList.add(ok ? 'right' : 'wrong');
+        if (!ok) { var r = q.querySelector('button[data-k="' + ans + '"]'); if (r) r.classList.add('right'); }
+        var w = q.querySelector('.why'); if (w) w.hidden = false;
+        var sc = document.getElementById('score');
+        if (sc) sc.textContent = 'Quiz score so far: ' + right + ' correct out of ' + answered + ' answered (' + total + ' questions on this page).';
+      });
+    });
+  });
+
+  /* ---- mobile menu ---- */
+  var mb = document.getElementById('menubtn');
+  if (mb) mb.addEventListener('click', function(){ document.body.classList.toggle('menu'); });
+  if (nav) nav.addEventListener('click', function(e){ if (e.target.closest('a[data-id]')) document.body.classList.remove('menu'); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') document.body.classList.remove('menu'); });
+  document.addEventListener('click', function(e){
+    if (document.body.classList.contains('menu') && !e.target.closest('#outline') && !e.target.closest('#menubtn')) document.body.classList.remove('menu');
+  });
+
+  /* ---- scrollspy ---- */
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if (en.isIntersecting) {
+          document.querySelectorAll('.outline a.on').forEach(function(a){ a.classList.remove('on'); });
+          var a = document.querySelector('.outline a[data-id="' + en.target.id + '"]');
+          if (a) a.classList.add('on');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    lessons.forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---- print: open every reveal ---- */
+  window.addEventListener('beforeprint', function(){ document.querySelectorAll('details').forEach(function(d){ d.open = true; }); });
+})();
+
+</script>
+</body>
+</html>

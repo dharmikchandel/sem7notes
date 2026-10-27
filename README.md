@@ -22,6 +22,14 @@ Instead of relying solely on static PDFs, these notes are designed to provide a 
 | Module 1 | Digital Marketing | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-1-digital-marketing.html) |
 | Module 2 | Search Engine Optimization | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-2-seo.html) |
 
+### DevOps
+
+| Module | Topics | Study Notes |
+|:---:|---|:---:|
+| Module 1 | Foundations | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module1_Foundations.html) |
+| Module 2 | Pillars | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module2_Pillars.html) |
+| Module 3 | Architecture | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module3_Architecture.html) |
+
 ## 📋 University Syllabus
 
 Reference images of the official syllabuses are provided below to help map the study notes to the university curriculum.
@@ -41,6 +49,10 @@ Reference images of the official syllabuses are provided below to help map the s
 ### Digital Marketing (DiM)
 
 [DiM Syllabus](syllabus/DiM%2026-27%20Syllabus.png)
+
+### DevOps
+
+[DevOps Syllabus](syllabus/DevOps%2026-27%20Syllabus.png)
 
 <!-- Add more subjects using the same format -->
 

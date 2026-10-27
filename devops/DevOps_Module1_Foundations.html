@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>DevOps Module 1: Foundational Terminology and Concepts</title>
+<style>
+:root{
+  color-scheme:dark;
+  --paper:#0a0f1d; --sheet:#111a2e; --ink:#e9eefb; --ink2:#a3aec9; --rule:#27324f; --tint:#19243f;
+  --blue:#8fb0ff; --blue-t:#1a2b58;
+  --crit:#ff8d9c; --crit-t:#3b1b26;
+  --major:#f2b865; --major-t:#3a2c14;
+  --minor:#a9b4c9; --minor-t:#232c44;
+  --pass:#62d69c; --pass-t:#13362a;
+  --answer:#151e35; --lines:#25325a; --margin:#a8545e;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua","Noto Serif",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 var(--sans)}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:3px}
+.shell{display:grid;grid-template-columns:304px minmax(0,1fr);min-height:100vh}
+
+/* ---------- outline sidebar ---------- */
+.outline{position:sticky;top:0;height:100vh;overflow:auto;padding:24px 20px 40px;background:var(--sheet);border-right:1px solid var(--rule);font-size:.92rem;line-height:1.35}
+.outline .brand{font:700 1.05rem/1.25 var(--serif);margin:0 0 4px}
+.outline .sub{color:var(--ink2);margin:0 0 14px}
+.mods{display:grid;gap:6px;margin:0 0 16px}
+.mods a{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;color:var(--ink);text-decoration:none;font-weight:600;font-size:.88rem}
+.mods a:hover{border-color:var(--blue)}
+.mods a.cur{background:var(--blue-t);border-color:var(--blue)}
+.mods a small{color:var(--ink2);font-weight:500;white-space:nowrap}
+.outline .bar{height:6px;background:var(--tint);border-radius:3px;overflow:hidden}
+.outline .bar i{display:block;height:100%;width:0;background:var(--pass);transition:width .25s}
+.outline .count{margin:6px 0 12px;color:var(--ink2);font-size:.85rem}
+.focus{display:flex;gap:8px;align-items:flex-start;padding:9px 10px;margin:0 0 6px;border:1px dashed var(--rule);border-radius:8px;font-size:.86rem;color:var(--ink2);cursor:pointer}
+.focus input{margin-top:3px;accent-color:var(--blue)}
+.outline h6{margin:18px 0 6px;font:650 .85rem/1.3 var(--sans);color:var(--ink2)}
+.outline ol{list-style:none;margin:0;padding:0}
+.outline li a{display:grid;grid-template-columns:24px 1fr;gap:6px;padding:7px 8px;margin:0 -8px;border-radius:6px;color:var(--ink);text-decoration:none}
+.outline li a:hover{background:var(--tint)}
+.outline li a.on{background:var(--blue-t);font-weight:600}
+.outline li a .n{color:var(--ink2);font-variant-numeric:tabular-nums}
+.outline li a.done .t::after{content:"  ✓";color:var(--pass);font-weight:700}
+.topbar{display:none}
+body.focusmode section.lesson[data-tier="2"],body.focusmode section.lesson[data-tier="3"]{display:none}
+body.focusmode .outline li.t2,body.focusmode .outline li.t3,body.focusmode .outline h6.h2,body.focusmode .outline h6.h3{display:none}
+
+/* ---------- main ---------- */
+main{padding:56px clamp(20px,5vw,72px) 140px}
+.col{max-width:720px}
+h1{font:700 clamp(2rem,5vw,3.1rem)/1.1 var(--serif);letter-spacing:-.015em;margin:0 0 10px}
+.lede{font-size:1.15rem;color:var(--ink2);margin:0 0 28px;max-width:48ch}
+h2{font:700 clamp(1.55rem,3.4vw,2rem)/1.2 var(--serif);letter-spacing:-.01em;margin:0}
+h3{font:650 1.15rem/1.35 var(--sans);margin:34px 0 6px}
+h4{font:650 1rem/1.4 var(--sans);margin:22px 0 4px}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:1.3em}
+li{margin:0 0 5px}
+li>ul,li>ol{margin-top:5px}
+code{font:.88em var(--mono);background:var(--tint);padding:1px 5px;border-radius:4px}
+pre{font:.88rem/1.5 var(--mono);background:var(--tint);padding:14px 16px;border-radius:8px;overflow:auto;margin:0 0 16px}
+pre code{background:none;padding:0}
+sup,sub{line-height:0}
+
+/* lesson head */
+.lesson{padding-top:56px;scroll-margin-top:8px;margin-top:56px;border-top:1px solid var(--rule)}
+.intro{margin-top:8px}
+.lh{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:start;margin-bottom:22px}
+.lh .no{font:700 2.6rem/1 var(--serif);color:var(--ink2);opacity:.55;min-width:1.3ch;text-align:right}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;font-size:.88rem;color:var(--ink2)}
+.sev{font-weight:700;padding:1px 9px;border-radius:99px;font-size:.84rem}
+.sev.crit{background:var(--crit-t);color:var(--crit)}
+.sev.major{background:var(--major-t);color:var(--major)}
+.sev.minor{background:var(--minor-t);color:var(--minor)}
+
+/* callouts */
+.note{margin:18px 0;padding:12px 16px 4px;border-left:4px solid var(--blue);background:var(--blue-t);border-radius:0 8px 8px 0}
+.note>b:first-child{display:block;margin-bottom:3px}
+.note.tip{border-color:var(--pass);background:var(--pass-t)}
+.note.warn{border-color:var(--crit);background:var(--crit-t)}
+.note.src{border-color:var(--major);background:var(--major-t)}
+.note.plain{border-color:var(--minor);background:var(--minor-t)}
+
+/* tables */
+.scroll{overflow-x:auto;margin:14px 0 20px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet)}
+table{border-collapse:collapse;width:100%;font-size:.93rem;line-height:1.45}
+th,td{padding:8px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+th{background:var(--tint);font-weight:650}
+tr:last-child td{border-bottom:0}
+td.c,th.c{text-align:center}
+.num{font-variant-numeric:tabular-nums}
+td.ok{color:var(--pass);font-weight:600}
+td.no{color:var(--crit);font-weight:600}
+.plan td:first-child,.plan th:first-child{width:1%;white-space:nowrap}
+
+/* diagrams made of boxes */
+.fig{margin:22px 0;padding:16px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px}
+.fig figcaption{margin-top:10px;font-size:.86rem;color:var(--ink2)}
+.flow{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.flow.mid{justify-content:center}
+.box{padding:7px 12px;border:1.5px solid var(--ink2);border-radius:8px;background:var(--sheet);font-size:.9rem;line-height:1.3;text-align:center;font-weight:600}
+.box small{display:block;font-weight:400;color:var(--ink2);font-size:.78rem}
+.box.hl{background:var(--blue-t);border-color:var(--blue)}
+.box.ok{background:var(--pass-t);border-color:var(--pass)}
+.box.bad{background:var(--crit-t);border-color:var(--crit)}
+.box.mid{background:var(--major-t);border-color:var(--major)}
+.box.dim{background:var(--tint);border-color:var(--rule);font-weight:500}
+.ar{color:var(--ink2);font-weight:700}
+.lane{font-size:.8rem;font-weight:700;color:var(--ink2);margin:10px 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.lane:first-child{margin-top:0}
+.stack{display:grid;gap:0;justify-items:stretch}
+.stack .box{border-radius:8px;text-align:left;padding:10px 14px}
+.stack .link{text-align:center;color:var(--ink2);font-size:.8rem;padding:3px 0;font-weight:600}
+.svc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.svc .box{font-size:.84rem}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cols2>div{border:1px solid var(--rule);border-radius:10px;background:var(--sheet);padding:12px 14px 4px}
+.cols2 h4{margin:0 0 6px}
+.cols2 ul{padding-left:1.1em;font-size:.95rem}
+
+/* problem + reveal */
+.prob{margin:18px 0 10px;padding:14px 18px 2px;background:var(--sheet);border:1px solid var(--rule);border-left:4px solid var(--blue);border-radius:0 8px 8px 0}
+.prob>b:first-child{display:block;margin-bottom:4px}
+details.try{margin:0 0 24px;border:1px dashed var(--ink2);border-radius:10px;background:transparent}
+details.try>summary{cursor:pointer;padding:11px 16px;font-weight:650;list-style:none;display:flex;align-items:center;gap:10px}
+details.try>summary::-webkit-details-marker{display:none}
+details.try>summary::before{content:"+";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#0a1020;font-weight:700;line-height:1;flex:none}
+details.try[open]>summary::before{content:"–"}
+details.try>.in{padding:2px 18px 6px;border-top:1px dashed var(--rule)}
+
+/* answer sheet (ruled paper) */
+details.sheet{margin:26px 0 30px}
+details.sheet>summary{cursor:pointer;list-style:none;padding:12px 16px;background:#22315f;color:var(--ink);border:1px solid #394b88;border-radius:8px;font-weight:650;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+details.sheet>summary::-webkit-details-marker{display:none}
+details.sheet>summary::before{content:"✎";color:var(--major)}
+details.sheet>summary small{font-weight:400;opacity:.8}
+details.sheet[open]>summary{border-radius:8px 8px 0 0}
+.sbody{--ln:28px;position:relative;padding:var(--ln) 22px 14px 66px;background-color:var(--answer);background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ln) - 1px),var(--lines) calc(var(--ln) - 1px),var(--lines) var(--ln));border:1px solid var(--rule);border-top:0;border-radius:0 0 8px 8px;font:16.5px/var(--ln) var(--serif)}
+.sbody::before{content:"";position:absolute;top:0;bottom:0;left:50px;width:2px;background:var(--margin)}
+.sbody h4{margin:0;font:700 16.5px/var(--ln) var(--serif)}
+.sbody p{margin:0 0 var(--ln);line-height:var(--ln)}
+.sbody ul,.sbody ol{margin:0 0 var(--ln);padding-left:1.25em}
+.sbody li{margin:0;line-height:var(--ln)}
+.sbody li>ul,.sbody li>ol{margin:0}
+.sbody code{line-height:1;font-size:.85em}
+.sbody .draw{color:var(--blue);font-style:italic}
+.sbody b{font-weight:700}
+.sbody table{font:15px/1.4 var(--sans);margin:0 0 var(--ln)}
+
+/* quiz */
+.quiz{margin:26px 0 0;padding-top:6px}
+.quiz>h3{margin-top:0}
+.mcq{margin:0 0 20px}
+.mcq .q{font-weight:600;margin:0 0 8px}
+.mcq .opts{display:grid;gap:6px}
+.mcq button{all:unset;box-sizing:border-box;cursor:pointer;display:block;padding:8px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet);font-size:.96rem;line-height:1.45}
+.mcq button:hover{border-color:var(--blue)}
+.mcq button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.mcq.done button{cursor:default}
+.mcq.done button:hover{border-color:var(--rule)}
+.mcq button.right{background:var(--pass-t);border-color:var(--pass)}
+.mcq button.wrong{background:var(--crit-t);border-color:var(--crit)}
+.mcq .why{margin:8px 0 0;font-size:.93rem;color:var(--ink2)}
+.score{margin:6px 0 0;font-size:.92rem;color:var(--ink2)}
+
+/* done button */
+.donebar{margin:34px 0 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.donebtn{all:unset;box-sizing:border-box;cursor:pointer;padding:9px 16px;border-radius:8px;border:1px solid var(--blue);color:var(--blue);font-weight:650;font-size:.95rem}
+.donebtn:hover{background:var(--blue-t)}
+.donebtn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.donebtn[aria-pressed="true"]{background:var(--pass);border-color:var(--pass);color:#07130d}
+
+/* helpers */
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--rule);border-radius:10px;background:var(--sheet);overflow:hidden;margin:16px 0 22px}
+.grid3.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid3.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grid3>div{padding:14px 16px 6px;border-right:1px solid var(--rule)}
+.grid3>div:last-child{border-right:0}
+.grid3 h4{margin:0 0 6px}
+.grid3 ul{padding-left:1.1em;margin-bottom:8px;font-size:.95rem}
+.steps{counter-reset:s;list-style:none;padding:0;margin:14px 0 20px}
+.steps li{counter-increment:s;position:relative;padding:2px 0 12px 46px;margin:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:700 .9rem var(--sans)}
+.steps li::after{content:"";position:absolute;left:14px;top:32px;bottom:2px;width:2px;background:var(--rule)}
+.steps li:last-child::after{display:none}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:12px 0 18px}
+.kv dt{font-weight:650}.kv dd{margin:0}
+.pill{display:inline-block;padding:0 8px;border-radius:99px;background:var(--tint);font-size:.86rem;font-weight:600;white-space:nowrap}
+.ok{color:var(--pass)} .no{color:var(--crit)}
+.pager{display:flex;gap:12px;flex-wrap:wrap;margin:72px 0 0;padding-top:24px;border-top:1px solid var(--rule)}
+.pager a{flex:1 1 240px;padding:14px 16px;border:1px solid var(--rule);border-radius:10px;background:var(--sheet);color:var(--ink);text-decoration:none;font-weight:650}
+.pager a:hover{border-color:var(--blue)}
+.pager a small{display:block;color:var(--ink2);font-weight:500}
+
+/* ---------- responsive ---------- */
+@media (max-width:960px){
+  .shell{display:block}
+  .topbar{display:flex;position:sticky;top:0;z-index:20;align-items:center;gap:12px;padding:10px 16px;background:var(--sheet);border-bottom:1px solid var(--rule)}
+  .topbar button{all:unset;cursor:pointer;padding:6px 12px;border:1px solid var(--rule);border-radius:8px;font-weight:650;font-size:.92rem}
+  .topbar button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  .topbar span{font:700 .98rem var(--serif);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .outline{position:fixed;z-index:30;left:0;top:0;bottom:0;width:min(88vw,330px);height:auto;transform:translateX(-102%);transition:transform .2s;box-shadow:0 0 0 100vmax transparent}
+  body.menu .outline{transform:none;box-shadow:0 0 0 100vmax rgba(2,4,10,.6)}
+  main{padding:28px 16px 100px}
+  .lesson{padding-top:40px;scroll-margin-top:64px}
+  .grid3,.grid3.two,.grid3.four{grid-template-columns:1fr}
+  .grid3>div{border-right:0;border-bottom:1px solid var(--rule)}
+  .grid3>div:last-child{border-bottom:0}
+  .sbody{padding-left:50px;padding-right:14px}
+  .sbody::before{left:36px}
+  .lh .no{font-size:2rem}
+  .cols2,.svc{grid-template-columns:1fr}
+}
+@media (max-width:640px){.kv{grid-template-columns:1fr;gap:2px}.kv dt{margin-top:10px}.kv dd{margin-bottom:2px}}
+@media print{
+  .outline,.topbar,.donebar,.pager{display:none!important}
+  .shell{display:block} body{background:#fff;color:#000;font-size:12pt}
+  main{padding:0} .lesson{break-inside:auto}
+  .sbody{background-image:none;background-color:#fff;color:#000}
+}
+
+</style>
+</head>
+<body>
+<div class="topbar"><button type="button" id="menubtn" aria-label="Open the lesson outline">Outline</button><span>Module 1: Foundational Terminology and Concepts</span></div>
+<div class="shell">
+<nav class="outline" id="outline" aria-label="Course outline"></nav>
+<main><div class="col">
+<h1>Module 1: Foundational Terminology and Concepts</h1>
+<p class="lede">Built from your five past papers and the professor's Module 1 slides. Question 1 of the paper has come from this module every single time.</p>
+<section class="intro" id="plan">
+<h3>What your past papers actually ask</h3>
+<p>Every paper has three questions of 10 marks in 1 hr 15 min, so about 22 minutes per question. In all five papers, Question 1 came from Module 1. When a question says "explain any two", each part is worth 5 marks, so write about half a page for each. This table lists the Module 1 questions that have already been set.</p>
+<div class="scroll"><table class="plan">
+<thead><tr><th>Paper</th><th>Module 1 questions asked</th></tr></thead>
+<tbody>
+<tr><td>Oct 2022</td><td>Q1: differentiate five pairs with two points each: role of development team and operation team; compile and build; release and deploy; operate and monitor; output and outcome. Q2 option: which methodology covers both software development and IT operations, and its principles.</td></tr>
+<tr><td>Sep 2023</td><td>Q1: success story of DevOps for any one organization (profile, one major issue, actions, benefits). Q2 any one: generative culture, infrastructure for DevOps.</td></tr>
+<tr><td>Sep 2024</td><td>Q1 any two: role of operation team; any two metrics of DevOps; the mindset that sees human errors as structural rather than personal. Q2 any two included: terminologies related to infrastructure management.</td></tr>
+<tr><td>Sep 2025</td><td>Q1: A. old view versus new view. B. DevOps folk model with its significance.</td></tr>
+<tr><td>Oct 2025 (re-exam)</td><td>Q1 any two: role of operation team; benefits of DevOps over traditional development; release and deploy phases of DevOps.</td></tr>
+</tbody></table></div>
+
+<h3>The hit list for the whole course</h3>
+<p>This ranks topics by how often they have appeared across all five papers. Study from the top down. The links open the lesson, even in another module.</p>
+<div class="scroll"><table>
+<thead><tr><th>Topic</th><th>Asked in</th><th>Go to</th></tr></thead>
+<tbody>
+<tr><td><b>Affinity</b>: meaning, requirements, measuring</td><td>4 of 5 papers</td><td><a href="DevOps_Module2_Pillars.html#affinity">M2 lessons 5, 6, 7</a></td></tr>
+<tr><td><b>Architecture scenario</b> (three-tier, NFRs, thumb rules, Conway) as Question 3</td><td>4 of 5 papers</td><td><a href="DevOps_Module3_Architecture.html#nfr">Module 3</a></td></tr>
+<tr><td><b>Role of operation team</b> (and dev versus ops)</td><td>3 of 5 papers</td><td><a href="#devops-ops">Lesson 1</a></td></tr>
+<tr><td>Old view versus new view of human error</td><td>2 papers</td><td><a href="#oldnew">Lesson 7</a></td></tr>
+<tr><td>Release and deploy</td><td>2 papers</td><td><a href="#lifecycle">Lesson 3</a></td></tr>
+<tr><td>Infrastructure terminology / infrastructure for DevOps</td><td>2 papers</td><td><a href="#infra">Lesson 10</a>, <a href="DevOps_Module2_Pillars.html#automation">M2 lesson 9</a></td></tr>
+<tr><td>Generative culture</td><td>Sep 2023</td><td><a href="#culture">Lesson 11</a></td></tr>
+<tr><td>Folk model; DevOps metrics; output versus outcome</td><td>Sep 2025; Sep 2024; Oct 2022</td><td><a href="#folk">Lesson 6</a></td></tr>
+<tr><td>Benefits of DevOps over traditional development</td><td>Oct 2025</td><td><a href="#benefits">Lesson 2</a></td></tr>
+<tr><td>Success story (Etsy)</td><td>Sep 2023</td><td><a href="#etsy">Lesson 5</a></td></tr>
+<tr><td>Principles of the methodology covering Dev and Ops</td><td>Oct 2022</td><td><a href="#compact">Lesson 8</a></td></tr>
+<tr><td>Collaboration, mentorship, growth mindset; conflict resolution styles</td><td>Sep 2025</td><td><a href="DevOps_Module2_Pillars.html#collab">M2 lessons 1 to 3</a></td></tr>
+<tr><td>Pillars of DevOps, "some teams are smarter than others"</td><td>Sep 2023</td><td><a href="DevOps_Module2_Pillars.html#pillars">M2 lesson 14</a></td></tr>
+<tr><td>Scaling for organizations; types of build automation; vampire and zombie projects</td><td>Oct 2025; Oct 2025; Sep 2024</td><td><a href="DevOps_Module2_Pillars.html#scaling">M2 lessons 9, 11, 13</a></td></tr>
+</tbody></table></div>
+
+<h3>How the labels work</h3>
+<ul>
+<li><span class="sev crit">Critical</span> has already appeared as a question, or is one half of an "any two" question. Learn these first.</li>
+<li><span class="sev major">Major</span> is in the syllabus and has not been asked yet. Read once, quickly.</li>
+<li><span class="sev minor">Minor</span> is slide filler. A minute or two is enough.</li>
+</ul>
+
+<h3>How to study each lesson</h3>
+<ol>
+<li>Read the lesson once. Do not try to memorise it yet.</li>
+<li>Close the answer sheet and try to write the answer from memory on paper. Then open the sheet and fix the gaps.</li>
+<li>Take the short quiz, then press "Mark this lesson as done".</li>
+</ol>
+<div class="note tip"><b>Time plan</b><p>The nine Critical lessons in this module take about 3½ hours. Across all three modules the Critical lessons add up to roughly 10 hours. If you have less, tick "Critical-only mode" in the sidebar, and on each lesson read only the headings, the tables and the answer sheet. That fast route is about 5 hours for everything.</p></div>
+<div class="note src"><b>Two things to know about your slides</b><p>1. The professor's slides do not spell out the differences for compile vs build, release vs deploy and operate vs monitor, nor a full list for the role of the operation team. Those answers are built from the slide content plus standard textbook points, and each such place is marked "Not in your slides".<br>2. The two case-study slides in Unit 1.1 (Etsy and Heatwave) are pictures, so their text could not be read. Lesson 5 uses Etsy from public sources. Flip through those slides once and add any figure your professor showed.</p></div>
+</section>
+
+<!-- ============ LESSON 1 ============ -->
+<section class="lesson" id="devops-ops" data-tier="1">
+<header class="lh"><span class="no">1</span><div><h2>DevOps, the Dev and Ops divide, and the role of the operation team</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2025, Sep 2024, Oct 2022</span><span>About 25 min</span><span>Syllabus 1.1</span></p></div></header>
+
+<p>This is the most repeated question in the module. Learn what DevOps is, why it appeared, and what each side does. Then the role of the operation team is easy to write.</p>
+
+<h3>What DevOps is</h3>
+<p>From the slides: DevOps is a <b>cultural movement that changes how individuals think about their work</b>. It values the diversity of work done and speeds up how a business realises value. It breaks the wall between development, operations, quality assurance and security.</p>
+<ul>
+<li><b>Gene Kim:</b> a collaborative working relationship between Development and IT Operations, giving fast flow of planned work while increasing reliability, stability and security.</li>
+<li><b>John Willis:</b> a set of practices and patterns that turn human capital into high-performance organizational capital.</li>
+</ul>
+
+<h3>Why it appeared: four problems</h3>
+<ol>
+<li><b>Siloed teams.</b> Dev and Ops worked apart and released code slowly.</li>
+<li><b>Slow, risky releases.</b> Big, rare releases mean bigger changesets and more risk.</li>
+<li><b>Manual, inconsistent operations.</b> Hand-configured servers drift apart (environment drift).</li>
+<li><b>Rising expectations.</b> Businesses wanted to ship value faster and learn from feedback.</li>
+</ol>
+
+<h3>The traditional divide</h3>
+<div class="scroll"><table>
+<thead><tr><th></th><th>Development team</th><th>Operation team</th></tr></thead>
+<tbody>
+<tr><td><b>Does</b></td><td>Planning, development, testing, quality assurance</td><td>Infrastructure management, security and compliance, database administration, network</td></tr>
+<tr><td><b>Wants</b></td><td>Fast, frequent change</td><td>Stability above all</td></tr>
+<tr><td><b>Conflict</b></td><td colspan="2">Dev is rewarded for change and Ops is rewarded for stability, so each side sees the other as the obstacle. DevOps replaces this with one shared goal.</td></tr>
+</tbody></table></div>
+
+<h3>Role of the operation team</h3>
+<p>The slides show Ops handling infrastructure, security, databases and network, and the whole Ops half of the loop (release, deploy, operate, monitor). In DevOps the team stops being a gatekeeper and becomes an enabler who works with Dev from the start.</p>
+<ol class="steps">
+<li><b>Provision and manage infrastructure:</b> servers, networks, cloud. In DevOps this is automated through scripts and infrastructure as code, not hand-set.</li>
+<li><b>Release and deploy:</b> get tested software into production reliably, together with Dev, through the pipeline.</li>
+<li><b>Operate:</b> keep the live service available, scaled, patched, backed up.</li>
+<li><b>Monitor and respond:</b> collect metrics and logs, raise alerts, handle incidents, restore service quickly.</li>
+<li><b>Security, compliance and database administration:</b> protect data and meet regulations.</li>
+<li><b>Feed back to Dev:</b> pass production insight into planning so the next release is better.</li>
+<li><b>Collaborate:</b> shared goals, shared on-call, blameless postmortems.</li>
+</ol>
+<div class="note src"><b>Not in your slides</b><p>The slides give the Ops column and the Ops half of the loop. The seven numbered points above join those with standard textbook duties such as backup and incident response, so you have enough for 5 or 10 marks.</p></div>
+
+<details class="sheet"><summary>Answer sheet: role of the operation team <small>5 marks if "any two", 10 if on its own</small></summary>
+<div class="sbody">
+<h4>Role of the operation team</h4>
+<p>The operation (Ops) team keeps software running reliably in production. It wants stability. In DevOps it works with development as one team.</p>
+<ul>
+<li><b>Infrastructure:</b> provisions and manages servers, network and cloud, using automation and infrastructure as code.</li>
+<li><b>Release and deploy:</b> moves tested builds to production safely, with Dev, through the pipeline.</li>
+<li><b>Operate and monitor:</b> keeps the service available and scaled; watches metrics, logs and alerts; handles incidents.</li>
+<li><b>Security and database:</b> compliance, access control, database administration, backups.</li>
+<li><b>Feedback:</b> returns production data and incident lessons to the Plan phase.</li>
+</ul>
+<p>Change from the old model: from gatekeeper who blocks change to enabler who shares ownership of it.</p>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: role of development team vs operation team <small>2 marks, two points each</small></summary>
+<div class="sbody">
+<h4>Development team vs operation team</h4>
+<ul>
+<li><b>Activities:</b> Dev does planning, coding, testing and QA. Ops does infrastructure, security, database and network, and runs the software in production.</li>
+<li><b>Goal:</b> Dev wants fast, frequent change. Ops wants stability.</li>
+</ul>
+<p>In DevOps both share ownership from plan to monitor.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">In the traditional model, the operation team mainly wants:</p><div class="opts"><button type="button" data-k="a">As many releases as possible</button><button type="button" data-k="b">Fewer tests</button><button type="button" data-k="c">Stability above all</button><button type="button" data-k="d">New features</button></div><p class="why" hidden>Dev wants fast, frequent change. Ops wants stability. That clash is what DevOps removes.</p></div>
+<div class="mcq" data-a="b"><p class="q">Which is NOT one of the four reasons DevOps emerged?</p><div class="opts"><button type="button" data-k="a">Siloed teams</button><button type="button" data-k="b">Too many programming languages</button><button type="button" data-k="c">Slow, risky releases</button><button type="button" data-k="d">Manual, inconsistent ops</button></div><p class="why" hidden>The four are siloed teams, slow and risky releases, manual and inconsistent ops, and rising expectations.</p></div>
+<div class="mcq" data-a="d"><p class="q">In DevOps the operation team's attitude to change moves from:</p><div class="opts"><button type="button" data-k="a">Enabler to gatekeeper</button><button type="button" data-k="b">Developer to tester</button><button type="button" data-k="c">Manual to hardware</button><button type="button" data-k="d">Gatekeeper to enabler</button></div><p class="why" hidden>Ops stops blocking change and helps ship it safely through automation and shared ownership.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 2 ============ -->
+<section class="lesson" id="benefits" data-tier="1">
+<header class="lh"><span class="no">2</span><div><h2>Benefits of DevOps over traditional development</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2025</span><span>About 15 min</span><span>Syllabus 1.1</span></p></div></header>
+
+<p>Write this as a comparison, then list the benefits. The slides give you the problems of the old way and the key takeaways of the new way, so the answer comes straight from them.</p>
+
+<div class="scroll"><table>
+<thead><tr><th></th><th>Traditional development</th><th>DevOps</th></tr></thead>
+<tbody>
+<tr><td><b>Teams</b></td><td>Dev and Ops in silos; code is thrown over a wall</td><td>One team with shared goals and ownership</td></tr>
+<tr><td><b>Releases</b></td><td>Large, infrequent, risky</td><td>Small, frequent, low risk</td></tr>
+<tr><td><b>Process</b></td><td>Manual setup and deployment; environment drift</td><td>Automated build, test, deploy; identical environments</td></tr>
+<tr><td><b>Testing</b></td><td>Late, near the end</td><td>Continuous, on every merge</td></tr>
+<tr><td><b>Failure</b></td><td>Blame the person who made the mistake</td><td>Blameless: fix the system, share the lesson</td></tr>
+<tr><td><b>Feedback</b></td><td>Slow, from users after release</td><td>Fast, from monitoring and dashboards</td></tr>
+<tr><td><b>Success measured by</b></td><td>Output: features shipped</td><td>Outcome: value gained; lead time, deployment frequency</td></tr>
+</tbody></table></div>
+
+<h3>The benefits, one line each</h3>
+<ol>
+<li><b>Faster delivery.</b> Small automated changes shorten lead time and raise deployment frequency.</li>
+<li><b>Lower risk.</b> Small changesets are easier to test and to trace when something breaks, so the change failure rate falls.</li>
+<li><b>Faster recovery.</b> Monitoring and automation cut the time to detect, fix and restore service.</li>
+<li><b>Better collaboration.</b> Walls between Dev, Ops, QA and security come down; shared ownership.</li>
+<li><b>Consistency.</b> Automated provisioning and containers remove "it works on my machine".</li>
+<li><b>Higher quality.</b> CI runs tests on every merge, so defects are caught early.</li>
+<li><b>Learning culture.</b> Blameless postmortems build trust and fuel innovation.</li>
+<li><b>Business value.</b> Faster feedback means faster revenue, retention and lower cost (outcomes, not only outputs).</li>
+</ol>
+<div class="note tip"><b>Slide takeaways to quote</b><p>Culture over tools. Small, frequent, automated change. Visibility drives improvement (dashboards let every stakeholder see impact).</p></div>
+
+<details class="sheet"><summary>Answer sheet: benefits of DevOps over traditional development <small>5 marks</small></summary>
+<div class="sbody">
+<h4>Benefits of DevOps over traditional development</h4>
+<p>Traditional development keeps Dev and Ops in silos with large, rare, manual releases. DevOps joins them in one loop.</p>
+<ul>
+<li><b>Speed:</b> small automated changes give short lead time and frequent deployment.</li>
+<li><b>Reliability:</b> small changes and CI testing lower the change failure rate; monitoring cuts recovery time.</li>
+<li><b>Collaboration:</b> shared ownership replaces handoffs and blame.</li>
+<li><b>Consistency:</b> automation and containers remove environment drift.</li>
+<li><b>Business value:</b> faster feedback improves outcomes such as revenue and retention.</li>
+</ul>
+<p class="draw">Add the traditional vs DevOps table if you have time.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="a"><p class="q">Why do small, frequent releases lower risk?</p><div class="opts"><button type="button" data-k="a">Smaller changesets are easier to test and to trace when something breaks</button><button type="button" data-k="b">They need no testing</button><button type="button" data-k="c">They remove the need for Ops</button><button type="button" data-k="d">They make code shorter</button></div><p class="why" hidden>A small change has fewer places where a fault can hide.</p></div>
+<div class="mcq" data-a="c"><p class="q">"It works on my machine" is best removed by:</p><div class="opts"><button type="button" data-k="a">Longer meetings</button><button type="button" data-k="b">More manual setup</button><button type="button" data-k="c">Automation and containers that make environments identical</button><button type="button" data-k="d">Fewer developers</button></div><p class="why" hidden>The same container runs unchanged from laptop to production.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 3 ============ -->
+<section class="lesson" id="lifecycle" data-tier="1">
+<header class="lh"><span class="no">3</span><div><h2>The DevOps lifecycle, and the pairs examiners like to differentiate</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022 (three pairs), Oct 2025 (release and deploy)</span><span>About 30 min</span><span>Syllabus 1.1</span></p></div></header>
+
+<p>The process has eight phases in one continuous loop. The 2022 paper asked you to tell neighbouring phases apart, so this lesson gives each pair two clear points.</p>
+
+<figure class="fig">
+<p class="lane">Dev side: turns ideas into tested software</p>
+<div class="flow"><span class="box hl">Plan</span><span class="ar">→</span><span class="box hl">Code</span><span class="ar">→</span><span class="box hl">Build</span><span class="ar">→</span><span class="box hl">Test</span></div>
+<p class="lane">Ops side: runs it reliably and feeds insight back</p>
+<div class="flow"><span class="box ok">Release</span><span class="ar">→</span><span class="box ok">Deploy</span><span class="ar">→</span><span class="box ok">Operate</span><span class="ar">→</span><span class="box ok">Monitor</span><span class="ar">↺ back to Plan</span></div>
+<figcaption>Two halves, one infinite loop. It is not a one-way handoff. Draw it like this in the exam.</figcaption>
+</figure>
+
+<div class="scroll"><table>
+<thead><tr><th>Phase</th><th>What happens</th><th>Typical tools</th></tr></thead>
+<tbody>
+<tr><td><b>Plan</b></td><td>Turn ideas and feedback into requirements and a backlog</td><td>Jira, Trello</td></tr>
+<tr><td><b>Code</b></td><td>Write code and keep it in version control</td><td>Git, GitHub</td></tr>
+<tr><td><b>Build</b></td><td>Compile and package the code into an artifact</td><td>Maven, Jenkins</td></tr>
+<tr><td><b>Test</b></td><td>Run automated tests</td><td>JUnit, Selenium</td></tr>
+<tr><td><b>Release</b></td><td>Approve and version a tested build for production</td><td>Artifact repository, release tags</td></tr>
+<tr><td><b>Deploy</b></td><td>Install the release on servers</td><td>Ansible, Kubernetes, Docker</td></tr>
+<tr><td><b>Operate</b></td><td>Run, scale and maintain the live system</td><td>Cloud, Terraform, Kubernetes</td></tr>
+<tr><td><b>Monitor</b></td><td>Watch metrics, logs and alerts; feed back to Plan</td><td>Prometheus, Grafana, ELK</td></tr>
+</tbody></table></div>
+<p>The slide says tools alone do not create DevOps. The right tool encodes and reinforces the culture behind it. The tool names above are common examples, not a list from your slides.</p>
+
+<h3>The five pairs from the 2022 paper</h3>
+<div class="scroll"><table>
+<thead><tr><th>Pair</th><th>Point 1</th><th>Point 2</th></tr></thead>
+<tbody>
+<tr><td><b>Role of Dev team vs Ops team</b></td><td>Dev plans, codes, tests and does QA. Ops manages infrastructure, security, databases and runs production.</td><td>Dev wants fast, frequent change. Ops wants stability.</td></tr>
+<tr><td><b>Compile vs Build</b></td><td>Compile is one step: it turns source code into object or byte code and catches syntax errors. Build is the whole process: compile, link, resolve dependencies, run tests.</td><td>Compile produces class or object files. Build produces a versioned, deployable artifact (JAR, WAR, Docker image) for the artifact repository.</td></tr>
+<tr><td><b>Release vs Deploy</b></td><td>Release is the decision and packaging: a tested build is versioned and approved as ready for users. Deploy is the technical act of installing it on an environment.</td><td>They can be separated. You can deploy code and release it later (for example behind a switch). In Continuous Delivery a human decides the release; in Continuous Deployment it is automatic.</td></tr>
+<tr><td><b>Operate vs Monitor</b></td><td>Operate is running the live system: keep it up, scale it, patch it, restart it. Monitor is watching it: collect metrics, logs and alerts.</td><td>Operate acts and monitor informs. Monitoring spots a problem and triggers an operate action, and its data feeds Plan.</td></tr>
+<tr><td><b>Output vs Outcome</b></td><td>Output is what the organization delivered, for example a new feature in a release.</td><td>Outcome is what the organization gains: more revenue, better retention, lower cost.</td></tr>
+</tbody></table></div>
+<div class="note src"><b>Not in your slides</b><p>Output vs outcome and the Dev and Ops roles are straight from your slides (units 1.2 and 1.1). The compile and build, release and deploy, and operate and monitor points are standard textbook differences that fit the slide's eight-phase loop.</p></div>
+
+<h3>Release and deploy as phases of DevOps</h3>
+<ul>
+<li><b>Release phase:</b> the build that passed testing is versioned, approved and made available. Continuous Delivery means every change is always releasable, and a human decides when.</li>
+<li><b>Deploy phase:</b> the release is installed in staging and then production, automatically through the pipeline. Continuous Deployment removes the manual approval step.</li>
+<li><b>Safe deployment styles</b> from Module 2: blue-green (two environments, switch traffic, instant rollback) and canary (5% of users first, then expand).</li>
+</ul>
+
+<details class="sheet"><summary>Answer sheet: differentiate the five pairs <small>10 marks: 2 per pair, 2 points each</small></summary>
+<div class="sbody">
+<h4>Differences</h4>
+<p class="draw">Use a four-column table: pair, then points. Or write each pair as two bullets.</p>
+<ul>
+<li><b>Dev vs Ops role:</b> activities (Dev codes and tests; Ops runs infrastructure and production); goal (Dev change, Ops stability).</li>
+<li><b>Compile vs Build:</b> compile = source to object code, one step; build = compile + link + test + package. Output: object files vs deployable artifact.</li>
+<li><b>Release vs Deploy:</b> release = approve and version a build; deploy = install it on a server. Can be separate; a human releases in Continuous Delivery.</li>
+<li><b>Operate vs Monitor:</b> operate = run and maintain the live system; monitor = observe it with metrics, logs, alerts. Monitor informs and operate acts.</li>
+<li><b>Output vs Outcome:</b> output = what was delivered (a feature); outcome = what was gained (revenue, retention).</li>
+</ul>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: release and deploy phases of DevOps <small>5 marks</small></summary>
+<div class="sbody">
+<h4>Release and deploy phases</h4>
+<p>They are the first two phases on the Ops side of the DevOps loop, after Plan, Code, Build and Test.</p>
+<p class="draw">Draw the eight-phase loop and shade release and deploy.</p>
+<ul>
+<li><b>Release:</b> a tested build is versioned, stored in the artifact repository and approved. Continuous Delivery keeps it always releasable.</li>
+<li><b>Deploy:</b> the release moves through staging to production using automation. Continuous Deployment does this with no manual gate.</li>
+<li>Strategies: blue-green for zero downtime and instant rollback; canary for exposing 5% of users first.</li>
+</ul>
+<p>Benefit: small, frequent, automated releases lower risk and speed feedback.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">Which phases form the Ops half of the DevOps loop?</p><div class="opts"><button type="button" data-k="a">Plan, Code, Build, Test</button><button type="button" data-k="b">Release, Deploy, Operate, Monitor</button><button type="button" data-k="c">Code, Test, Release, Monitor</button><button type="button" data-k="d">Build, Release, Plan, Operate</button></div><p class="why" hidden>Plan, Code, Build, Test are the Dev half.</p></div>
+<div class="mcq" data-a="d"><p class="q">Which is a build but not a compile?</p><div class="opts"><button type="button" data-k="a">Turning source code into byte code</button><button type="button" data-k="b">Checking syntax errors</button><button type="button" data-k="c">Producing object files</button><button type="button" data-k="d">Compiling, running tests and packaging a Docker image</button></div><p class="why" hidden>Build includes compile plus linking, tests and packaging into an artifact.</p></div>
+<div class="mcq" data-a="a"><p class="q">"A new key feature shipped in a release" is an example of:</p><div class="opts"><button type="button" data-k="a">Output</button><button type="button" data-k="b">Outcome</button><button type="button" data-k="c">Monitoring</button><button type="button" data-k="d">Operations</button></div><p class="why" hidden>Output is what you ship. Outcome is the gain, such as more revenue.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 4 ============ -->
+<section class="lesson" id="cicd" data-tier="2">
+<header class="lh"><span class="no">4</span><div><h2>CI, Continuous Delivery, Continuous Deployment and the developer concepts</h2>
+<p class="meta"><span class="sev major">Major</span><span>Not asked on its own yet</span><span>About 20 min</span><span>Syllabus 1.1, 1.4</span></p></div></header>
+
+<p>These three terms are confused all the time, and the difference between the last two is a likely short question. The same ideas also support the release and deploy answer in Lesson 3.</p>
+
+<figure class="fig">
+<div class="flow"><span class="box hl">Code commit</span><span class="ar">→</span><span class="box hl">CI: build and test</span><span class="ar">→</span><span class="box hl">Artifact repository</span><span class="ar">→</span><span class="box ok">CD: deploy to staging</span><span class="ar">→</span><span class="box mid">Manual approval</span><span class="ar">→</span><span class="box ok">Deploy to production</span></div>
+<figcaption>Continuous Delivery stops at the manual approval box. Continuous Deployment goes all the way to production with no human step.</figcaption>
+</figure>
+
+<div class="scroll"><table>
+<thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><b>Continuous Integration (CI)</b></td><td>Developers merge into a shared mainline often. Every merge triggers automated tests, so problems are caught early. "Green" means the build is clean; "red" means it is broken.</td></tr>
+<tr><td><b>Continuous Delivery</b></td><td>CI plus automated proof that every change is always deployable. A human decides when to release.</td></tr>
+<tr><td><b>Continuous Deployment</b></td><td>Every change that passes the tests goes to production automatically. No manual gate.</td></tr>
+</tbody></table></div>
+<p>Jez Humble's point: Continuous Delivery is general and fits even embedded and IoT software. Continuous Deployment is specific to web software, because you cannot auto-deploy to a physical device the same way.</p>
+
+<h3>Development, release and deployment concepts (unit 1.4)</h3>
+<dl class="kv">
+<dt>Version control</dt><dd>Records changes as commits with who and when. You can compare, merge and restore, so production can be reverted to a previous version. Example: Git.</dd>
+<dt>TDD</dt><dd>Write a failing test first, write the code, then make the test pass. Shorter feedback loops, and developers own quality.</dd>
+<dt>Application deployment</dt><dd>Planning and executing delivery of a release. The approach should match the app: a database update needs strict consistency, a static page does not.</dd>
+<dt>MVP</dt><dd>The prototype with the minimum effort needed to test whether an idea is good. Less is wasted if big changes are needed.</dd>
+</dl>
+
+<h3>Beyond DevOps and examples</h3>
+<ul>
+<li><b>NoOps:</b> Dev and Ops never interact directly, often through serverless. <b>MLOps:</b> managing the machine learning lifecycle in production. <b>DevSecOps:</b> security built into every stage.</li>
+<li>Users of DevOps in industry: AWS, Netflix, Walmart, Target, Hertz, Fidelity. It is not tied to one domain.</li>
+</ul>
+
+<details class="sheet"><summary>Answer sheet: CI vs Continuous Delivery vs Continuous Deployment <small>5 marks</small></summary>
+<div class="sbody">
+<h4>CI, Continuous Delivery and Continuous Deployment</h4>
+<ul>
+<li><b>CI:</b> frequent merges to a shared mainline, each triggering automated build and tests.</li>
+<li><b>Continuous Delivery:</b> every change is proven deployable by automated tests; a human decides when to release.</li>
+<li><b>Continuous Deployment:</b> every change that passes goes to production automatically.</li>
+</ul>
+<p class="draw">Draw the pipeline: commit, CI, artifact repository, staging, manual approval, production.</p>
+<p>Benefit: small, frequent, tested changes catch regressions early and reduce risk.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">The difference between Continuous Delivery and Continuous Deployment is:</p><div class="opts"><button type="button" data-k="a">Delivery has no tests</button><button type="button" data-k="b">Deployment needs more humans</button><button type="button" data-k="c">Delivery has a manual release decision; deployment is automatic to production</button><button type="button" data-k="d">There is no difference</button></div><p class="why" hidden>Both are automated up to staging. Only deployment removes the final human approval.</p></div>
+<div class="mcq" data-a="a"><p class="q">In TDD the developer first:</p><div class="opts"><button type="button" data-k="a">Writes a failing test</button><button type="button" data-k="b">Writes the code</button><button type="button" data-k="c">Deploys</button><button type="button" data-k="d">Writes documentation</button></div><p class="why" hidden>Test first, then code until it passes.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 5 ============ -->
+<section class="lesson" id="etsy" data-tier="1">
+<header class="lh"><span class="no">5</span><div><h2>Success story: Etsy</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2023</span><span>About 20 min</span><span>Syllabus 1.1 (case study)</span></p></div></header>
+
+<p>The 2023 question asked for a DevOps success story of any one organization under four headings: profile, one major issue, actions taken, benefits. Etsy is the case your slides name, and it also appears in your Module 2 slides. Keep the four headings in your answer, because they are the marking scheme.</p>
+<div class="note src"><b>Check this against your slides</b><p>The case-study slides in your Unit 1.1 deck are images, so their text was not readable. This lesson is built from public sources (InfoQ's 2014 report of Etsy's QCon talk and the talk slides by Daniel Schauenberg). The second case in your deck is Heatwave. Flip through those slides once. If your professor showed different numbers, write those. Etsy alone is enough for "any one organization".</p></div>
+
+<h3>The four headings</h3>
+<dl class="kv">
+<dt>1. Profile</dt><dd>Etsy is an online marketplace for handmade and vintage goods, based in Brooklyn. Your Module 2 slides put it at about 800 staff. In 2014 it reported about 150 engineers, around 60 million visits and 1.5 billion page views per month.</dd>
+<dt>2. Major issue</dt><dd>Releases were large, rare and risky. A typical website released about every two weeks, and pushing code needed many people on standby. Development and operations were separate teams with different goals, which slowed delivery and made each deploy stressful.</dd>
+<dt>3. Actions</dt><dd>
+<ul>
+<li><b>Continuous Integration:</b> a full test suite runs before every deploy (over 14,000 test runs a day).</li>
+<li><b>"Princess" staging environment:</b> a production-like copy for employees, so code is checked before it is live.</li>
+<li><b>Deployinator:</b> a one-button deploy tool, so one person pushes a change in about two minutes. Etsy open-sourced it in 2015.</li>
+<li><b>Config flags (feature flags):</b> new code ships switched off, then is turned on gradually.</li>
+<li><b>Monitoring for everyone:</b> dashboards and graphs open to all; developers watch their own features.</li>
+<li><b>Culture:</b> everyone deploys, even on their first day; postmortems are open to the whole company; a dedicated channel for outage coordination; sharing through blog posts and open-source tools.</li>
+</ul></dd>
+<dt>4. Benefits</dt><dd>From roughly one release every two weeks to about 50 deploys a day. Small changes meant lower risk and quick rollback, faster experiments and learning, a stronger collaborative culture, and a reputation that attracts engineers.</dd>
+</dl>
+
+<div class="note tip"><b>Say it in one line</b><p>Etsy turned painful fortnightly releases into around 50 safe deploys a day by combining CI, a one-button deploy tool, feature flags, open monitoring and a blameless, shared-ownership culture.</p></div>
+
+<details class="sheet"><summary>Answer sheet: success story of DevOps for one organization <small>10 marks, about 2.5 per heading</small></summary>
+<div class="sbody">
+<h4>DevOps success story: Etsy</h4>
+<p><b>a) Profile:</b> Etsy, an online marketplace for handmade and vintage goods in Brooklyn; hundreds of staff, about 150 engineers, millions of monthly visitors.</p>
+<p><b>b) Major issue:</b> large, infrequent, risky releases and a wall between development and operations.</p>
+<p><b>c) Actions taken:</b></p>
+<ul>
+<li>CI with automated tests on every change.</li>
+<li>Princess staging environment, a copy of production.</li>
+<li>Deployinator: one-button deployment.</li>
+<li>Config flags for safe rollout.</li>
+<li>Open monitoring dashboards; shared on-call; open postmortems.</li>
+</ul>
+<p><b>d) Benefits:</b> about 50 deploys a day instead of one every two weeks; lower risk per change; faster feedback and experiments; blameless culture and happier engineers.</p>
+</div></details>
+
+<p class="score">Sources: InfoQ, "How Etsy Deploys More Than 50 Times a Day" (2014); Daniel Schauenberg, "Development, Deployment and Collaboration at Etsy", QCon London 2014.</p>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">Deployinator is:</p><div class="opts"><button type="button" data-k="a">A monitoring dashboard</button><button type="button" data-k="b">Etsy's one-button deployment tool</button><button type="button" data-k="c">A database migration tool</button><button type="button" data-k="d">A test framework</button></div><p class="why" hidden>It let one person deploy a change in about two minutes.</p></div>
+<div class="mcq" data-a="d"><p class="q">The four headings the 2023 question wanted were:</p><div class="opts"><button type="button" data-k="a">Plan, code, build, test</button><button type="button" data-k="b">Error, fault, failure, incident</button><button type="button" data-k="c">Collaboration, affinity, tools, scaling</button><button type="button" data-k="d">Profile, major issue, actions taken, benefits</button></div><p class="why" hidden>Use those four as your headings.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 6 ============ -->
+<section class="lesson" id="folk" data-tier="1">
+<header class="lh"><span class="no">6</span><div><h2>DevOps as a folk model, outputs vs outcomes, and the metrics</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2025 (folk model), Sep 2024 (metrics), Oct 2022 (output vs outcome)</span><span>About 25 min</span><span>Syllabus 1.2</span></p></div></header>
+
+<p>Three separate questions live in this lesson. The folk model is the hardest to explain well, so it comes first and is built from a plain idea: a shared shorthand that people use without checking that they all mean the same thing.</p>
+
+<h3>What a folk model is</h3>
+<p>From the slides: a folk model is a <b>mental model that is not necessarily accurate in the real world</b>, so it can lead to wrong decisions, but it is <b>shared among members of a culture</b>.</p>
+<ul>
+<li><b>Cultural model:</b> a small set of concepts and the relations between them, shared by a social group (a cognitive schema).</li>
+<li><b>Intersubjective sharing:</b> everybody in the group knows the schema, and everybody knows that everyone knows it.</li>
+<li><b>Instantiation:</b> fitting real people and events into the roles of the schema. The "buying" schema has purchaser, seller, merchandise, price. "John bought a hat at the bookstore" fills those roles.</li>
+</ul>
+<p>In cognitive science, a folk model is a simplified stand-in for a more complex idea. "The cloud" is the example: people say "the internet", "Google Drive" or "a data centre". All are useful and none is precise.</p>
+
+<h3>Why DevOps is a folk model</h3>
+<ul>
+<li>People use "DevOps" for CI/CD, automation or testing, so it became a buzzword. To one person it is a job title, to another Docker, to another a culture. The real thing behind the buzzword is <b>culture</b>.</li>
+<li>The model of DevOps is rarely taught. It is learned from observations, with the gaps filled by common sense.</li>
+<li><b>Useful:</b> a quick shared shorthand. <b>Problematic:</b> groups use the same word with different intent and argue about definitions instead of ideas. Example: one teammate says "make it modular" meaning separate files, another builds microservices.</li>
+</ul>
+<p><b>Getting past the definition trap:</b> do not argue what DevOps means. Describe an exaggerated bad behaviour, such as a "DevOps team" that only passes messages between Dev and Ops. The good behaviour then becomes obvious.</p>
+
+<h3>Significance</h3>
+<ol>
+<li>It shows DevOps is about culture and shared understanding, not a tool or a job title.</li>
+<li>It explains why teams miscommunicate and argue over definitions.</li>
+<li>It tells us how to spread DevOps: with stories and examples, including exaggerated bad ones.</li>
+<li>It leads to changing what we measure: outcomes, not only outputs.</li>
+</ol>
+
+<h3>Outputs vs outcomes</h3>
+<div class="cols2">
+<div><h4>Outputs</h4><ul><li>What the organization actually delivered.</li><li>Example: a new key feature shipped in a release.</li></ul></div>
+<div><h4>Outcomes</h4><ul><li>What the organization gains from those outputs.</li><li>Example: more revenue, better customer retention, lower operating cost.</li></ul></div>
+</div>
+
+<h3>The four metrics</h3>
+<div class="scroll"><table>
+<thead><tr><th>Metric</th><th>Meaning</th><th>Best in class</th></tr></thead>
+<tbody>
+<tr><td><b>Lead time</b></td><td>Time from an identified change to it reaching customers</td><td>Under an hour</td></tr>
+<tr><td><b>Deployment frequency</b></td><td>How often the organization deploys</td><td>On demand, many times a day</td></tr>
+<tr><td><b>Change failure rate</b></td><td>Share of production changes that fail</td><td>0 to 15%</td></tr>
+<tr><td><b>Mean time to restore</b></td><td>Time to detect, fix and restore service after an incident</td><td>Under an hour</td></tr>
+</tbody></table></div>
+<div class="note tip"><b>Remember</b><p>Two measure speed (lead time, deployment frequency). Two measure stability (change failure rate, time to restore). The 2024 paper has "change failure rate, lead time" pencilled beside the question.</p></div>
+
+<details class="sheet"><summary>Answer sheet: DevOps folk model with its significance <small>5 marks</small></summary>
+<div class="sbody">
+<h4>DevOps folk model</h4>
+<p>A folk model is a mental model shared by members of a culture that may not be accurate in the real world, so it can lead to wrong decisions. In cognitive science it is a simplified stand-in for a complex idea, like "the cloud".</p>
+<ul>
+<li>"DevOps" is a folk model: some mean CI/CD, some Docker, some a job title. The true core is culture.</li>
+<li>Useful as shorthand; problematic when groups attach different meanings and argue over the word.</li>
+<li>Way out: describe an exaggerated bad behaviour to show the good one, instead of arguing definitions.</li>
+</ul>
+<p><b>Significance:</b> shows DevOps is cultural and shared understanding; explains miscommunication; teaches through stories; moves measurement from outputs to outcomes.</p>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: any two metrics of DevOps <small>5 marks</small></summary>
+<div class="sbody">
+<h4>DevOps metrics</h4>
+<p>High-performing teams measure outcomes with a consistent set of metrics.</p>
+<ul>
+<li><b>Lead time:</b> time from an identified change to it reaching customers. Best in class is under an hour.</li>
+<li><b>Change failure rate:</b> share of production changes that fail. Best in class is 0 to 15%.</li>
+</ul>
+<p>Also: deployment frequency (on demand, many per day) and mean time to restore (under an hour).</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">A folk model is best described as:</p><div class="opts"><button type="button" data-k="a">A precise formal definition</button><button type="button" data-k="b">A folk song about teams</button><button type="button" data-k="c">A shared mental model that may not be accurate</button><button type="button" data-k="d">A deployment tool</button></div><p class="why" hidden>Shared within a culture, and possibly leading to wrong decisions.</p></div>
+<div class="mcq" data-a="b"><p class="q">Which metric measures the share of production changes that fail?</p><div class="opts"><button type="button" data-k="a">Lead time</button><button type="button" data-k="b">Change failure rate</button><button type="button" data-k="c">Deployment frequency</button><button type="button" data-k="d">Mean time to restore</button></div><p class="why" hidden>Best in class is 0 to 15%.</p></div>
+<div class="mcq" data-a="d"><p class="q">More revenue and better customer retention are examples of:</p><div class="opts"><button type="button" data-k="a">Outputs</button><button type="button" data-k="b">Inputs</button><button type="button" data-k="c">Artifacts</button><button type="button" data-k="d">Outcomes</button></div><p class="why" hidden>Outputs are things delivered. Outcomes are what the organization gains.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 7 ============ -->
+<section class="lesson" id="oldnew" data-tier="1">
+<header class="lh"><span class="no">7</span><div><h2>The old view and the new view of human error</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2025, Sep 2024</span><span>About 20 min</span><span>Syllabus 1.2</span></p></div></header>
+
+<p>The 2024 paper asked for "the mindset that sees human errors as structural rather than personal". That is the new view, so one lesson covers both questions.</p>
+
+<div class="cols2">
+<div><h4>Old view: "bad apples"</h4>
+<ul>
+<li>"Human error is the cause of trouble."</li>
+<li>Goal is to eliminate human error.</li>
+<li>Blame the "bad apples" and remove them.</li>
+<li>Assumes malice or incompetence.</li>
+<li>Individuals are blamed, shamed or fired.</li>
+<li>A culture of fear that blocks communication and transparency.</li>
+</ul></div>
+<div><h4>New view: "a symptom of deeper trouble"</h4>
+<ul>
+<li>"Human error is a symptom of trouble deeper in the system."</li>
+<li>Errors are structural, not personal.</li>
+<li>People act on the context they are in, not out of malice.</li>
+<li>Examine the system as a whole, not individuals in isolation.</li>
+<li>Every error is a shared learning opportunity.</li>
+<li>A blameless environment, handled cooperatively.</li>
+</ul></div>
+</div>
+
+<h3>Examples to write</h3>
+<ul>
+<li><b>2 AM crash.</b> Old view asks "Who pushed that code?" New view asks "What in our process let a broken script reach production unchecked?"</li>
+<li><b>Airline.</b> Firing the pilot after a crash, without asking why the warning system failed, lets the next pilot make the same mistake.</li>
+<li><b>DROP TABLE.</b> A junior developer drops a production table. New view: why was an unreviewed command allowed to run in production?</li>
+</ul>
+
+<h3>Why the new view wins</h3>
+<ol>
+<li><b>Builds trust:</b> more transparency within a team.</li>
+<li><b>Prevents repeats:</b> colleagues learn without repeating costly mistakes. GitLab and Cloudflare publish public postmortems for this reason.</li>
+<li><b>Fuels innovation:</b> more time solving new problems instead of old ones.</li>
+</ol>
+<p>With the new view, issues become <b>repairs, not blame</b>: repair misunderstandings about who works on what, repair bugs that expose gaps in expected behaviour, and repair process and documentation when production does not match expectations.</p>
+
+<details class="sheet"><summary>Answer sheet: old view vs new view of DevOps <small>5 marks</small></summary>
+<div class="sbody">
+<h4>Old view vs new view</h4>
+<p>They are two mindsets toward human error. The mindset you choose decides whether the culture is one of fear or of learning.</p>
+<p class="draw">Draw a two-column table.</p>
+<ul>
+<li><b>Old view (bad apples):</b> human error causes trouble; find and punish the person; assumes malice or incompetence; creates fear and hiding.</li>
+<li><b>New view:</b> human error is a symptom of deeper system trouble; errors are structural; people act on their context; examine the whole system; blameless learning.</li>
+</ul>
+<p>Example: a 2 AM crash. Old: "who pushed it?" New: "why did the process let it through?" Result: trust, no repeats, innovation.</p>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: mindset that sees human errors as structural, not personal <small>5 marks</small></summary>
+<div class="sbody">
+<h4>The new view of human error</h4>
+<p>This mindset says human error is a symptom of deeper trouble in the system, not a personal failing. It underlies the blameless culture.</p>
+<ul>
+<li>People act on their context, not out of malice or incompetence.</li>
+<li>Organizations examine the system as a whole, not individuals in isolation.</li>
+<li>Every error becomes a shared learning opportunity, such as a blameless postmortem.</li>
+</ul>
+<p>Example: a junior drops a production table. The question is why an unreviewed command could run, so add review and permissions. Benefits: trust, fewer repeats, more innovation.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="a"><p class="q">"Human error is a symptom of trouble deeper in the system" is the:</p><div class="opts"><button type="button" data-k="a">New view</button><button type="button" data-k="b">Old view</button><button type="button" data-k="c">Waterfall view</button><button type="button" data-k="d">Scrum view</button></div><p class="why" hidden>The old view says human error is the cause of trouble.</p></div>
+<div class="mcq" data-a="d"><p class="q">Which question reflects the new view after a 2 AM outage?</p><div class="opts"><button type="button" data-k="a">Who pushed the code?</button><button type="button" data-k="b">Who should be fired?</button><button type="button" data-k="c">Who was careless?</button><button type="button" data-k="d">What in our process let this reach production unchecked?</button></div><p class="why" hidden>The new view looks at the system.</p></div>
+<div class="mcq" data-a="b"><p class="q">An effect of a blame culture is that people:</p><div class="opts"><button type="button" data-k="a">Share full details of incidents</button><button type="button" data-k="b">Hide mistakes out of fear</button><button type="button" data-k="c">Learn faster</button><button type="button" data-k="d">Trust each other more</button></div><p class="why" hidden>Fear blocks communication and transparency.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 8 ============ -->
+<section class="lesson" id="compact" data-tier="1">
+<header class="lh"><span class="no">8</span><div><h2>The DevOps Compact, and "the methodology that covers both Dev and Ops"</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Oct 2022 (Q2 option)</span><span>About 20 min</span><span>Syllabus 1.2</span></p></div></header>
+
+<p>The 2022 option asked: "Which methodology focuses on both software development and IT operations? Explain its principles to achieve the goal." The answer to the first sentence is DevOps. For the principles, your slides give the DevOps Compact and the key takeaways, so use those.</p>
+
+<h3>The Compact: three principles</h3>
+<p>The heart of DevOps starts with people working as teams with a shared desire for mutual understanding.</p>
+<div class="flow"><span class="box hl">1. Shared, clearly defined goals</span><span class="box hl">2. Ongoing communication</span><span class="box hl">3. Dynamic repair of understanding</span></div>
+<ul>
+<li><b>Shared goals:</b> a backend and frontend team agree the API contract up front.</li>
+<li><b>Communication:</b> they message each other when blocked.</li>
+<li><b>Repair:</b> they adjust the plan when something breaks.</li>
+</ul>
+
+<h3>The climber and belayer</h3>
+<p>Rock climbing depends on communication, clarification and mutual trust, just like the compact.</p>
+<div class="scroll"><table>
+<thead><tr><th>Climber says</th><th>Belayer says</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>"On belay?"</td><td>"Belay on"</td><td>Is the partner ready? Yes, I am in control.</td></tr>
+<tr><td>"Climbing"</td><td>"Climb on"</td><td>I am starting. Acknowledged.</td></tr>
+</tbody></table></div>
+<p>The DevOps version of "on belay?" is a passing CI pipeline, an approved review or a green staging build before you "climb" into production.</p>
+<p><b>Trust but verify:</b> before the climb, each person checks their own equipment and then each other's. In a workplace, trust your partner's competence and still check the work before it moves on.</p>
+
+<h3>The General and George</h3>
+<p>Two people at "Sparkle Corp" share a goal: ship a feature without breaking the site. The General (senior developer) clearly communicates expectations and processes. George (newer ops engineer) clearly speaks up when he needs help. The compact breaks if George nods along instead of asking, because the gap shows up later, when it is costliest to fix.</p>
+
+<h3>The key takeaways as principles</h3>
+<ol>
+<li><b>Culture over tools:</b> tools work when they encode trust and shared ownership.</li>
+<li><b>Small, frequent, automated change:</b> CI/CD reduces risk by catching problems early.</li>
+<li><b>Visibility drives improvement:</b> dashboards let every stakeholder see impact.</li>
+</ol>
+
+<details class="sheet"><summary>Answer sheet: methodology covering both development and operations, and its principles <small>10 marks</small></summary>
+<div class="sbody">
+<h4>DevOps and its principles</h4>
+<p>The methodology that unites software development and IT operations is <b>DevOps</b>. It is a cultural movement that breaks the wall between Dev, Ops, QA and security, and joins plan, code, build, test, release, deploy, operate and monitor in one loop.</p>
+<p><b>Principles (the DevOps Compact):</b></p>
+<ul>
+<li><b>Shared, clearly defined goals</b> between Dev and Ops.</li>
+<li><b>Ongoing communication</b> and mutual understanding.</li>
+<li><b>Dynamic repair of understanding</b>: problems lead to repairs, not blame.</li>
+<li><b>Trust but verify:</b> trust competence, check the work (the climber and belayer).</li>
+</ul>
+<p><b>Supporting principles:</b></p>
+<ul>
+<li>Culture over tools.</li>
+<li>Small, frequent, automated change (CI/CD).</li>
+<li>Visibility through dashboards and metrics.</li>
+<li>Blameless learning from failures.</li>
+</ul>
+<p>Outcome: faster delivery with more reliability and stability.</p>
+</div></details>
+<div class="note src"><b>Not in your slides</b><p>Your slides never list "principles of DevOps" as one numbered list. The answer above combines the Compact with the takeaways, which is the closest match. Some textbooks use the acronym CAMS (Culture, Automation, Measurement, Sharing). Add one line on it if you remember it, but it is not needed.</p></div>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="c"><p class="q">Which is NOT one of the three principles of the DevOps Compact?</p><div class="opts"><button type="button" data-k="a">Shared, clearly defined goals</button><button type="button" data-k="b">Ongoing communication</button><button type="button" data-k="c">Individual heroics</button><button type="button" data-k="d">Dynamic repair of understanding</button></div><p class="why" hidden>The compact is about people working as teams.</p></div>
+<div class="mcq" data-a="a"><p class="q">"On belay?" in a DevOps setting is closest to:</p><div class="opts"><button type="button" data-k="a">A green CI pipeline or approved review before a deploy</button><button type="button" data-k="b">A server reboot</button><button type="button" data-k="c">A performance review</button><button type="button" data-k="d">A software licence</button></div><p class="why" hidden>It is the confirmation you get before moving into production.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 9 ============ -->
+<section class="lesson" id="methods" data-tier="2">
+<header class="lh"><span class="no">9</span><div><h2>Methodologies behind DevOps: development, operations, systems</h2>
+<p class="meta"><span class="sev major">Major</span><span>Not asked yet (syllabus 1.3)</span><span>About 25 min</span><span>Syllabus 1.3</span></p></div></header>
+
+<p>A methodology splits work into phases. Many treat development and operations as separate, which creates conflicting goals. DevOps does not prescribe one: it asks you to assess which fits your environment. A 5-person startup might use Agile loosely; a bank might combine Agile and ITIL.</p>
+
+<h3>Three lenses</h3>
+<div class="grid3">
+<div><h4>Software development</h4><ul><li>How to structure and pace writing code</li><li>Waterfall, Agile, Scrum</li></ul></div>
+<div><h4>Operations</h4><ul><li>How to structure and govern running IT services</li><li>ITIL, COBIT</li></ul></div>
+<div><h4>Systems</h4><ul><li>How to think about the whole system, maximising value and minimising waste</li><li>Systems thinking, Lean</li></ul></div>
+</div>
+
+<h3>Software development methodologies</h3>
+<dl class="kv">
+<dt>Waterfall</dt><dd>Sequential: requirements, design, implementation, integration, testing, installation, maintenance. You cannot start the next stage before the last. Adapted to software in the early 1980s.</dd>
+<dt>Agile</dt><dd>A group of lighter, more flexible methods. The 2001 manifesto values: individuals and interactions over processes and tools; working software over comprehensive documentation; customer collaboration over contract negotiation; responding to change over following a plan.</dd>
+<dt>Scrum</dt><dd>By Ken Schwaber and Jeff Sutherland. Work in sprints of one week to one month. The Daily Scrum asks: what did I do yesterday, what will I do today, what is blocking me? The Scrum Master facilitates and removes blockers.</dd>
+</dl>
+<div class="note"><b>Is DevOps just Agile?</b><p>No. DevOps grew around Agile but extends it to the whole organization. Agile organises developers' sprints. DevOps also asks how the same team handles deployment, monitoring and incidents.</p></div>
+
+<h3>Operations methodologies</h3>
+<dl class="kv">
+<dt>ITIL</dt><dd>A set of best practices for IT services; first published in 1989 by the British CCTA. Five core sections: <b>Service Strategy</b> (align business goals and customer needs), <b>Service Design</b> (the four Ps: People, Processes, Products, Partners), <b>Service Transition</b> (build, test and deploy changes in a coordinated way), <b>Service Operation</b> (daily running; fulfil requests, fix failures), <b>Continual Service Improvement</b> (learn from past successes and failures).</dd>
+<dt>COBIT</dt><dd>An ISACA framework for governance and management of IT, first released in 1996. Core idea: align business goals with IT goals. Five principles: meet stakeholder needs; cover the enterprise end to end; apply one integrated framework; enable a holistic approach; separate governance from management.</dd>
+</dl>
+
+<h3>Systems methodologies</h3>
+<dl class="kv">
+<dt>Systems thinking</dt><dd>Think about the whole system, not just development or operations. Ask "what else does this touch?" before changing a part.</dd>
+<dt>Lean</dt><dd>From Toyota's production system (Womack, Jones and Roos). Five principles: <b>define value, map the value stream, create flow, establish pull, pursue perfection</b>. Goal: maximise customer value and minimise waste.</dd>
+<dt>Waste in software (Poppendieck)</dt><dd>Partially done work, extra features, relearning, unnecessary handoffs, task switching, delays, defects.</dd>
+</dl>
+<div class="note tip"><b>One incident, three lenses</b><p>A fest app crashes in production. Agile and Scrum shaped how it was built. ITIL and COBIT shape how the incident is handled. Lean asks whether the whole process wasted anyone's time.</p></div>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">Which are the five principles of Lean?</p><div class="opts"><button type="button" data-k="a">Plan, do, check, act, repeat</button><button type="button" data-k="b">Value, value stream, flow, pull, perfection</button><button type="button" data-k="c">Strategy, design, transition, operation, improvement</button><button type="button" data-k="d">Requirements, design, build, test, deploy</button></div><p class="why" hidden>The third option is ITIL's five core sections.</p></div>
+<div class="mcq" data-a="d"><p class="q">The four Ps of ITIL Service Design are:</p><div class="opts"><button type="button" data-k="a">Plan, Prepare, Publish, Patch</button><button type="button" data-k="b">Product, Price, Place, Promotion</button><button type="button" data-k="c">People, Process, Pipeline, Platform</button><button type="button" data-k="d">People, Processes, Products, Partners</button></div><p class="why" hidden>The second is the marketing 4 Ps.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 10 ============ -->
+<section class="lesson" id="infra" data-tier="1">
+<header class="lh"><span class="no">10</span><div><h2>Infrastructure concepts: infrastructure for DevOps</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2024 (infrastructure terminologies), Sep 2023 (infrastructure for DevOps)</span><span>About 25 min</span><span>Syllabus 1.4 (with 2.3)</span></p></div></header>
+
+<p>Infrastructure was once the realm of operations engineers only. Now it matters to anyone building software. Unit 1.4 gives five concepts, and unit 2.3 adds the infrastructure automation terms. Write the five, then the extra terms for a full answer.</p>
+
+<h3>The five concepts from unit 1.4</h3>
+<div class="scroll"><table>
+<thead><tr><th>Concept</th><th>What it is</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><b>Configuration management</b></td><td>Identifying, managing, monitoring and auditing a product through its whole lifecycle: processes, documentation, people, tools, software, systems. Started in the 1950s with the US Department of Defense.</td><td>Tracking who approved a server change, the documents describing it and the tool that applied it</td></tr>
+<tr><td><b>Cloud computing</b></td><td>Shared, internet-based computing where customers use shared resources as needed, without buying and maintaining hardware. You can practise DevOps without the cloud.</td><td>A team rents an AWS server for a weekend hackathon, then shuts it down</td></tr>
+<tr><td><b>Infrastructure automation</b></td><td>Reduces the burden on people to manage systems while raising quality, accuracy and precision. Put the commands in a script run in one step.</td><td>A script that provisions 50 identical servers instead of typing commands 50 times</td></tr>
+<tr><td><b>Artifact management</b></td><td>An artifact is the output of any build step (JAR, WAR, library, app). A repository is the central point for binaries and dependencies, a proxy to public repositories, and a depot for build promotions.</td><td>An internal repository caching dependencies, so builds work even if a public package disappears</td></tr>
+<tr><td><b>Containers</b></td><td>Isolated structures deployed independently of the operating system and hardware. Like virtual machines but lighter. Build locally and run the same container in production.</td><td>Docker removes "it works on my machine"</td></tr>
+</tbody></table></div>
+
+<h3>Extra terms from unit 2.3 (infrastructure automation)</h3>
+<dl class="kv">
+<dt>Infrastructure as code (IaC)</dt><dd>Provision infrastructure through code, not manual clicks. Version it, test it and review it. Tools: Terraform (cloud), Ansible (configuration), Helm (Kubernetes).</dd>
+<dt>Configuration drift</dt><dd>Servers slowly change away from their desired state through manual patches and one-off fixes, until no two are alike.</dd>
+<dt>Snowflake server</dt><dd>A server so uniquely hand-configured that nobody can rebuild it. Fragile and irreplaceable.</dd>
+<dt>MTBF, MTTR, availability</dt><dd>Mean time between failures; mean time to repair. Availability = MTBF ÷ (MTBF + MTTR). "Four nines" (99.99%) means under an hour of downtime a year. IaC lowers MTTR because re-running the script rebuilds the server.</dd>
+</dl>
+<p>More detail on these is in <a href="DevOps_Module2_Pillars.html#automation">Module 2, lesson 9</a>.</p>
+
+<details class="sheet"><summary>Answer sheet: terminologies related to infrastructure management <small>5 marks</small></summary>
+<div class="sbody">
+<h4>Infrastructure terminology</h4>
+<ul>
+<li><b>Configuration management:</b> identify, manage, monitor and audit a product through its whole lifecycle.</li>
+<li><b>Cloud computing:</b> shared, internet-based resources used as needed, with no hardware to buy.</li>
+<li><b>Infrastructure automation:</b> scripts replace manual steps, reducing errors.</li>
+<li><b>Artifact management:</b> a repository for build outputs and dependencies, and a proxy to public repositories.</li>
+<li><b>Containers:</b> isolated, portable units that run the same on a laptop and in production.</li>
+</ul>
+<p>Also: infrastructure as code, configuration drift, snowflake server, MTBF and MTTR.</p>
+</div></details>
+
+<details class="sheet"><summary>Answer sheet: infrastructure for DevOps <small>10 marks if the only question, 5 if "any one of two"</small></summary>
+<div class="sbody">
+<h4>Infrastructure for DevOps</h4>
+<p>DevOps treats infrastructure like software: automated, versioned and repeatable.</p>
+<ul>
+<li><b>Configuration management</b> and <b>infrastructure automation</b> so servers are built by scripts, not by hand.</li>
+<li><b>Infrastructure as code</b> (Terraform, Ansible): versioned, reviewed and testable.</li>
+<li><b>Cloud</b> for on-demand resources.</li>
+<li><b>Artifact repository</b> so dev, test and production use the same build.</li>
+<li><b>Containers</b> so the environment travels with the application.</li>
+</ul>
+<p>It should manage configuration drift, eliminate snowflake servers, keep infrastructure code in version control, and stay simple. Result: repeatable, consistent, auditable, resilient infrastructure that can be rebuilt in minutes.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="a"><p class="q">A server that only one person understands and nobody can rebuild is a:</p><div class="opts"><button type="button" data-k="a">Snowflake server</button><button type="button" data-k="b">Container</button><button type="button" data-k="c">Artifact</button><button type="button" data-k="d">Canary</button></div><p class="why" hidden>Configuration drift creates snowflake servers.</p></div>
+<div class="mcq" data-a="c"><p class="q">An artifact repository mainly:</p><div class="opts"><button type="button" data-k="a">Monitors CPU usage</button><button type="button" data-k="b">Schedules meetings</button><button type="button" data-k="c">Stores build outputs and dependencies and acts as a proxy to public repositories</button><button type="button" data-k="d">Runs unit tests</button></div><p class="why" hidden>It is the central point for binaries and dependencies.</p></div>
+<div class="mcq" data-a="d"><p class="q">Containers help because:</p><div class="opts"><button type="button" data-k="a">They need a separate OS each</button><button type="button" data-k="b">They replace version control</button><button type="button" data-k="c">They are only for monitoring</button><button type="button" data-k="d">The same container runs unchanged from laptop to production</button></div><p class="why" hidden>Lighter than virtual machines, with no environment surprises.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 11 ============ -->
+<section class="lesson" id="culture" data-tier="1">
+<header class="lh"><span class="no">11</span><div><h2>Cultural concepts and the generative culture</h2>
+<p class="meta"><span class="sev crit">Critical</span><span>Asked: Sep 2023 (generative culture)</span><span>About 20 min</span><span>Syllabus 1.4</span></p></div></header>
+
+<p>These are the concepts about how organizations deal with and learn from incidents and failures. The generative culture is the one that has been asked. The others are short and support it.</p>
+
+<div class="scroll"><table>
+<thead><tr><th>Concept</th><th>What it is</th></tr></thead>
+<tbody>
+<tr><td><b>Retrospective</b></td><td>A discussion after a project is finished, usually regular (every quarter) or at project end. Three topics: what happened, what went well, what went poorly.</td></tr>
+<tr><td><b>Postmortem</b></td><td>Happens after an <i>unplanned</i> incident or outage. A systemic postmortem has a timeline from logs, a debrief where everyone shares their view, and remediation items to prevent a repeat.</td></tr>
+<tr><td><b>Blamelessness</b></td><td>From John Allspaw's blameless postmortems. It is not about letting people off the hook. It lets people come forward with full details, even if their own actions contributed, so real learning can begin.</td></tr>
+<tr><td><b>Organizational learning</b></td><td>Collecting, growing and sharing an organization's knowledge through deliberate steps. After an outage, fix the bug <i>and</i> update onboarding documents so every new hire learns it.</td></tr>
+</tbody></table></div>
+
+<h3>The Westrum model of organizational culture</h3>
+<p>Sociologist Ron Westrum found that how information flows through an organization predicts its culture and performance. There are three types.</p>
+<div class="scroll"><table>
+<thead><tr><th></th><th>Pathological</th><th>Bureaucratic</th><th>Generative</th></tr></thead>
+<tbody>
+<tr><td><b>Orientation</b></td><td>Power</td><td>Rules</td><td>Performance</td></tr>
+<tr><td><b>Information</b></td><td>Hoarded or distorted for political gain</td><td>Stays inside departments</td><td>Flows freely</td></tr>
+<tr><td><b>Cooperation</b></td><td>Fear and threat are common</td><td>Modest; teams protect their own turf</td><td>High cooperation and trust</td></tr>
+<tr><td><b>Failure leads to</b></td><td>Scapegoating</td><td>Little concern for the overall mission</td><td>Inquiry, not blame</td></tr>
+</tbody></table></div>
+
+<h3>Why DevOps aims for a generative culture</h3>
+<ul>
+<li>DevOps is fundamentally about culture. If the culture is not supportive, an organization will not become high-performing, however good its tools are.</li>
+<li><b>Trust and cooperation</b> across the whole organization, not just within teams.</li>
+<li><b>Better decisions</b> because better information reaches the decision-makers.</li>
+<li><b>Open, transparent teams</b> where hierarchy matters less than the mission.</li>
+</ul>
+<div class="note tip"><b>The pilot example</b><p>A pilot reports a near miss. A pathological culture silences the pilot to avoid bad publicity. A bureaucratic one files the report and ignores it. A generative one investigates, so a near miss does not become an accident.</p></div>
+
+<details class="sheet"><summary>Answer sheet: generative culture <small>10 marks if the only question, about 5 if "any one of three" is split</small></summary>
+<div class="sbody">
+<h4>Generative culture</h4>
+<p>Ron Westrum classified organizational culture by how information flows into three types.</p>
+<p class="draw">Draw the pathological, bureaucratic, generative table.</p>
+<ul>
+<li><b>Pathological:</b> power-oriented; fear; information hoarded; failure leads to scapegoating.</li>
+<li><b>Bureaucratic:</b> rule-oriented; departments protect their turf; modest cooperation.</li>
+<li><b>Generative:</b> performance-oriented; high cooperation and trust; information flows freely; failure leads to inquiry, not blame.</li>
+</ul>
+<p><b>Why DevOps wants it:</b> culture decides performance whatever the tools; it gives trust across the organization, better decisions and transparent teams.</p>
+<p>Example: the near-miss pilot report. Link: blameless postmortems, retrospectives and organizational learning are how a generative culture works day to day.</p>
+</div></details>
+
+<div class="quiz"><h3>Check yourself</h3>
+<div class="mcq" data-a="b"><p class="q">In which culture does failure lead to inquiry, not blame?</p><div class="opts"><button type="button" data-k="a">Pathological</button><button type="button" data-k="b">Generative</button><button type="button" data-k="c">Bureaucratic</button><button type="button" data-k="d">All three</button></div><p class="why" hidden>Pathological leads to scapegoating; bureaucratic to turf protection.</p></div>
+<div class="mcq" data-a="d"><p class="q">A postmortem differs from a retrospective because it:</p><div class="opts"><button type="button" data-k="a">Is only about good news</button><button type="button" data-k="b">Happens before a project</button><button type="button" data-k="c">Is planned quarterly</button><button type="button" data-k="d">Follows an unplanned incident or outage</button></div><p class="why" hidden>A retrospective is planned and regular.</p></div>
+<div class="mcq" data-a="a"><p class="q">Blamelessness is intended to:</p><div class="opts"><button type="button" data-k="a">Make people comfortable giving full details so the team can learn</button><button type="button" data-k="b">Let people off the hook</button><button type="button" data-k="c">Avoid writing postmortems</button><button type="button" data-k="d">Remove the need for testing</button></div><p class="why" hidden>Only with all the details can real learning begin.</p></div>
+</div>
+</section>
+
+<!-- ============ LESSON 12 ============ -->
+<section class="lesson" id="mock" data-tier="4">
+<header class="lh"><span class="no">12</span><div><h2>Mock paper for Module 1</h2>
+<p class="meta"><span>22 minutes per question</span><span>Paper and pen only</span></p></div></header>
+<p>Set a timer and answer from memory. It follows the shape of your papers: three questions of 10 marks each. Check yourself against the marking points under each one.</p>
+
+<div class="prob"><b>Q1 (10 marks), attempt any two</b><p>a) Explain the role of the operation team.<br>b) Explain the release and deploy phases of DevOps.<br>c) Explain the mindset that sees human errors as structural rather than personal.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>a:</b> Ops wants stability; infrastructure, release and deploy, operate and monitor, security and database, feedback to Dev; gatekeeper to enabler. <b>b:</b> the eight-phase loop drawn; release = version and approve; deploy = install through staging to production; Continuous Delivery vs Deployment; blue-green and canary. <b>c:</b> the new view, structural not personal, blameless, with the 2 AM example and benefits.</p></div></details>
+
+<div class="prob"><b>Q2 (10 marks), attempt any one</b><p>A. Explain the success story of DevOps for any one organization with respect to profile, one major issue, actions taken and benefits.<br>B. Differentiate with two points each: compile and build; release and deploy; operate and monitor; output and outcome; role of development and operation team.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>A:</b> four headings; Etsy profile; fortnightly risky releases; CI, Princess, Deployinator, config flags, open monitoring, blameless culture; about 50 deploys a day. <b>B:</b> five pairs, two points each (use the table in lesson 3).</p></div></details>
+
+<div class="prob"><b>Q3 (10 marks), attempt any one</b><p>A. Explain the old view and the new view of DevOps, and the DevOps folk model with its significance.<br>B. Explain generative culture. Compare it with the other two cultures and say why DevOps aims for it.</p></div>
+<details class="try"><summary>Marking points</summary><div class="in"><p><b>A:</b> two-column table; bad apples vs symptom of deeper trouble; folk model definition, "DevOps" as buzzword, definition trap, significance. <b>B:</b> Westrum's three types; information flow; failure leads to inquiry; trust, better decisions, transparency; pilot example.</p></div></details>
+
+<h3>Not asked yet, but fair game</h3>
+<ul>
+<li>Difference between Continuous Delivery and Continuous Deployment.</li>
+<li>Waterfall vs Agile; ITIL vs COBIT; the five principles of Lean.</li>
+<li>Retrospective vs postmortem; the DevOps Compact.</li>
+<li>Version control, TDD, MVP, containers, artifact management.</li>
+</ul>
+<p>Quiz scores are for you only and are not saved.</p>
+<p class="score" id="score">Quiz score so far: no questions answered yet.</p>
+</section>
+
+<!-- ============ LESSON 13 ============ -->
+<section class="lesson" id="cheat" data-tier="4">
+<header class="lh"><span class="no">13</span><div><h2>Last-hour sheet</h2>
+<p class="meta"><span>Read this just before the exam</span></p></div></header>
+<dl class="kv">
+<dt>DevOps</dt><dd>A cultural movement. Breaks the wall between Dev, Ops, QA, security. Born from siloed teams, slow risky releases, manual ops, rising expectations.</dd>
+<dt>Dev vs Ops</dt><dd>Dev: plan, code, test, QA; wants change. Ops: infrastructure, security, database, network; wants stability. Role of Ops in DevOps: infrastructure, release and deploy, operate, monitor, security, feedback; gatekeeper becomes enabler.</dd>
+<dt>Loop</dt><dd>Plan, Code, Build, Test | Release, Deploy, Operate, Monitor, back to Plan.</dd>
+<dt>Pairs</dt><dd>Compile = source to object code; Build = compile + test + package. Release = approve and version; Deploy = install. Operate = run; Monitor = observe. Output = shipped; Outcome = gained.</dd>
+<dt>CI / CD</dt><dd>CI = merge often, test every merge. Delivery = always deployable, human releases. Deployment = automatic to production.</dd>
+<dt>Etsy</dt><dd>Fortnightly risky releases to about 50 deploys a day: CI, Princess staging, Deployinator, config flags, open monitoring, blameless culture.</dd>
+<dt>Folk model</dt><dd>Shared mental model that may be inaccurate. "DevOps" is one. Escape the definition trap with exaggerated bad behaviour.</dd>
+<dt>Metrics</dt><dd>Lead time, deployment frequency, change failure rate (0 to 15%), mean time to restore.</dd>
+<dt>Old vs New view</dt><dd>Old: human error is the cause; blame bad apples. New: human error is a symptom of deeper system trouble; blameless; shared learning.</dd>
+<dt>Compact</dt><dd>Shared goals, ongoing communication, dynamic repair of understanding. Trust but verify.</dd>
+<dt>Methodologies</dt><dd>Waterfall, Agile, Scrum (dev); ITIL, COBIT (ops); Lean: value, value stream, flow, pull, perfection (systems).</dd>
+<dt>Infrastructure</dt><dd>Configuration management, cloud, infrastructure automation, artifact management, containers. Plus IaC, configuration drift, snowflake server, MTBF, MTTR.</dd>
+<dt>Culture</dt><dd>Retrospective (planned), postmortem (after an incident), blamelessness, organizational learning. Westrum: pathological (power), bureaucratic (rules), generative (performance, trust, inquiry not blame).</dd>
+</dl>
+</section>
+
+<nav class="pager" aria-label="Other modules"><a href="DevOps_Module2_Pillars.html"><small>Next</small>Module 2 · Pillars</a></nav>
+</div></main>
+</div>
+<script>window.COURSE={"id": "m1", "title": "Module 1: Foundational Terminology and Concepts", "sub": "DevOps, syllabus units 1.1 to 1.4", "tiers": {"1": "Critical: already asked", "2": "Major: in syllabus, not asked yet", "3": "Minor: skim", "4": "Finish line"}, "modules": [{"id": "m1", "href": "DevOps_Module1_Foundations.html", "label": "Module 1 \u00b7 Foundations", "total": 13}, {"id": "m2", "href": "DevOps_Module2_Pillars.html", "label": "Module 2 \u00b7 Pillars", "total": 16}, {"id": "m3", "href": "DevOps_Module3_Architecture.html", "label": "Module 3 \u00b7 Architecture", "total": 12}]};</script>
+<script>
+(function(){
+  var C = window.COURSE || {};
+  function load(id){ try { return JSON.parse(localStorage.getItem('devops:' + id + ':done') || '{}') || {}; } catch(e) { return {}; } }
+  var done = load(C.id);
+  function save(){ try { localStorage.setItem('devops:' + C.id + ':done', JSON.stringify(done)); } catch(e) {} }
+
+  var lessons = Array.prototype.slice.call(document.querySelectorAll('section.lesson'));
+  var nav = document.getElementById('outline');
+
+  /* ---- focus mode (critical only) ---- */
+  var FOCUS_KEY = 'devops:focus';
+  var focus = false;
+  try { focus = localStorage.getItem(FOCUS_KEY) === '1'; } catch(e) {}
+  function applyFocus(){ document.body.classList.toggle('focusmode', focus); }
+  applyFocus();
+
+  /* ---- build outline ---- */
+  if (nav) {
+    var html = '<p class="brand">' + C.title + '</p><p class="sub">' + (C.sub || '') + '</p>';
+    html += '<div class="mods">';
+    (C.modules || []).forEach(function(m){
+      var d = m.id === C.id ? done : load(m.id);
+      var n = 0; Object.keys(d).forEach(function(k){ if (d[k]) n++; });
+      html += '<a href="' + m.href + '" class="' + (m.id === C.id ? 'cur' : '') + '" data-mod="' + m.id + '"><span>' + m.label + '</span><small>' + n + '/' + m.total + '</small></a>';
+    });
+    html += '</div>';
+    html += '<div class="bar" aria-hidden="true"><i id="barfill"></i></div><p class="count" id="barcount"></p>';
+    html += '<label class="focus"><input type="checkbox" id="focusbox"><span>Critical-only mode: hide Major and Minor lessons (use this if you are short on time)</span></label>';
+    var tiers = C.tiers || {};
+    Object.keys(tiers).forEach(function(t){
+      var inTier = lessons.filter(function(s){ return s.dataset.tier === t; });
+      if (!inTier.length) return;
+      html += '<h6 class="h' + t + '">' + tiers[t] + '</h6><ol>';
+      inTier.forEach(function(s){
+        var n = s.querySelector('.no'), h = s.querySelector('h2');
+        html += '<li class="t' + t + '"><a href="#' + s.id + '" data-id="' + s.id + '"><span class="n">' + (n ? n.textContent : '') + '</span><span class="t">' + h.textContent + '</span></a></li>';
+      });
+      html += '</ol>';
+    });
+    nav.innerHTML = html;
+    var fb = document.getElementById('focusbox');
+    if (fb) { fb.checked = focus; fb.addEventListener('change', function(){ focus = fb.checked; try { localStorage.setItem(FOCUS_KEY, focus ? '1' : '0'); } catch(e) {} applyFocus(); refresh(); }); }
+  }
+
+  function visible(s){ return !(focus && (s.dataset.tier === '2' || s.dataset.tier === '3')); }
+
+  function refresh(){
+    var n = 0, tot = 0;
+    lessons.forEach(function(s){
+      var d = !!done[s.id];
+      if (visible(s)) { tot++; if (d) n++; }
+      var a = document.querySelector('.outline a[data-id="' + s.id + '"]');
+      if (a) a.classList.toggle('done', d);
+      var b = s.querySelector('.donebtn');
+      if (b) { b.setAttribute('aria-pressed', d ? 'true' : 'false'); b.textContent = d ? 'Done. Click to undo' : 'Mark this lesson as done'; }
+    });
+    var f = document.getElementById('barfill'), c = document.getElementById('barcount');
+    if (f) f.style.width = (tot ? Math.round(100 * n / tot) : 0) + '%';
+    if (c) c.textContent = n + ' of ' + tot + ' lessons done' + (focus ? ' (critical-only mode)' : '');
+    var cur = document.querySelector('.mods a.cur small');
+    if (cur) { var k = 0; Object.keys(done).forEach(function(x){ if (done[x]) k++; }); cur.textContent = k + '/' + (C.modules.filter(function(m){ return m.id === C.id; })[0].total); }
+  }
+
+  /* ---- done buttons ---- */
+  lessons.forEach(function(s){
+    var bar = document.createElement('div'); bar.className = 'donebar';
+    bar.innerHTML = '<button type="button" class="donebtn" aria-pressed="false"></button>';
+    s.appendChild(bar);
+    bar.firstChild.addEventListener('click', function(){ done[s.id] = !done[s.id]; save(); refresh(); });
+  });
+  refresh();
+
+  /* ---- MCQs ---- */
+  var mcqs = Array.prototype.slice.call(document.querySelectorAll('.mcq'));
+  var total = mcqs.length, right = 0, answered = 0;
+  mcqs.forEach(function(q){
+    var ans = q.dataset.a;
+    q.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (q.classList.contains('done')) return;
+        q.classList.add('done'); answered++;
+        var ok = btn.dataset.k === ans;
+        if (ok) right++;
+        btn.classList.add(ok ? 'right' : 'wrong');
+        if (!ok) { var r = q.querySelector('button[data-k="' + ans + '"]'); if (r) r.classList.add('right'); }
+        var w = q.querySelector('.why'); if (w) w.hidden = false;
+        var sc = document.getElementById('score');
+        if (sc) sc.textContent = 'Quiz score so far: ' + right + ' correct out of ' + answered + ' answered (' + total + ' questions on this page).';
+      });
+    });
+  });
+
+  /* ---- mobile menu ---- */
+  var mb = document.getElementById('menubtn');
+  if (mb) mb.addEventListener('click', function(){ document.body.classList.toggle('menu'); });
+  if (nav) nav.addEventListener('click', function(e){ if (e.target.closest('a[data-id]')) document.body.classList.remove('menu'); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') document.body.classList.remove('menu'); });
+  document.addEventListener('click', function(e){
+    if (document.body.classList.contains('menu') && !e.target.closest('#outline') && !e.target.closest('#menubtn')) document.body.classList.remove('menu');
+  });
+
+  /* ---- scrollspy ---- */
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if (en.isIntersecting) {
+          document.querySelectorAll('.outline a.on').forEach(function(a){ a.classList.remove('on'); });
+          var a = document.querySelector('.outline a[data-id="' + en.target.id + '"]');
+          if (a) a.classList.add('on');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    lessons.forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---- print: open every reveal ---- */
+  window.addEventListener('beforeprint', function(){ document.querySelectorAll('details').forEach(function(d){ d.open = true; }); });
+})();
+
+</script>
+</body>
+</html>
