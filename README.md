@@ -30,6 +30,13 @@ Instead of relying solely on static PDFs, these notes are designed to provide a 
 | Module 2 | Pillars | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module2_Pillars.html) |
 | Module 3 | Architecture | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module3_Architecture.html) |
 
+### Honours (MARE)
+
+| Module | Topics | Study Notes |
+|:---:|---|:---:|
+| Module 1 | Intro & Reverse Engg | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/honours/Module_1_Theory_Answers.html) |
+| Module 2 | Malware Analysis | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/honours/Module_2_Theory_Answers.html) |
+
 ## 📋 University Syllabus
 
 Reference images of the official syllabuses are provided below to help map the study notes to the university curriculum.
@@ -53,6 +60,10 @@ Reference images of the official syllabuses are provided below to help map the s
 ### DevOps
 
 [DevOps Syllabus](syllabus/DevOps%2026-27%20Syllabus.png)
+
+### Honours(MARE)
+
+[MARE Syllabus](syllabus/MARE%2026-27%20Syllabus.png)
 
 <!-- Add more subjects using the same format -->
 
