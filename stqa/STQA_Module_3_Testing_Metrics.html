@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STQA Module 3 | Testing Metrics</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink: #152c2b;
+  --muted: #465f5d;
+  --accent: #176459;
+  --accent-deep: #0c4b44;
+  --line: #d9e4e0;
+  --paper: #fffefa;
+  --canvas: #f3f5ef;
+  --highlight: #e8f4ec;
+  --warm: #fff0d9;
+  --display: Georgia, "Times New Roman", serif;
+  font: 16px/1.6 "Segoe UI", Roboto, system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: var(--canvas); }
+a { color: var(--accent-deep); text-underline-offset: .21em; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible, summary:focus-visible { outline: 3px solid #b1581c; outline-offset: 3px; }
+.skip { position: absolute; left: 1rem; top: .6rem; transform: translateY(-160%); z-index: 2; padding: .55rem .85rem; background: #fff; }
+.skip:focus { transform: translateY(0); }
+.wrap { width: min(100% - 2.5rem, 74rem); margin-inline: auto; }
+.top { background: #102d29; color: #ecf6ee; }
+.top .wrap { display: flex; justify-content: space-between; align-items: center; gap: .6rem 1.25rem; min-height: 4.1rem; flex-wrap: wrap; padding-block: .65rem; }
+.brand { font-weight: 650; font-size: .94rem; }
+.tabs { display: flex; gap: .35rem; flex-wrap: wrap; }
+.tabs a { color: #f5fbf7; padding: .32rem .7rem; border-radius: .4rem; font-size: .88rem; text-decoration: none; }
+.tabs a:hover { text-decoration: underline; }
+.tabs a[aria-current="page"] { background: #e0f1e3; color: #143b31; font-weight: 700; }
+.hero { background: #e5eee4; border-bottom: 1px solid #d4e0d6; padding-block: clamp(2.2rem, 6vw, 4.35rem); }
+.hero p { max-width: 58ch; margin: .8rem 0 0; }
+.kicker { color: var(--accent-deep); font-size: .81rem; font-weight: 750; letter-spacing: .055em; }
+.hero h1 { font: normal clamp(2.65rem, 6.2vw, 5.15rem)/1.02 var(--display); letter-spacing: -.045em; margin: .4rem 0 .8rem; }
+.hero .intro { font-size: clamp(1.02rem, 2vw, 1.2rem); }
+.action { display: inline-block; margin-top: 1.25rem; padding: .54rem .9rem; color: #fff; background: var(--accent-deep); border-radius: .38rem; font-weight: 700; text-decoration: none; }
+.action:hover { text-decoration: underline; }
+.layout { display: grid; grid-template-columns: 14.2rem minmax(0, 1fr); gap: clamp(1.25rem, 4vw, 3.4rem); align-items: start; padding-block: 2rem 3rem; }
+.rail { position: sticky; top: 1.25rem; border-top: 2px solid var(--accent); padding-top: .8rem; }
+.rail p { margin: 0 0 .5rem; }
+.rail ul { list-style: none; margin: 0; padding: 0; }
+.rail a { display: block; padding: .24rem 0; font-size: .93rem; }
+main { min-width: 0; }
+section { scroll-margin-top: 1rem; margin-bottom: 1.2rem; background: var(--paper); border: 1px solid var(--line); border-radius: .72rem; padding: clamp(1rem, 3.25vw, 2rem); }
+h2, h3 { line-height: 1.22; }
+h2 { margin: 0 0 .8rem; font: normal clamp(1.75rem, 3.2vw, 2.5rem)/1.1 var(--display); letter-spacing: -.025em; }
+h3 { margin: 1.25rem 0 .35rem; font-size: 1.05rem; }
+p { margin: .7rem 0; }
+ul, ol { padding-inline-start: 1.25rem; margin: .65rem 0; }
+li + li { margin-top: .3rem; }
+p:last-child, ol:last-child, ul:last-child, details:last-child { margin-bottom: 0; }
+.meta { margin: 0 0 .4rem; color: var(--accent-deep); font-size: .83rem; font-weight: 750; }
+.note, .formula { padding: .75rem .9rem; margin: .95rem 0; border-radius: .35rem; }
+.note { background: var(--warm); border-left: .23rem solid #ad6a30; }
+.formula { background: var(--highlight); border-left: .23rem solid var(--accent); font-family: ui-monospace, Consolas, monospace; font-size: .92rem; overflow-wrap: anywhere; }
+.formula div + div { margin-top: .25rem; }
+.table-scroll { overflow-x: auto; margin: .85rem 0; }
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: .94rem; }
+caption { text-align: left; font-weight: 700; margin-bottom: .35rem; }
+th, td { padding: .52rem .64rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { background: var(--highlight); color: #19423a; }
+tbody th { font-weight: 650; }
+.numbers { text-align: right; font-variant-numeric: tabular-nums; }
+details { border: 1px solid var(--line); border-radius: .45rem; margin: .7rem 0; }
+summary { cursor: pointer; padding: .65rem .8rem; color: var(--accent-deep); font-weight: 700; }
+summary:hover { background: var(--highlight); border-radius: inherit; }
+details > .answer { padding: .05rem .85rem .85rem; }
+.route td:first-child { white-space: nowrap; }
+.diagram { margin: 1rem 0; background: #eef4ee; padding: .85rem; border-radius: .45rem; }
+.diagram figcaption { margin-bottom: .65rem; font-weight: 750; }
+.flow { display: grid; justify-items: center; gap: .18rem; text-align: center; }
+.inputs { display: flex; justify-content: center; align-items: center; gap: .35rem; flex-wrap: wrap; }
+.node { display: inline-block; padding: .30rem .55rem; background: var(--paper); border: 1px solid #9fbeb2; border-radius: .32rem; }
+.arrow { color: var(--accent-deep); font-weight: 750; }
+.flow-inline { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; }
+.flow small { color: var(--muted); }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .91em; overflow-wrap: anywhere; }
+footer { color: var(--muted); font-size: .89rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+footer p { margin-top: 0; }
+caption, .answer { overflow-wrap: anywhere; }
+@media (max-width: 780px) {
+  .layout { grid-template-columns: 1fr; gap: 1.2rem; padding-top: 1.25rem; }
+  .rail { position: static; }
+  .rail ul { display: flex; flex-wrap: wrap; column-gap: 1rem; }
+}
+@media (max-width: 420px) {
+  .wrap { width: calc(100% - 1.3rem); }
+  th, td { padding: .42rem .45rem; }
+  .top .wrap { align-items: flex-start; }
+}
+@media print {
+  :root { font-size: 11pt; }
+  body, section, .hero { background: #fff; }
+  .wrap { width: 100%; }
+  .layout { display: block; padding: 0; }
+  .top, .rail, .action, .skip { display: none; }
+  .hero, section { padding: .65rem 0; border: 0; }
+  .hero h1 { font-size: 32pt; }
+  h2, h3, summary, caption { break-after: avoid; }
+  tr, figure, .formula { break-inside: avoid; }
+}
+[hidden] { display: none !important; }
+button, input { font: inherit; }
+button:focus-visible, input:focus-visible { outline: 3px solid #b1581c; outline-offset: 2px; }
+.layout { grid-template-columns: 17.75rem minmax(0, 1fr); gap: clamp(1.3rem, 3.2vw, 2.9rem); }
+.rail { background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: .65rem; padding: .8rem; }
+.dashboard { margin-bottom: .6rem; }
+.mode-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem; padding: .22rem; border: 1px solid var(--line); border-radius: .45rem; background: var(--canvas); }
+.mode-buttons button { padding: .32rem .18rem; border: 0; border-radius: .27rem; cursor: pointer; background: transparent; color: var(--accent-deep); font-size: .86rem; }
+.mode-buttons button[aria-pressed="true"] { background: var(--accent-deep); color: #fff; font-weight: 700; }
+.completion { margin-top: .68rem; font-weight: 700; font-size: .92rem; }
+.rail .mode-count { margin-bottom: .26rem; }
+progress { display: block; width: 100%; height: .56rem; border: 0; border-radius: 1rem; overflow: hidden; background: var(--line); color: var(--accent); }
+progress::-webkit-progress-bar { background: var(--line); border-radius: 1rem; }
+progress::-webkit-progress-value { background: var(--accent); border-radius: 1rem; }
+progress::-moz-progress-bar { background: var(--accent); border-radius: 1rem; }
+.rail .complete-all, .rail .storage-note { color: var(--muted); margin: .31rem 0 0; font-size: .81rem; }
+.rail a.resume { font-weight: 700; margin-top: .37rem; }
+.rail .jump-links { display: flex; flex-wrap: wrap; gap: .65rem; border-top: 1px solid var(--line); }
+.rail .jump-links a { font-size: .84rem; }
+.rail .index-title { margin: .58rem 0 .2rem; }
+.topic-index { max-height: min(37vh, 24rem); overflow-y: auto; scrollbar-gutter: stable; padding-inline-end: .2rem; }
+.topic-index legend { padding: .15rem 0; font-size: .77rem; font-weight: 750; color: var(--muted); }
+.topic-index fieldset { min-inline-size: 0; padding: 0; border: 0; margin: 0 0 .45rem; }
+.topic-index fieldset:last-child { margin-bottom: 0; }
+.topic-index li { display: flex; align-items: flex-start; gap: .44rem; min-width: 0; margin: 0; padding: .12rem .2rem; border-radius: .26rem; }
+.topic-index li:has(input:checked) { background: var(--highlight); }
+.topic-index li input { margin: .42rem 0 0; }
+.topic-index li a { flex: 1; min-width: 0; font-size: .88rem; line-height: 1.28; padding: .24rem 0; }
+input[type="checkbox"] { flex: none; width: 1.02rem; height: 1.02rem; accent-color: var(--accent-deep); cursor: pointer; }
+.lesson-check { display: flex; align-items: center; gap: .48rem; margin-top: 1.25rem; padding-top: .64rem; border-top: 1px solid var(--line); color: var(--accent-deep); font-weight: 700; cursor: pointer; }
+.lesson-check input { margin: 0; }
+.lesson[data-topic] { scroll-margin-top: 1rem; }
+@media (max-width: 780px) {
+  .layout { grid-template-columns: 1fr; }
+  .rail { position: relative; top: auto; }
+  .rail .topic-index ul { display: block; }
+  .topic-index { max-height: min(47vh, 18rem); }
+}
+@media print {
+  .layout { display: block; }
+  .lesson-check { display: none; }
+}
+
+</style>
+</head>
+<body data-module="3">
+<a class="skip" href="#content">Skip to lesson</a>
+<header class="top">
+  <div class="wrap">
+    <span class="brand">Software Testing and Quality Assurance</span>
+    <nav class="tabs" aria-label="Course modules"><a href="STQA_Module_3_Testing_Metrics.html" aria-current="page">Module 3</a><a href="STQA_Module_4_AI_and_Test_Automation.html">Module 4</a></nav>
+  </div>
+</header>
+<div class="hero">
+  <div class="wrap">
+    <p class="kicker">Module 3 · 8 topics</p>
+    <h1>Testing Metrics</h1>
+    <p class="intro">Measure testing progress, estimate effort and prepare for the Halstead and Test Point Analysis questions.</p>
+  </div>
+</div>
+<div class="wrap layout">
+  <aside class="rail" aria-label="Study progress and topic index">
+    <div class="dashboard" hidden>
+      <p class="kicker">Study mode</p>
+      <div class="mode-buttons" role="group" aria-label="Study mode">
+        <button type="button" data-mode="fast" aria-pressed="false">Fast · 4</button>
+        <button type="button" data-mode="full" aria-pressed="true">Full · 8</button>
+      </div>
+      <div class="completion" role="status" aria-atomic="true">
+        <p class="mode-count" id="mode-count">0 of 8 topics done</p>
+      </div>
+      <progress id="topic-meter" aria-label="Topics done in the selected mode" value="0" max="8"></progress>
+      <p class="complete-all" id="module-count" hidden></p>
+      <p class="storage-note" id="storage-note" hidden>This browser is blocking saved progress. Your marks last until you reload or close this page.</p>
+      <a class="resume" href="#measurement" id="resume">Go to next unfinished topic</a>
+    </div>
+    <div class="jump-links">
+      <a href="#route">Study plan</a>
+      <a href="#recall">Revision questions</a>
+    </div>
+    <p class="kicker index-title">Topic index</p>
+    <nav class="topic-index" aria-label="Topic index">
+      <fieldset data-index-group><legend>3.1 Measurement and estimation</legend><ul>
+<li data-index-topic="measurement"><span data-enhance hidden><input type="checkbox" data-complete="measurement" aria-label="Measurement objectives and GQM completed"></span><a href="#measurement">Measurement objectives and GQM</a></li>
+<li data-index-topic="attributes"><span data-enhance hidden><input type="checkbox" data-complete="attributes" aria-label="Attributes and corresponding metrics completed"></span><a href="#attributes">Attributes and corresponding metrics</a></li>
+<li data-index-topic="estimation"><span data-enhance hidden><input type="checkbox" data-complete="estimation" aria-label="Estimation models for testing effort completed"></span><a href="#estimation">Estimation models for testing effort</a></li>
+<li data-index-topic="halstead"><span data-enhance hidden><input type="checkbox" data-complete="halstead" aria-label="Halstead effort numerical completed"></span><a href="#halstead">Halstead effort numerical</a></li>
+</ul></fieldset>
+<fieldset data-index-group><legend>3.2 Information flow and testing progress</legend><ul>
+<li data-index-topic="flow"><span data-enhance hidden><input type="checkbox" data-complete="flow" aria-label="Information flow metrics completed"></span><a href="#flow">Information flow metrics</a></li>
+<li data-index-topic="tpa"><span data-enhance hidden><input type="checkbox" data-complete="tpa" aria-label="Test Point Analysis (TPA) completed"></span><a href="#tpa">Test Point Analysis (TPA)</a></li>
+<li data-index-topic="progress"><span data-enhance hidden><input type="checkbox" data-complete="progress" aria-label="Testing progress metrics completed"></span><a href="#progress">Testing progress metrics</a></li>
+<li data-index-topic="function-points"><span data-enhance hidden><input type="checkbox" data-complete="function-points" aria-label="Function point metrics for testing completed"></span><a href="#function-points">Function point metrics for testing</a></li>
+</ul></fieldset>
+    </nav>
+  </aside>
+  <main id="content">
+    <section id="route">
+  <div data-mode-content="full">
+    <h2>Three-day study plan</h2>
+    <div class="table-scroll">
+      <table class="route">
+        <thead><tr><th scope="col">Day</th><th scope="col">Study</th><th scope="col">Write from memory</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Day 1</th><td><a href="STQA_Module_3_Testing_Metrics.html#route">Module 3</a> · 8 topics</td><td>Halstead numerical, TPA diagram, four progress metrics.</td></tr>
+          <tr><th scope="row">Day 2</th><td><a href="STQA_Module_4_AI_and_Test_Automation.html#automation">Module 4 · Automation and web testing</a> · 12 topics</td><td>Keyword-driven test table and six shopping-site test cases with expected results.</td></tr>
+          <tr><th scope="row">Day 3</th><td><a href="STQA_Module_4_AI_and_Test_Automation.html#agile">Module 4 · Agile, CI/CD and AI</a> · 7 topics</td><td>Five Agile challenges, the pipeline diagram, and an AI-generated boundary test. Finish with one timed 10-mark answer per module.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Start here and complete all eight topics. Rework the Halstead table, then draw the TPA diagram and explain the backlog example from memory.</p>
+  </div>
+  <div data-mode-content="fast" hidden>
+    <h2>Fast study plan</h2>
+    <p>Study the 4 topics in this module’s index. Prioritize the Halstead numerical, Test Point Analysis, testing progress metrics and function points. For practice, redo the Halstead calculation without the answer table.</p>
+    <p class="note">Use <strong>Full mode</strong> when you’re ready to complete the rest of this module’s syllabus. Every topic you tick here also counts there.</p>
+  </div>
+</section>
+    <section class="lesson" id="measurement" data-topic data-fast="false" aria-labelledby="measurement-title">
+  
+  <h2 id="measurement-title">Measurement objectives and GQM</h2>
+  <p>A <strong>software metric</strong> is a quantitative measure of an attribute of a product, process or resource. Testing teams use metrics to estimate effort, monitor status, find bottlenecks and support decisions such as release readiness.</p>
+<h3>Goal → Question → Metric (GQM)</h3>
+<p>Define a goal, ask a question that tells you whether the goal is being met, then choose a measure that can answer the question. <strong>Goal.</strong> Complete planned regression testing before release. <strong>Question.</strong> How much of the planned suite is complete? <strong>Metric.</strong> Completed regression tests divided by planned regression tests, as a percentage.</p><h3>What can you measure?</h3>
+<p>A <strong>product</strong> measure describes the application, such as its functional size. A <strong>process</strong> measure describes how work happens, such as the average time from reporting a defect to verifying its fix. A <strong>resource</strong> measure describes the people, time or equipment available, such as tester person-hours.</p>
+<p>An <strong>internal attribute</strong> can be measured from an artifact, such as the lines of source code. An <strong>external attribute</strong> describes behavior in use, such as response time under load. Define the unit, what to include, when to measure, and what decision the result will inform.</p>
+<details><summary>Try GQM for a release with unresolved critical defects.</summary><div class="answer"><p>Goal: reduce critical release risk. Question: how many confirmed critical defects are still open? Metric: count unresolved defects classified as critical at the release review.</p></div></details>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="measurement" aria-label="Measurement objectives and GQM completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="attributes" data-topic data-fast="false" aria-labelledby="attributes-title">
+  <p class="meta">Past paper · Four product metrics for 10 marks</p>
+  <h2 id="attributes-title">Attributes and corresponding metrics</h2>
+  <p>An <strong>attribute</strong> is what you care about. A <strong>metric</strong> gives you a number you can record for that attribute. For example, to measure the completeness of testing, count how many in-scope requirements have been exercised and divide by the total in scope.</p>
+<p><strong>Use the number to make a decision.</strong> For an exit criterion of zero open critical defects, check the count just before release. To assess automation cost, compare the time saved over repeated runs with script setup, maintenance and infrastructure costs. To estimate suite size, count regression cases separately from the tests planned for new features.</p><div class="table-scroll">
+    <table>
+      <caption>Examples of testing attributes and their metrics</caption>
+      <thead><tr><th scope="col">Attribute</th><th scope="col">Possible metric</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Progress</th><td>Execution percentage or number of unresolved defects.</td></tr>
+        <tr><th scope="row">Cost</th><td>Actual testing cost compared with budget, or testing hours per function point.</td></tr>
+        <tr><th scope="row">Quality</th><td>Defects per function point or percentage of requirements exercised.</td></tr>
+        <tr><th scope="row">Size</th><td>Number of planned test cases, regression tests or automation candidates.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<h3>Four product metrics for a 10-mark answer</h3>
+<ol>
+    <li><strong>Lines of code (LOC)</strong> measure implementation size. One team might count 2,000 non-blank, non-comment lines. Comparisons assume consistent counting rules and similar languages.</li>
+    <li><strong>Function points (FP)</strong> measure the size of functionality delivered to users. A count considers inputs, outputs, inquiries, internal logical files and external interface files. Historical rates like testing hours or cost per FP can predict effort or cost for a similarly scoped project. At 3 hours per FP, 100 FP would take an estimated 300 person-hours.</li>
+    <li><strong>Halstead volume</strong> estimates how much information a program’s tokens represent. It uses total token count and operator/operand vocabulary, <strong>V = N × log₂(n)</strong>.</li>
+    <li><strong>Defect density</strong> measures observed defects per size unit, for example 12 confirmed defects in 60 FP gives <strong>0.20 defects per FP</strong>. Compare values from a similar test phase and defect scope.</li>
+  </ol>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="attributes" aria-label="Attributes and corresponding metrics completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="estimation" data-topic data-fast="false" aria-labelledby="estimation-title">
+  
+  <h2 id="estimation-title">Estimation models for testing effort</h2>
+  <p>Testing effort is the work required, usually measured in person-hours. Duration is the elapsed calendar time, while staffing is the number of people needed to do the work. Choose an estimate based on the information you actually have, then calibrate it using past projects of similar scope.</p>
+<h3>From effort to staffing</h3>
+<p>Suppose 80 procedures historically require 160 person-hours. The baseline is <strong>2 hours per procedure</strong>. For 120 new procedures, estimate <strong>240 person-hours</strong>. If each tester can contribute 60 productive hours in the available window, estimate <strong>4 testers</strong>.</p>
+<p>For task planning, split a 240-hour estimate into planning (20%, or 48 hours), design (30%, or 72 hours) and execution (50%, or 120 hours). If a new browser matrix adds 20 hours to execution, revise the total to <strong>260 person-hours</strong>. Historical splits are starting points. Review the assumptions before using the numbers as commitments.</p><div class="table-scroll">
+    <table>
+      <caption>Choose the model based on what you know</caption>
+      <thead><tr><th scope="col">Model</th><th scope="col">Basis and example</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Development ratio</th><td>Use a developer-to-tester ratio. With 12 developers and a 3:1 ratio, estimate 4 testers.</td></tr>
+        <tr><th scope="row">Project-staff ratio</th><td>Use the historical testing share of the whole project team. 20% of 30 staff gives 6 testers.</td></tr>
+        <tr><th scope="row">Test procedure method</th><td>Multiply the number of planned procedures by historical hours per procedure. 100 procedures × 2 hours gives 200 person-hours.</td></tr>
+        <tr><th scope="row">Task planning method</th><td>Allocate effort across activities such as test planning, design and execution using historical splits. Adjust each estimate for the current scope and sum the adjusted hours.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="estimation" aria-label="Estimation models for testing effort completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="halstead" data-topic data-fast="true" aria-labelledby="halstead-title">
+  <p class="meta">Past paper · 10 marks · Paper A, Q3(i)</p>
+  <h2 id="halstead-title">Halstead effort numerical</h2>
+  <p>Halstead measures a module using the operators and operands in its source code. For example, <code>total = price + tax</code> has <code>=</code> and <code>+</code> as operators, with <code>total</code>, <code>price</code> and <code>tax</code> as operands. In an effort-allocation problem, the module with a larger share of total Halstead effort gets a larger share of the testing effort.</p>
+<p><strong>Lowercase n</strong> counts distinct items. <strong>Uppercase N</strong> counts all occurrences. Subscript <strong>1</strong> means operators and <strong>2</strong> means operands.</p>
+<div class="formula">
+    <div>Vocabulary n = n₁ + n₂</div>
+    <div>Length N = N₁ + N₂</div>
+    <div>Volume V = N × log₂(n)</div>
+    <div>Difficulty D = (n₁ ÷ 2) × (N₂ ÷ n₂). Program level PL = 1 ÷ D.</div>
+    <div>Effort E = V ÷ PL = V × D</div>
+    <div>Effort share (%) = 100 × E for the module ÷ sum of E for all modules</div>
+  </div>
+<h3>Worked past-paper problem</h3>
+<p>For module A, <strong>n = 23 + 12 = 35</strong> and <strong>N = 43 + 37 = 80</strong>. Then <strong>V = 80 × log₂(35) ≈ 410.34</strong>, <strong>D = (23 ÷ 2) × (37 ÷ 12) ≈ 35.4583</strong> and <strong>E ≈ 14,550.07</strong>. Apply the same steps to the other modules.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Halstead worked calculation">
+    <table>
+      <thead><tr><th scope="col">Module</th><th scope="col">Given (n₁, n₂, N₁, N₂)</th><th scope="col">n / N</th><th class="numbers" scope="col">V</th><th class="numbers" scope="col">D</th><th class="numbers" scope="col">E</th><th class="numbers" scope="col">Share</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">A</th><td>23, 12, 43, 37</td><td>35 / 80</td><td class="numbers">410.34</td><td class="numbers">35.4583</td><td class="numbers">14,550.07</td><td class="numbers">33.29%</td></tr>
+        <tr><th scope="row">B</th><td>34, 12, 56, 34</td><td>46 / 90</td><td class="numbers">497.12</td><td class="numbers">48.1667</td><td class="numbers">23,944.64</td><td class="numbers">54.79%</td></tr>
+        <tr><th scope="row">C</th><td>12, 23, 54, 41</td><td>35 / 95</td><td class="numbers">487.28</td><td class="numbers">10.6957</td><td class="numbers">5,211.80</td><td class="numbers">11.92%</td></tr>
+      </tbody>
+    </table>
+  </div>
+<p>The total effort before rounding is approximately <strong>43,706.50</strong>. A’s allocation is <strong>14,550.07 ÷ 43,706.50 × 100 ≈ 33.29%</strong>. B receives the largest share, about <strong>54.79%</strong>.</p>
+<p class="note">Use log base 2. If your calculator has only <code>log</code>, use <code>log(n) ÷ log(2)</code>. Keep intermediate values unrounded until the end.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="halstead" aria-label="Halstead effort numerical completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="flow" data-topic data-fast="false" aria-labelledby="flow-title">
+  
+  <h2 id="flow-title">Information flow metrics</h2>
+  <p><strong>Information flow metrics</strong> measure a module’s interactions so testers can identify modules that may need extra interface and integration testing.</p>
+<ul>
+    <li><strong>Local direct flow.</strong> A module passes information to a called module, which can return a result to the caller.</li>
+    <li><strong>Local indirect flow.</strong> The caller takes a result from one called module and passes it to another, such as passing a tax calculation to an invoice generator.</li>
+    <li><strong>Global flow.</strong> Information passes between modules through a shared data structure.</li>
+  </ul>
+<div class="formula">
+    <div>Fan-in = incoming local flows + data structures read</div>
+    <div>Fan-out = outgoing local flows + data structures updated</div>
+  </div>
+<p>If a module receives two local flows and reads one shared structure, fan-in is <strong>3</strong>. If it generates two outgoing flows and updates one shared structure, fan-out is <strong>3</strong>. A high fan-in suggests the module receives information from several sources. A high fan-out suggests its outputs or updates can affect several parts of the system. Test those interfaces and shared-state interactions.</p><h3>What to test when the flow is complex</h3>
+<p>In a checkout workflow, test a valid and an invalid response from the tax module, then check that the result passed to the invoice module uses the right currency and precision. If inventory and checkout share stock information, verify that an order update is visible to both and that an unsuccessful order leaves the shared stock correct.</p>
+<p>One form of the Henry–Kafura measure uses <strong>module length × (fan-in × fan-out)²</strong>. With length 20, fan-in 3 and fan-out 2, the relative measure is <strong>720</strong>. Use a consistent definition of length and flows when comparing modules.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="flow" aria-label="Information flow metrics completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="tpa" data-topic data-fast="true" aria-labelledby="tpa-title">
+  <p class="meta">Past paper · 10 marks · Paper A, Q3(ii)</p>
+  <h2 id="tpa-title">Test Point Analysis (TPA)</h2>
+  <p>TPA estimates <strong>person-hours for system or acceptance testing</strong> from the functional size of the software, the test strategy and the conditions under which the team will work. It supports staffing, scheduling and budgeting before all tests have been designed.</p>
+<figure class="diagram">
+    <figcaption>Block diagram to reproduce</figcaption>
+    <div class="flow">
+      <div class="inputs"><span class="node">Dynamic test points</span><span>+</span><span class="node">Static test points</span></div>
+      <span class="arrow" aria-hidden="true">↓</span>
+      <span class="node">Total test points</span>
+      <small>Multiply by the environment and productivity factors</small>
+      <span class="arrow" aria-hidden="true">↓</span>
+      <span class="node">Primary test hours</span>
+      <small>Add the planning and control allowance</small>
+      <span class="arrow" aria-hidden="true">↓</span>
+      <span class="node">Total test hours</span>
+    </div>
+  </figure>
+<ol>
+    <li><strong>Estimate dynamic test points.</strong> Start from each function’s function points. Weight them for factors such as complexity, interfaces, importance and frequency of use, and for the quality characteristics the tests must cover. Sum the points for all functions.</li>
+    <li><strong>Estimate static test points.</strong> Use the system’s functional size and the scope of quality characteristics assessed without running the software, for example through a review checklist.</li>
+    <li><strong>Convert total points into hours.</strong> Add both point counts and multiply by the environment factor and a productivity factor. The result covers primary work such as preparing, specifying, executing and completing tests.</li>
+    <li><strong>Add the control allowance.</strong> Include hours for planning and control. The result is total testing effort in person-hours.</li>
+  </ol>
+<p><strong>Example with assumed factors.</strong> 80 dynamic + 20 static = 100 points. At an environment factor of 1.2 and 0.5 person-hours per point, primary effort is <strong>60 person-hours</strong>. With a 10% control allowance, total effort is <strong>66 person-hours</strong>.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="tpa" aria-label="Test Point Analysis (TPA) completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="progress" data-topic data-fast="true" aria-labelledby="progress-title">
+  <p class="meta">Past papers · 10 marks, ESE Q3(ii) · 5 marks, Paper B Q5(i)</p>
+  <h2 id="progress-title">Testing progress metrics</h2>
+  <p>Progress metrics track how much testing is complete, what results it produced and how much work remains. Review them together because each uses a different denominator or measures a different activity.</p>
+<div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Metric</th><th scope="col">How to measure it</th><th scope="col">What it tells you</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Execution progress</th><td>Completed test executions ÷ planned test cases × 100.</td><td>Shows schedule progress. Track blocked or unrun tests separately.</td></tr>
+        <tr><th scope="row">Pass rate</th><td>Passed tests ÷ executed tests with a pass/fail result × 100.</td><td>Shows the share of completed tests that passed.</td></tr>
+        <tr><th scope="row">Requirements coverage</th><td>In-scope requirements exercised by at least one test ÷ all in-scope requirements × 100.</td><td>Shows which requirements still need to be tested. State whether coverage means designed, executed or passed tests.</td></tr>
+        <tr><th scope="row">Defect backlog</th><td>Count of unresolved defects at the end of a period. Closing backlog = opening backlog + new + reopened − closed.</td><td>Compare arrivals with closures and break down open defects by severity and age.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<p><strong>Worked dashboard.</strong> 100 planned, 60 executed, 45 passed, and 18 of 24 requirements exercised gives <strong>60% execution</strong>, <strong>75% pass rate</strong> and <strong>75% requirements coverage</strong>. If 12 defects were open, 8 were reported, 2 reopened and 4 closed, the ending backlog is <strong>18</strong>.</p>
+<h3>Model answer for the five-day backlog question</h3>
+<p>A continuous rise means more defects entered or returned to the open queue than were closed each day, assuming the reporting scope stayed the same. Possible causes include more effective testing, a recent risky change, slow fixes, or delayed verification. Compare daily arrivals and closures, then inspect open defects by severity, age and module. If high-severity items are accumulating, prioritize them and reassess the exit criteria before release. Explain the four metrics above for the second part of the question.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="progress" aria-label="Testing progress metrics completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="function-points" data-topic data-fast="true" aria-labelledby="function-points-title">
+  <p class="meta">Past paper · 5 marks · Paper B, Q1(ii)</p>
+  <h2 id="function-points-title">Function point metrics for testing</h2>
+  <p>A <strong>function point (FP)</strong> measures functional size from the user’s perspective. An FP count classifies and weights the functions users need, so testers can use historical rates independently of the implementation language.</p>
+<div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Function type</th><th scope="col">Shopping-site example</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">External input (EI)</th><td>Submit a shipping address that updates the order.</td></tr>
+        <tr><th scope="row">External output (EO)</th><td>Produce an invoice containing a calculated tax amount.</td></tr>
+        <tr><th scope="row">External inquiry (EQ)</th><td>Look up an order status with no derived calculation or data update.</td></tr>
+        <tr><th scope="row">Internal logical file (ILF)</th><td>Order records maintained by the shopping application.</td></tr>
+        <tr><th scope="row">External interface file (EIF)</th><td>Catalogue records read by the app and maintained by a separate system.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<p>Relevant testing measures include <strong>hours per FP</strong>, <strong>cost per FP</strong>, <strong>FP tested per person-month</strong>, <strong>defects per FP</strong> and <strong>test cases per FP</strong>. If a similar project took 3 hours per FP, estimate 300 person-hours for 100 FP.</p><details>
+    <summary>Function-point numerical from the lecture</summary>
+    <div class="answer">
+      <p>The lecture gives historical rules of thumb for this example. For <strong>760 FP</strong> and <strong>456 defects</strong>, estimate total cases as <strong>760<sup>1.2</sup> ≈ 2,864</strong>, and acceptance cases as <strong>760 × 1.2 = 912</strong>. Defect density is <strong>456 ÷ 760 = 0.60 defects/FP</strong>. The lecture calls <strong>2,864 ÷ 760 ≈ 3.77 test cases/FP</strong> test-case coverage. That ratio has units of cases per FP.</p>
+    </div>
+  </details>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="function-points" aria-label="Function point metrics for testing completed">
+    Mark topic complete
+  </label>
+</section>
+    <section id="recall">
+  <h2>Closed-book revision</h2>
+  <p>Try each prompt on paper before opening the answer. Aim to explain the idea, use an example, and show the calculation or diagram where it helps.</p>
+  <details><summary>Calculate Halstead effort for n₁ = 8, n₂ = 8, N₁ = 16, N₂ = 24.</summary><div class="answer"><p>n = 16 and N = 40. V = 40 × log₂(16) = 160. D = (8 ÷ 2) × (24 ÷ 8) = 12. <strong>E = 160 × 12 = 1,920.</strong></p></div></details>
+  <details><summary>What does a rising backlog show? Which four progress metrics can you explain?</summary><div class="answer"><p>New and reopened defects outnumber closures. Explain defect backlog, execution progress, pass rate and requirements coverage, including the denominator of each percentage. Review severity and age to judge release risk.</p></div></details>
+  <details><summary>Draw the TPA diagram and distinguish FP from TPA.</summary><div class="answer"><p>Add dynamic and static test points. Multiply by environment and productivity factors for primary hours. Add the control allowance for total hours. FP measures functional size. TPA can use FP as an input to estimate test effort.</p></div></details>
+  <p><a class="action" href="STQA_Module_4_AI_and_Test_Automation.html">Continue to Module 4</a></p>
+</section>
+<footer>
+  <p><strong>Course sources.</strong> Supplied syllabus 3.1–3.2, STQA_Ch3 slides 3–22 and supplied papers. Paper A has the Halstead and TPA questions. Paper B has the factorial problem. ESE refers to the uploaded two-page paper.</p>
+  <p>Read the original TPA method in <a href="https://www.erikvanveenendaal.nl/NL/files/Testpointanalysis%20a%20method%20for%20test%20estimation.pdf">Testpointanalysis: A Method for Test Estimation</a>.</p>
+<p>Information-flow measure reference. <a href="https://ntrs.nasa.gov/api/citations/19820022084/downloads/19820022084.pdf">Henry and Kafura, Software Structure Metrics Based on Information Flow</a>.</p></footer>
+  </main>
+</div>
+<script>
+(() => {
+  "use strict";
+
+  const lessons = [...document.querySelectorAll("section[data-topic]")];
+  const byId = new Map(lessons.map(lesson => [lesson.id, lesson]));
+  const groups = [...document.querySelectorAll("[data-index-group]")];
+  const indexItems = [...document.querySelectorAll("[data-index-topic]")];
+  const modeButtons = [...document.querySelectorAll("button[data-mode]")];
+  const checkboxes = [...document.querySelectorAll("input[data-complete]")];
+  const modeContent = [...document.querySelectorAll("[data-mode-content]")];
+  const fullOnlyPractice = [...document.querySelectorAll("[data-full-practice]")];
+  const count = document.querySelector("#mode-count");
+  const total = document.querySelector("#module-count");
+  const meter = document.querySelector("#topic-meter");
+  const continueLink = document.querySelector("#resume");
+  const storageNote = document.querySelector("#storage-note");
+  const key = "stqa-course-progress-v2:" + document.body.dataset.module;
+  const modeKey = key + ":mode";
+  const topicPrefix = key + ":topic:";
+
+  const done = new Set();
+  let mode = "full";
+  let storage = true;
+
+  try {
+    if (localStorage.getItem(modeKey) === "fast") mode = "fast";
+    for (const lesson of lessons) {
+      if (localStorage.getItem(topicPrefix + lesson.id) === "1") done.add(lesson.id);
+    }
+  } catch {
+    storage = false;
+  }
+
+  function save(item, value) {
+    if (!storage) return;
+    try {
+      localStorage.setItem(item, value);
+    } catch {
+      storage = false;
+    }
+  }
+
+  function render() {
+    const active = lessons.filter(lesson => mode === "full" || lesson.dataset.fast === "true");
+    const activeIds = new Set(active.map(lesson => lesson.id));
+    const completed = active.filter(lesson => done.has(lesson.id)).length;
+    const next = active.find(lesson => !done.has(lesson.id));
+
+    for (const lesson of lessons) lesson.hidden = !activeIds.has(lesson.id);
+    for (const item of indexItems) item.hidden = !activeIds.has(item.dataset.indexTopic);
+    for (const group of groups) group.hidden = !group.querySelector("li:not([hidden])");
+    for (const checkbox of checkboxes) checkbox.checked = done.has(checkbox.dataset.complete);
+    for (const button of modeButtons) button.setAttribute("aria-pressed", String(button.dataset.mode === mode));
+    for (const section of modeContent) section.hidden = section.dataset.modeContent !== mode;
+    for (const practice of fullOnlyPractice) practice.hidden = mode === "fast";
+
+    count.textContent = `${completed} of ${active.length} topics done`;
+    meter.max = active.length;
+    meter.value = completed;
+    total.textContent = mode === "fast" ? `${done.size} of ${lessons.length} done across this module` : "";
+    total.hidden = mode === "full";
+    continueLink.setAttribute("href", next ? "#" + next.id : "#recall");
+    continueLink.textContent = next ? "Go to next unfinished topic" : "Go to revision questions";
+    storageNote.hidden = storage;
+  }
+
+  function linkedLesson() {
+    return byId.get(location.hash.slice(1));
+  }
+
+  function showTopicForHash() {
+    const lesson = linkedLesson();
+    if (lesson && mode === "fast" && lesson.dataset.fast !== "true") {
+      mode = "full";
+      render();
+      lesson.scrollIntoView();
+    }
+  }
+
+  for (const button of modeButtons) {
+    button.addEventListener("click", () => {
+      mode = button.dataset.mode;
+      const current = linkedLesson();
+      if (mode === "fast" && current && current.dataset.fast !== "true") {
+        location.hash = "route";
+      }
+      save(modeKey, mode);
+      render();
+    });
+  }
+
+  for (const checkbox of checkboxes) {
+    checkbox.addEventListener("change", () => {
+      const id = checkbox.dataset.complete;
+      if (checkbox.checked) done.add(id);
+      else done.delete(id);
+      save(topicPrefix + id, checkbox.checked ? "1" : "0");
+      render();
+    });
+  }
+
+  window.addEventListener("hashchange", showTopicForHash);
+  window.addEventListener("storage", event => {
+    if (!event.key?.startsWith(topicPrefix)) return;
+    const id = event.key.slice(topicPrefix.length);
+    if (!byId.has(id)) return;
+    if (event.newValue === "1") done.add(id);
+    else done.delete(id);
+    render();
+  });
+
+  render();
+  showTopicForHash();
+  document.querySelector(".dashboard").hidden = false;
+  for (const checkbox of checkboxes) checkbox.closest("[data-enhance]").hidden = false;
+})();
+
+</script>
+</body>
+</html>

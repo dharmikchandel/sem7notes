@@ -14,6 +14,8 @@ Instead of relying solely on static PDFs, these notes are designed to provide a 
 |:---:|---|:---:|
 | Module 1 | Testing Methodology | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/stqa/STQA_Module1_Testing_Methodology.html) |
 | Module 2 | Testing Techniques | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/stqa/STQA_Module2_Testing_Techniques.html) |
+| Module 3 | Testing Metrics | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/stqa/STQA_Module_3_Testing_Metrics.html) |
+| Module 4 | AI & Test Automation | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/stqa/STQA_Module_4_AI_and_Test_Automation.html) |
 
 ### Digital Marketing (DiM)
 

@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STQA Module 4 | AI and Test Automation</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink: #152c2b;
+  --muted: #465f5d;
+  --accent: #176459;
+  --accent-deep: #0c4b44;
+  --line: #d9e4e0;
+  --paper: #fffefa;
+  --canvas: #f3f5ef;
+  --highlight: #e8f4ec;
+  --warm: #fff0d9;
+  --display: Georgia, "Times New Roman", serif;
+  font: 16px/1.6 "Segoe UI", Roboto, system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; color: var(--ink); background: var(--canvas); }
+a { color: var(--accent-deep); text-underline-offset: .21em; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible, summary:focus-visible { outline: 3px solid #b1581c; outline-offset: 3px; }
+.skip { position: absolute; left: 1rem; top: .6rem; transform: translateY(-160%); z-index: 2; padding: .55rem .85rem; background: #fff; }
+.skip:focus { transform: translateY(0); }
+.wrap { width: min(100% - 2.5rem, 74rem); margin-inline: auto; }
+.top { background: #102d29; color: #ecf6ee; }
+.top .wrap { display: flex; justify-content: space-between; align-items: center; gap: .6rem 1.25rem; min-height: 4.1rem; flex-wrap: wrap; padding-block: .65rem; }
+.brand { font-weight: 650; font-size: .94rem; }
+.tabs { display: flex; gap: .35rem; flex-wrap: wrap; }
+.tabs a { color: #f5fbf7; padding: .32rem .7rem; border-radius: .4rem; font-size: .88rem; text-decoration: none; }
+.tabs a:hover { text-decoration: underline; }
+.tabs a[aria-current="page"] { background: #e0f1e3; color: #143b31; font-weight: 700; }
+.hero { background: #e5eee4; border-bottom: 1px solid #d4e0d6; padding-block: clamp(2.2rem, 6vw, 4.35rem); }
+.hero p { max-width: 58ch; margin: .8rem 0 0; }
+.kicker { color: var(--accent-deep); font-size: .81rem; font-weight: 750; letter-spacing: .055em; }
+.hero h1 { font: normal clamp(2.65rem, 6.2vw, 5.15rem)/1.02 var(--display); letter-spacing: -.045em; margin: .4rem 0 .8rem; }
+.hero .intro { font-size: clamp(1.02rem, 2vw, 1.2rem); }
+.action { display: inline-block; margin-top: 1.25rem; padding: .54rem .9rem; color: #fff; background: var(--accent-deep); border-radius: .38rem; font-weight: 700; text-decoration: none; }
+.action:hover { text-decoration: underline; }
+.layout { display: grid; grid-template-columns: 14.2rem minmax(0, 1fr); gap: clamp(1.25rem, 4vw, 3.4rem); align-items: start; padding-block: 2rem 3rem; }
+.rail { position: sticky; top: 1.25rem; border-top: 2px solid var(--accent); padding-top: .8rem; }
+.rail p { margin: 0 0 .5rem; }
+.rail ul { list-style: none; margin: 0; padding: 0; }
+.rail a { display: block; padding: .24rem 0; font-size: .93rem; }
+main { min-width: 0; }
+section { scroll-margin-top: 1rem; margin-bottom: 1.2rem; background: var(--paper); border: 1px solid var(--line); border-radius: .72rem; padding: clamp(1rem, 3.25vw, 2rem); }
+h2, h3 { line-height: 1.22; }
+h2 { margin: 0 0 .8rem; font: normal clamp(1.75rem, 3.2vw, 2.5rem)/1.1 var(--display); letter-spacing: -.025em; }
+h3 { margin: 1.25rem 0 .35rem; font-size: 1.05rem; }
+p { margin: .7rem 0; }
+ul, ol { padding-inline-start: 1.25rem; margin: .65rem 0; }
+li + li { margin-top: .3rem; }
+p:last-child, ol:last-child, ul:last-child, details:last-child { margin-bottom: 0; }
+.meta { margin: 0 0 .4rem; color: var(--accent-deep); font-size: .83rem; font-weight: 750; }
+.note, .formula { padding: .75rem .9rem; margin: .95rem 0; border-radius: .35rem; }
+.note { background: var(--warm); border-left: .23rem solid #ad6a30; }
+.formula { background: var(--highlight); border-left: .23rem solid var(--accent); font-family: ui-monospace, Consolas, monospace; font-size: .92rem; overflow-wrap: anywhere; }
+.formula div + div { margin-top: .25rem; }
+.table-scroll { overflow-x: auto; margin: .85rem 0; }
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: .94rem; }
+caption { text-align: left; font-weight: 700; margin-bottom: .35rem; }
+th, td { padding: .52rem .64rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { background: var(--highlight); color: #19423a; }
+tbody th { font-weight: 650; }
+.numbers { text-align: right; font-variant-numeric: tabular-nums; }
+details { border: 1px solid var(--line); border-radius: .45rem; margin: .7rem 0; }
+summary { cursor: pointer; padding: .65rem .8rem; color: var(--accent-deep); font-weight: 700; }
+summary:hover { background: var(--highlight); border-radius: inherit; }
+details > .answer { padding: .05rem .85rem .85rem; }
+.route td:first-child { white-space: nowrap; }
+.diagram { margin: 1rem 0; background: #eef4ee; padding: .85rem; border-radius: .45rem; }
+.diagram figcaption { margin-bottom: .65rem; font-weight: 750; }
+.flow { display: grid; justify-items: center; gap: .18rem; text-align: center; }
+.inputs { display: flex; justify-content: center; align-items: center; gap: .35rem; flex-wrap: wrap; }
+.node { display: inline-block; padding: .30rem .55rem; background: var(--paper); border: 1px solid #9fbeb2; border-radius: .32rem; }
+.arrow { color: var(--accent-deep); font-weight: 750; }
+.flow-inline { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; }
+.flow small { color: var(--muted); }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .91em; overflow-wrap: anywhere; }
+footer { color: var(--muted); font-size: .89rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+footer p { margin-top: 0; }
+caption, .answer { overflow-wrap: anywhere; }
+@media (max-width: 780px) {
+  .layout { grid-template-columns: 1fr; gap: 1.2rem; padding-top: 1.25rem; }
+  .rail { position: static; }
+  .rail ul { display: flex; flex-wrap: wrap; column-gap: 1rem; }
+}
+@media (max-width: 420px) {
+  .wrap { width: calc(100% - 1.3rem); }
+  th, td { padding: .42rem .45rem; }
+  .top .wrap { align-items: flex-start; }
+}
+@media print {
+  :root { font-size: 11pt; }
+  body, section, .hero { background: #fff; }
+  .wrap { width: 100%; }
+  .layout { display: block; padding: 0; }
+  .top, .rail, .action, .skip { display: none; }
+  .hero, section { padding: .65rem 0; border: 0; }
+  .hero h1 { font-size: 32pt; }
+  h2, h3, summary, caption { break-after: avoid; }
+  tr, figure, .formula { break-inside: avoid; }
+}
+[hidden] { display: none !important; }
+button, input { font: inherit; }
+button:focus-visible, input:focus-visible { outline: 3px solid #b1581c; outline-offset: 2px; }
+.layout { grid-template-columns: 17.75rem minmax(0, 1fr); gap: clamp(1.3rem, 3.2vw, 2.9rem); }
+.rail { background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: .65rem; padding: .8rem; }
+.dashboard { margin-bottom: .6rem; }
+.mode-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem; padding: .22rem; border: 1px solid var(--line); border-radius: .45rem; background: var(--canvas); }
+.mode-buttons button { padding: .32rem .18rem; border: 0; border-radius: .27rem; cursor: pointer; background: transparent; color: var(--accent-deep); font-size: .86rem; }
+.mode-buttons button[aria-pressed="true"] { background: var(--accent-deep); color: #fff; font-weight: 700; }
+.completion { margin-top: .68rem; font-weight: 700; font-size: .92rem; }
+.rail .mode-count { margin-bottom: .26rem; }
+progress { display: block; width: 100%; height: .56rem; border: 0; border-radius: 1rem; overflow: hidden; background: var(--line); color: var(--accent); }
+progress::-webkit-progress-bar { background: var(--line); border-radius: 1rem; }
+progress::-webkit-progress-value { background: var(--accent); border-radius: 1rem; }
+progress::-moz-progress-bar { background: var(--accent); border-radius: 1rem; }
+.rail .complete-all, .rail .storage-note { color: var(--muted); margin: .31rem 0 0; font-size: .81rem; }
+.rail a.resume { font-weight: 700; margin-top: .37rem; }
+.rail .jump-links { display: flex; flex-wrap: wrap; gap: .65rem; border-top: 1px solid var(--line); }
+.rail .jump-links a { font-size: .84rem; }
+.rail .index-title { margin: .58rem 0 .2rem; }
+.topic-index { max-height: min(37vh, 24rem); overflow-y: auto; scrollbar-gutter: stable; padding-inline-end: .2rem; }
+.topic-index legend { padding: .15rem 0; font-size: .77rem; font-weight: 750; color: var(--muted); }
+.topic-index fieldset { min-inline-size: 0; padding: 0; border: 0; margin: 0 0 .45rem; }
+.topic-index fieldset:last-child { margin-bottom: 0; }
+.topic-index li { display: flex; align-items: flex-start; gap: .44rem; min-width: 0; margin: 0; padding: .12rem .2rem; border-radius: .26rem; }
+.topic-index li:has(input:checked) { background: var(--highlight); }
+.topic-index li input { margin: .42rem 0 0; }
+.topic-index li a { flex: 1; min-width: 0; font-size: .88rem; line-height: 1.28; padding: .24rem 0; }
+input[type="checkbox"] { flex: none; width: 1.02rem; height: 1.02rem; accent-color: var(--accent-deep); cursor: pointer; }
+.lesson-check { display: flex; align-items: center; gap: .48rem; margin-top: 1.25rem; padding-top: .64rem; border-top: 1px solid var(--line); color: var(--accent-deep); font-weight: 700; cursor: pointer; }
+.lesson-check input { margin: 0; }
+.lesson[data-topic] { scroll-margin-top: 1rem; }
+@media (max-width: 780px) {
+  .layout { grid-template-columns: 1fr; }
+  .rail { position: relative; top: auto; }
+  .rail .topic-index ul { display: block; }
+  .topic-index { max-height: min(47vh, 18rem); }
+}
+@media print {
+  .layout { display: block; }
+  .lesson-check { display: none; }
+}
+
+</style>
+</head>
+<body data-module="4">
+<a class="skip" href="#content">Skip to lesson</a>
+<header class="top">
+  <div class="wrap">
+    <span class="brand">Software Testing and Quality Assurance</span>
+    <nav class="tabs" aria-label="Course modules"><a href="STQA_Module_3_Testing_Metrics.html">Module 3</a><a href="STQA_Module_4_AI_and_Test_Automation.html" aria-current="page">Module 4</a></nav>
+  </div>
+</header>
+<div class="hero">
+  <div class="wrap">
+    <p class="kicker">Module 4 · 19 topics</p>
+    <h1>AI and Test Automation</h1>
+    <p class="intro">Choose what to automate, test a web application, and understand Agile, CI/CD and AI-assisted testing.</p>
+  </div>
+</div>
+<div class="wrap layout">
+  <aside class="rail" aria-label="Study progress and topic index">
+    <div class="dashboard" hidden>
+      <p class="kicker">Study mode</p>
+      <div class="mode-buttons" role="group" aria-label="Study mode">
+        <button type="button" data-mode="fast" aria-pressed="false">Fast · 6</button>
+        <button type="button" data-mode="full" aria-pressed="true">Full · 19</button>
+      </div>
+      <div class="completion" role="status" aria-atomic="true">
+        <p class="mode-count" id="mode-count">0 of 19 topics done</p>
+      </div>
+      <progress id="topic-meter" aria-label="Topics done in the selected mode" value="0" max="19"></progress>
+      <p class="complete-all" id="module-count" hidden></p>
+      <p class="storage-note" id="storage-note" hidden>This browser is blocking saved progress. Your marks last until you reload or close this page.</p>
+      <a class="resume" href="#automation" id="resume">Go to next unfinished topic</a>
+    </div>
+    <div class="jump-links">
+      <a href="#route">Study plan</a>
+      <a href="#recall">Revision questions</a>
+    </div>
+    <p class="kicker index-title">Topic index</p>
+    <nav class="topic-index" aria-label="Topic index">
+      <fieldset data-index-group><legend>4.1 Automation foundations</legend><ul>
+<li data-index-topic="automation"><span data-enhance hidden><input type="checkbox" data-complete="automation" aria-label="Need for automation completed"></span><a href="#automation">Need for automation</a></li>
+<li data-index-topic="guidelines"><span data-enhance hidden><input type="checkbox" data-complete="guidelines" aria-label="Guidelines for automated testing completed"></span><a href="#guidelines">Guidelines for automated testing</a></li>
+<li data-index-topic="tool-categories"><span data-enhance hidden><input type="checkbox" data-complete="tool-categories" aria-label="Categorization of testing tools completed"></span><a href="#tool-categories">Categorization of testing tools</a></li>
+<li data-index-topic="tool-selection"><span data-enhance hidden><input type="checkbox" data-complete="tool-selection" aria-label="Selection of testing tools completed"></span><a href="#tool-selection">Selection of testing tools</a></li>
+<li data-index-topic="data-driven"><span data-enhance hidden><input type="checkbox" data-complete="data-driven" aria-label="Data-driven testing completed"></span><a href="#data-driven">Data-driven testing</a></li>
+<li data-index-topic="frameworks"><span data-enhance hidden><input type="checkbox" data-complete="frameworks" aria-label="Keyword-driven testing completed"></span><a href="#frameworks">Keyword-driven testing</a></li>
+<li data-index-topic="synthetic-data"><span data-enhance hidden><input type="checkbox" data-complete="synthetic-data" aria-label="Synthetic data generation using AI completed"></span><a href="#synthetic-data">Synthetic data generation using AI</a></li>
+</ul></fieldset>
+<fieldset data-index-group><legend>4.2 Web, Agile and CI/CD</legend><ul>
+<li data-index-topic="web"><span data-enhance hidden><input type="checkbox" data-complete="web" aria-label="Testing web-based systems completed"></span><a href="#web">Testing web-based systems</a></li>
+<li data-index-topic="web-challenges"><span data-enhance hidden><input type="checkbox" data-complete="web-challenges" aria-label="Challenges in web testing completed"></span><a href="#web-challenges">Challenges in web testing</a></li>
+<li data-index-topic="security"><span data-enhance hidden><input type="checkbox" data-complete="security" aria-label="Web security testing completed"></span><a href="#security">Web security testing</a></li>
+<li data-index-topic="navigation"><span data-enhance hidden><input type="checkbox" data-complete="navigation" aria-label="Navigation testing completed"></span><a href="#navigation">Navigation testing</a></li>
+<li data-index-topic="performance"><span data-enhance hidden><input type="checkbox" data-complete="performance" aria-label="Performance testing completed"></span><a href="#performance">Performance testing</a></li>
+<li data-index-topic="agile"><span data-enhance hidden><input type="checkbox" data-complete="agile" aria-label="Testing Agile software completed"></span><a href="#agile">Testing Agile software</a></li>
+<li data-index-topic="pipeline"><span data-enhance hidden><input type="checkbox" data-complete="pipeline" aria-label="CI/CD pipeline stages and components completed"></span><a href="#pipeline">CI/CD pipeline stages and components</a></li>
+<li data-index-topic="cicd-tools"><span data-enhance hidden><input type="checkbox" data-complete="cicd-tools" aria-label="Common CI/CD tools completed"></span><a href="#cicd-tools">Common CI/CD tools</a></li>
+<li data-index-topic="ci-vs-cd"><span data-enhance hidden><input type="checkbox" data-complete="ci-vs-cd" aria-label="CI vs CD completed"></span><a href="#ci-vs-cd">CI vs CD</a></li>
+</ul></fieldset>
+<fieldset data-index-group><legend>4.3 AI in test automation</legend><ul>
+<li data-index-topic="ai"><span data-enhance hidden><input type="checkbox" data-complete="ai" aria-label="Role of AI in automation completed"></span><a href="#ai">Role of AI in automation</a></li>
+<li data-index-topic="ai-test-cases"><span data-enhance hidden><input type="checkbox" data-complete="ai-test-cases" aria-label="Intelligent test case generation completed"></span><a href="#ai-test-cases">Intelligent test case generation</a></li>
+<li data-index-topic="ai-benefits"><span data-enhance hidden><input type="checkbox" data-complete="ai-benefits" aria-label="Benefits and challenges of AI-driven testing completed"></span><a href="#ai-benefits">Benefits and challenges of AI-driven testing</a></li>
+</ul></fieldset>
+    </nav>
+  </aside>
+  <main id="content">
+    <section id="route">
+  <div data-mode-content="full">
+    <h2>Three-day study plan</h2>
+    <div class="table-scroll">
+      <table class="route">
+        <thead><tr><th scope="col">Day</th><th scope="col">Study</th><th scope="col">Write from memory</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Day 1</th><td><a href="STQA_Module_3_Testing_Metrics.html#route">Module 3</a> · 8 topics</td><td>Halstead numerical, TPA diagram, four progress metrics.</td></tr>
+          <tr><th scope="row">Day 2</th><td><a href="STQA_Module_4_AI_and_Test_Automation.html#automation">Module 4 · Automation and web testing</a> · 12 topics</td><td>Keyword-driven test table and six shopping-site test cases with expected results.</td></tr>
+          <tr><th scope="row">Day 3</th><td><a href="STQA_Module_4_AI_and_Test_Automation.html#agile">Module 4 · Agile, CI/CD and AI</a> · 7 topics</td><td>Five Agile challenges, the pipeline diagram, and an AI-generated boundary test. Finish with one timed 10-mark answer per module.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Use Day 2 for the automation and web topics. On Day 3, continue from Agile through CI/CD and AI. Write a timed keyword-driven answer and six shopping-site test cases.</p>
+  </div>
+  <div data-mode-content="fast" hidden>
+    <h2>Fast study plan</h2>
+    <p>Study the 6 topics in this module’s index. Prioritize automation and its guidelines, data- and keyword-driven testing, web-based systems and Agile testing. Write a framework answer and six web test cases from memory.</p>
+    <p class="note">Use <strong>Full mode</strong> when you’re ready to complete the rest of this module’s syllabus. Every topic you tick here also counts there.</p>
+  </div>
+</section>
+    <section class="lesson" id="automation" data-topic data-fast="true" aria-labelledby="automation-title">
+  <p class="meta">Past papers · Manual vs automated for 10 marks · When to skip automation for 5 marks</p>
+  <h2 id="automation-title">Need for automation</h2>
+  <p><strong>Test automation</strong> uses tools or scripts to set up tests, execute them, compare actual results with expected results, and report outcomes. It saves repeated effort, makes regression checks faster, applies checks consistently, and can simulate loads or data volumes hard to reproduce by hand. It frees testers to explore new features and investigate failures.</p>
+<div class="table-scroll">
+    <table>
+      <caption>Manual vs automated testing</caption>
+      <thead><tr><th scope="col">Aspect</th><th scope="col">Manual</th><th scope="col">Automated</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Execution</th><td>A tester follows or explores the workflow and evaluates the outcome.</td><td>A script executes recorded steps and checks defined assertions.</td></tr>
+        <tr><th scope="row">Cost</th><td>Less setup for a quick check. Effort recurs each run.</td><td>Requires writing and maintaining scripts. Repeated runs generally cost less in tester time.</td></tr>
+        <tr><th scope="row">Best fit</th><td>Exploratory work, usability judgment and one-off checks.</td><td>Stable, repeatable regression, many data combinations and load simulation.</td></tr>
+      </tbody>
+    </table>
+  </div><p><strong>Keep a test manual when</strong> it is a one-off check, the interface is changing so frequently that upkeep outweighs the savings, or the outcome requires human judgment, as in exploratory or usability testing. For a 5-mark answer, give these reasons with one example.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="automation" aria-label="Need for automation completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="guidelines" data-topic data-fast="true" aria-labelledby="guidelines-title">
+  <p class="meta">Past paper · Guidelines and one performance tool for 10 marks</p>
+  <h2 id="guidelines-title">Guidelines for automated testing</h2>
+  <ol>
+    <li><strong>Decide whether to build or buy.</strong> Compare custom development with available tools and their total upkeep.</li>
+    <li><strong>Pilot the tool on a prototype.</strong> Use a small representative workflow to verify compatibility and useful reports.</li>
+    <li><strong>Pick suitable cases.</strong> Favor stable, often-repeated scenarios with a clear expected result.</li>
+    <li><strong>Match organizational needs.</strong> Check the technology, test objective, SDLC stage, team skills, budget, schedule and tools already in use.</li>
+    <li><strong>Develop maintainable scripts.</strong> Use reusable actions, independent test data, clear assertions and version control.</li>
+    <li><strong>Automate regression where feasible.</strong> Automate high-impact workflows first, such as checkout totals or login for a test account.</li>
+  </ol><h3>Performance tool for the past-paper question</h3><p><strong>Apache JMeter</strong> is an open-source performance testing tool. In a test plan, a <strong>Thread Group</strong> represents virtual users, an <strong>HTTP Request sampler</strong> sends requests, and a results report summarizes response time, throughput and errors. For example, simulate 100 shoppers browsing a catalogue in a test environment. Compare the measured response time and error rate with the agreed targets.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="guidelines" aria-label="Guidelines for automated testing completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="tool-categories" data-topic data-fast="false" aria-labelledby="tool-categories-title">
+  
+  <h2 id="tool-categories-title">Categorization of testing tools</h2>
+  <p>Tools can be grouped by how they inspect software and by the testing activity they support. <strong>Static tools</strong> examine artifacts without running the software. Examples include code analyzers that identify unreachable code or uninitialized variables. <strong>Dynamic tools</strong> gather information during execution, such as statements and branches covered.</p>
+<div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Activity category</th><th scope="col">Typical support</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Reviews and inspections</th><td>Code comprehension, coding-rule checks and complexity analysis.</td></tr>
+        <tr><th scope="row">Test planning</th><td>Plan templates, scheduling, staffing estimates and scope tracking.</td></tr>
+        <tr><th scope="row">Test design and development</th><td>Generate candidate cases or data and map them to requirements.</td></tr>
+        <tr><th scope="row">Execution and evaluation</th><td>Browser automation, coverage collection, memory checks, pass/fail reports and performance measurement.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<p><strong>Example.</strong> In one project, a source analyzer checks the code before execution, Selenium checks a checkout workflow in a browser, and JMeter measures request performance under load. Each supports a different testing objective.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="tool-categories" aria-label="Categorization of testing tools completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="tool-selection" data-topic data-fast="false" aria-labelledby="tool-selection-title">
+  
+  <h2 id="tool-selection-title">Selection of testing tools</h2>
+  <p>Choose a tool by matching it with the test objective, the SDLC phase, the application stack and the people who will use it. A release team may need tools for different jobs, such as browser checks and load measurement.</p>
+<ol>
+    <li><strong>Define needs.</strong> Specify what to test, which environments to support, and what evidence the tool must produce.</li>
+    <li><strong>Check fit.</strong> Compare platform support, skills, integration with the build pipeline and reporting.</li>
+    <li><strong>Estimate total cost.</strong> Include licenses, runners, training, script development, configuration and future maintenance. Check the schedule and time to learn the tool.</li>
+    <li><strong>Run a small pilot.</strong> Automate a representative checkout flow and compare setup time, reliable reruns and failure reports across candidates.</li>
+    <li><strong>Decide and review.</strong> Select the smallest set that meets the needs, document ownership, and assess whether the tools continue to save time.</li>
+  </ol>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="tool-selection" aria-label="Selection of testing tools completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="data-driven" data-topic data-fast="true" aria-labelledby="data-driven-title">
+  <p class="meta">Past paper · 5 marks · Paper B, Q5(v)</p>
+  <h2 id="data-driven-title">Data-driven testing</h2>
+  <p>Run the <strong>same steps</strong> once for each row of input and expected output, commonly from a CSV, spreadsheet or database. For this example, one script enters credentials, submits the form and verifies the result from each row. Each row starts from a fresh login state.</p>
+<div class="table-scroll">
+    <table>
+      <caption>Different data for the same login steps</caption>
+      <thead><tr><th scope="col">Username</th><th scope="col">Password</th><th scope="col">Expected result</th></tr></thead>
+      <tbody>
+        <tr><td>Registered test account</td><td>Valid test password</td><td>Dashboard opens.</td></tr>
+        <tr><td>Registered test account</td><td>Incorrect test password</td><td>Sign-in rejected and an error appears.</td></tr>
+        <tr><td>Blank</td><td>Any test value</td><td>Username required message.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<p class="note">Data-driven testing varies <strong>inputs and expected results</strong>. Keyword-driven testing composes or varies <strong>actions</strong>. One framework can use both.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="data-driven" aria-label="Data-driven testing completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="frameworks" data-topic data-fast="true" aria-labelledby="frameworks-title">
+  <p class="meta">Past paper · 10 marks · ESE Q4(i)</p>
+  <h2 id="frameworks-title">Keyword-driven testing</h2>
+  <p>Test cases are written as a sequence of named actions called <strong>keywords</strong>. A driver reads each row, looks up the keyword in an action library, passes in the arguments, and records the result. Test authors compose scenarios from reusable actions. The library contains the code that carries them out.</p>
+<div class="table-scroll">
+    <table>
+      <caption>One login scenario written with keywords</caption>
+      <thead><tr><th scope="col">Step</th><th scope="col">Keyword</th><th scope="col">Arguments</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>OpenPage</code></td><td>Login page</td></tr>
+        <tr><td>2</td><td><code>EnterText</code></td><td>Username field, test account username</td></tr>
+        <tr><td>3</td><td><code>EnterText</code></td><td>Password field, valid test password</td></tr>
+        <tr><td>4</td><td><code>Click</code></td><td>Sign in button</td></tr>
+        <tr><td>5</td><td><code>VerifyPage</code></td><td>Account dashboard</td></tr>
+      </tbody>
+    </table>
+  </div>
+<p><strong>Benefits.</strong> Reuse actions across scenarios, write readable test cases, let domain testers author scenarios with fewer code changes, and update a shared keyword implementation when the interface changes. The team has to build and maintain the driver and library.</p><p class="note">Data-driven testing varies <strong>inputs and expected results</strong>. Keyword-driven testing composes or varies <strong>actions</strong>. One framework can use both.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="frameworks" aria-label="Keyword-driven testing completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="synthetic-data" data-topic data-fast="false" aria-labelledby="synthetic-data-title">
+  
+  <h2 id="synthetic-data-title">Synthetic data generation using AI</h2>
+  <p>Synthetic data consists of artificial records generated for testing. Specify a schema, dependencies and scenarios, then use a tool such as an LLM to create rows. For checkout, request fake product IDs, whole-rupee prices, cart totals around ₹500 and a deliberately invalid row with a missing product ID. Check field types, relationships and boundary coverage. Use mock values and keep the approved dataset versioned for repeatable runs.</p><ol>
+    <li><strong>Describe the data.</strong> Specify required fields, permissible values, and relationships, such as valid product IDs for order lines.</li>
+    <li><strong>Request useful variation.</strong> Include valid, boundary and explicitly invalid cases. Ask for structured output such as CSV or JSON.</li>
+    <li><strong>Validate before execution.</strong> Check the schema, unique identifiers, totals and test coverage. Validate valid and intentionally invalid records against their respective expectations.</li>
+    <li><strong>Store approved fixtures.</strong> Keep reproducible inputs with the tests. Where relevant, preserve realistic distributions while avoiding production records.</li>
+  </ol>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="synthetic-data" aria-label="Synthetic data generation using AI completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="web" data-topic data-fast="true" aria-labelledby="web-title">
+  <p class="meta">Past papers · Web testing methods and six worked shopping-site test cases</p>
+  <h2 id="web-title">Testing web-based systems</h2>
+  <p>A web application involves a browser, network, server and often a database or third-party API. Web testing checks user-facing behavior and the interactions between these components. Challenges include browser and device diversity, different network conditions, third-party failures, concurrent users, rapid releases and frequent changes.</p>
+<div class="table-scroll">
+    <table>
+      <caption>Web testing methods</caption>
+      <thead><tr><th scope="col">Method</th><th scope="col">What to verify</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Interface</th><td>Check browser-to-server, server-to-database and service interactions. Verify that failures show a clear error and leave data consistent.</td></tr>
+        <tr><th scope="row">Usability</th><td>Check whether users can understand labels, complete workflows and recover from mistakes.</td></tr>
+        <tr><th scope="row">Content</th><td>Check static labels and dynamic content, such as product prices and availability.</td></tr>
+        <tr><th scope="row">Navigation</th><td>Check internal links, external links, redirects, and search paths. Test Back/Forward and expected routes after redirects.</td></tr>
+        <tr><th scope="row">Compatibility</th><td>Check forms and layouts on supported browser, operating system, screen size and device combinations.</td></tr>
+        <tr><th scope="row">Security</th><td>Verify infrastructure configuration and app controls. Check role permissions, sign-in and sign-out, session expiry, and that sensitive data travels over HTTPS.</td></tr>
+        <tr><th scope="row">Performance</th><td>Measure response time, throughput, error rate, resource utilization and database load. Load testing uses expected demand. Stress testing pushes beyond normal capacity to observe degradation and recovery.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<h3>Six model test cases for an online shopping website</h3>
+<div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Area</th><th scope="col">Test action</th><th scope="col">Expected result</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Navigation</th><td>Search for a product then select a matching result.</td><td>The correct product page opens and matches the search result.</td></tr>
+        <tr><th scope="row">Cart</th><td>Change the quantity of a ₹500 item from 1 to 2.</td><td>The quantity becomes 2 and the line subtotal becomes ₹1,000.</td></tr>
+        <tr><th scope="row">Interface</th><td>Complete checkout using a payment sandbox configured to decline.</td><td>A clear error appears, the cart remains available, and no paid order is recorded.</td></tr>
+        <tr><th scope="row">Security</th><td>Sign out of a test account, then revisit its order history.</td><td>Sign-in is requested and order data stays hidden.</td></tr>
+        <tr><th scope="row">Compatibility</th><td>Open the checkout form on a supported mobile browser.</td><td>Fields, totals and submit controls remain readable and usable.</td></tr>
+        <tr><th scope="row">Performance</th><td>Simulate 100 concurrent catalogue users in a test environment.</td><td>95% of requests finish within 2 seconds and fewer than 1% fail, assuming these are the agreed targets.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<p><strong>Selenium</strong> automates browser workflows. <strong>Apache JMeter</strong> measures behavior under load.</p>
+<p><strong>Web vs desktop.</strong> Web testing emphasizes browser and device compatibility, network behavior, shared server capacity, and sessions across requests. Desktop testing typically emphasizes supported OS versions, installation and updates, local files, permissions and hardware. A networked desktop app can share web-system concerns.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="web" aria-label="Testing web-based systems completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="web-challenges" data-topic data-fast="false" aria-labelledby="web-challenges-title">
+  
+  <h2 id="web-challenges-title">Challenges in web testing</h2>
+  <p>Web applications combine a heterogeneous client environment with services spread across a network. A single user action can involve the browser, an application server, a database and an external payment service.</p>
+<div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Challenge</th><th scope="col">Example and testing response</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Diversity and compatibility</th><td>Checkout looks different across screen sizes. Prioritize frequently used browser, OS and device combinations.</td></tr>
+        <tr><th scope="row">Dynamic environment</th><td>Network delay or changes in live inventory affect what users see. Test slower connections and use known fixtures when asserting data.</td></tr>
+        <tr><th scope="row">Interoperability</th><td>A payment service can be unavailable. Verify service interactions and exercise error handling with a test double or sandbox.</td></tr>
+        <tr><th scope="row">Short releases and evolution</th><td>Frequent updates can break old flows. Rerun critical automated regression cases on each release.</td></tr>
+        <tr><th scope="row">Concurrent users</th><td>Several shoppers may try to order the last item. Verify correct stock counts and measure behavior under expected demand.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="web-challenges" aria-label="Challenges in web testing completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="security" data-topic data-fast="false" aria-labelledby="security-title">
+  
+  <h2 id="security-title">Web security testing</h2>
+  <p>Web security testing verifies infrastructure safeguards and application controls that protect data and functions. Examples include checking that HTTPS is configured, privileged operations require the right role, and sessions are handled securely.</p>
+<ul>
+    <li><strong>Authentication</strong> checks identity. A valid test user should be able to sign in, and incorrect credentials should be rejected.</li>
+    <li><strong>Authorization</strong> checks what an identified user can do. A test customer should see their own orders. The same customer should be denied access to staff-only functions.</li>
+    <li><strong>Session handling</strong> checks logout and idle expiry. After logout or expiration, protected pages should require sign-in.</li>
+    <li><strong>Data protection</strong> checks that sensitive data travels over HTTPS and is excluded from error messages and logs. Verify that production configuration disables public directory listings.</li>
+  </ul>
+<p><strong>Exam example.</strong> Use an approved test account, sign in, open order history, sign out and revisit the same page. Expect a sign-in request and no order details in the response.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="security" aria-label="Web security testing completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="navigation" data-topic data-fast="false" aria-labelledby="navigation-title">
+  
+  <h2 id="navigation-title">Navigation testing</h2>
+  <p>Navigation testing verifies that users reach the correct page, can return to a previous step and can recover if a page is unavailable. It covers <strong>internal links, external links, redirects and in-app search</strong>.</p>
+<div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Path</th><th scope="col">Check</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Internal link</th><td>Cart → Checkout opens the correct page and preserves cart items.</td></tr>
+        <tr><th scope="row">External link</th><td>The help link opens the intended support page.</td></tr>
+        <tr><th scope="row">Redirect</th><td>After sign-in, the shopper returns to the intended checkout step, if the requirements specify that behavior.</td></tr>
+        <tr><th scope="row">Search and Back</th><td>A result opens the matching product. Returning to search restores the filters if required.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="navigation" aria-label="Navigation testing completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="performance" data-topic data-fast="false" aria-labelledby="performance-title">
+  
+  <h2 id="performance-title">Performance testing</h2>
+  <p>Performance testing measures speed, stability and capacity at a specified workload. Decide a target before running a test, such as 100 concurrent users, a 95th-percentile response time of at most 2 seconds, and fewer than 1% failed requests.</p>
+<div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Measure</th><th scope="col">Interpretation</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Response time and round-trip time</th><td>Response time measures how long a request takes from the defined measurement point. Network round-trip time measures travel to a remote endpoint and back.</td></tr>
+        <tr><th scope="row">Throughput and error rate</th><td>Record completed requests per second and the percentage of failed requests.</td></tr>
+        <tr><th scope="row">Utilization and database load</th><td>Observe CPU, memory, connection usage and query workload to identify bottlenecks.</td></tr>
+        <tr><th scope="row">Scalability</th><td>Repeat at increasing workload or with additional resources and compare the results.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<p><strong>Load testing</strong> checks normal or expected peak conditions. <strong>Stress testing</strong> goes beyond that workload to find limits and observe failure and recovery. <strong>JMeter example.</strong> In a test environment, create a Thread Group for virtual users, an HTTP Request sampler for catalogue browsing and a results report. If p95 is 1.8 seconds but errors are 1.3%, the example above fails the error-rate target.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="performance" aria-label="Performance testing completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="agile" data-topic data-fast="true" aria-labelledby="agile-title">
+  <p class="meta">Past paper · Five challenges for 10 marks · Paper B, Q3(i)</p>
+  <h2 id="agile-title">Testing Agile software</h2>
+  <p>In Agile, developers and testers work in short iterations. They clarify acceptance criteria during planning, design and run tests as the story is built, regress earlier features, then use review feedback to improve the next iteration. In <strong>test-driven development (TDD)</strong>, a developer writes a failing test, writes enough code to pass it, then refactors while keeping the tests green.</p>
+<h3>Five challenges, with one response each</h3>
+<ol>
+    <li><strong>Changing requirements.</strong> Existing cases can become stale. Refine acceptance criteria and update linked tests when a story changes.</li>
+    <li><strong>Regression risk.</strong> New features may break existing behavior. Run a prioritized regression suite frequently.</li>
+    <li><strong>Short iterations.</strong> A large test effort may exceed the sprint window. Start testing early and run fast checks on each change.</li>
+    <li><strong>Distributed teams.</strong> Different locations and time zones can delay answers. Keep acceptance criteria, test results and defects in shared records.</li>
+    <li><strong>Growing scope across sprints.</strong> More features and data make suites and environments harder to maintain. Keep reusable test data, remove redundant checks and assign maintenance ownership.</li>
+  </ol>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="agile" aria-label="Testing Agile software completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="pipeline" data-topic data-fast="false" aria-labelledby="pipeline-title">
+  
+  <h2 id="pipeline-title">CI/CD pipeline stages and components</h2>
+  <figure class="diagram">
+    <figcaption>Typical pipeline</figcaption>
+    <div class="flow-inline">
+      <span class="node">Commit</span><span class="arrow">→</span>
+      <span class="node">Build</span><span class="arrow">→</span>
+      <span class="node">Automated tests</span><span class="arrow">→</span>
+      <span class="node">Package &amp; stage</span><span class="arrow">→</span>
+      <span class="node">Release &amp; monitor</span>
+    </div>
+  </figure>
+<p>A commit triggers a build on a runner. Unit and integration checks run against the build. A passing artifact is stored and deployed to staging, where smoke or acceptance checks validate key flows. A failed required check blocks promotion. At the production step, delivery can wait for approval and deployment promotes automatically. Monitoring checks the release and supports rollback when necessary.</p><div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Stage</th><th scope="col">Typical output</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Source</th><td>A versioned commit or pull request triggers a pipeline. A runner executes its jobs.</td></tr>
+        <tr><th scope="row">Build and test</th><td>Compile or assemble the app and run automated checks. Publish test results.</td></tr>
+        <tr><th scope="row">Package and store</th><td>Keep a versioned build or container in an artifact registry so it can be promoted consistently.</td></tr>
+        <tr><th scope="row">Staging</th><td>Deploy to a preproduction environment and run smoke or acceptance tests.</td></tr>
+        <tr><th scope="row">Release and monitor</th><td>Apply the production release policy, verify key flows and watch operational metrics for failures.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="pipeline" aria-label="CI/CD pipeline stages and components completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="cicd-tools" data-topic data-fast="false" aria-labelledby="cicd-tools-title">
+  
+  <h2 id="cicd-tools-title">Common CI/CD tools</h2>
+  <p>A CI/CD tool coordinates when jobs run, which runners execute them, where artifacts are stored and which checks or approvals govern promotion.</p>
+<div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Tool</th><th scope="col">Example use</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">GitHub Actions</th><td>Run a build and unit tests when a pull request changes in a GitHub repository.</td></tr>
+        <tr><th scope="row">Jenkins</th><td>Use a Jenkins pipeline and build agents to run build, test and deployment jobs.</td></tr>
+        <tr><th scope="row">GitLab CI/CD</th><td>Define stages in a GitLab repository and run the jobs on GitLab runners.</td></tr>
+        <tr><th scope="row">Azure Pipelines</th><td>Build and test an application, then deploy it to a staging environment through a defined pipeline.</td></tr>
+      </tbody>
+    </table>
+  </div>
+<p>When selecting one, check repository integration, runner availability, artifact storage, environment access and test reporting.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="cicd-tools" aria-label="Common CI/CD tools completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="ci-vs-cd" data-topic data-fast="false" aria-labelledby="ci-vs-cd-title">
+  
+  <h2 id="ci-vs-cd-title">CI vs CD</h2>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Practice</th><th scope="col">What happens</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Continuous integration (CI)</th><td>Integrate small code changes frequently and automatically build and test them to catch problems early.</td></tr>
+        <tr><th scope="row">Continuous delivery (CD)</th><td>Automate validation and preparation so changes remain ready to release. A release decision or approval can control when production is updated.</td></tr>
+        <tr><th scope="row">Continuous deployment (CD)</th><td>Automatically release eligible changes to production after required checks pass.</td></tr>
+      </tbody>
+    </table>
+  </div><p><strong>Checkout example.</strong> A tax-calculation change triggers an automatic build and tests during CI. In continuous delivery, the passing build is ready to release after a production decision. In continuous deployment, the passing build goes to production automatically under the defined rules.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="ci-vs-cd" aria-label="CI vs CD completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="ai" data-topic data-fast="false" aria-labelledby="ai-title">
+  
+  <h2 id="ai-title">Role of AI in automation</h2>
+  <p>AI can draft test cases from requirements, suggest which regression tests to run first using change and failure history, and group similar failures for triage. Testers validate the proposed checks before adding them to the automated suite.</p><ul>
+    <li><strong>Test design.</strong> Suggest cases from user stories and test data for uncommon combinations.</li>
+    <li><strong>Execution planning.</strong> Use changed components and past failures to suggest which approved regression tests to run first.</li>
+    <li><strong>Result analysis.</strong> Group similar failures to reduce duplicate investigation. Testers confirm the cause before assigning a defect.</li>
+    <li><strong>Maintenance.</strong> Suggest script or locator updates after intentional UI changes. Review changes to preserve what the original assertion checks.</li>
+  </ul>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="ai" aria-label="Role of AI in automation completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="ai-test-cases" data-topic data-fast="false" aria-labelledby="ai-test-cases-title">
+  
+  <h2 id="ai-test-cases-title">Intelligent test case generation</h2>
+  <p><strong>Process.</strong> Provide the user story, rules and data constraints. Ask the tool to propose normal, invalid and boundary cases with steps and expected results. Check every expected result against the requirement, remove duplicates, and link approved tests to the relevant story.</p>
+<p><strong>Example.</strong> A shop offers free shipping for valid whole-rupee cart totals of ₹500 or more. AI proposes <strong>₹499 → shipping charged</strong>, <strong>₹500 → free</strong> and <strong>₹501 → free</strong>. A tester confirms the ₹500 case against the rule and clarifies how discounts affect the threshold before adding discount-related cases.</p><p>Record enough information to reproduce each case. For the free-shipping rule, include the <strong>precondition</strong> (a test cart and a valid address), the <strong>input</strong> (the cart total), the <strong>step</strong> (calculate shipping), and the <strong>assertion</strong> (shipping charge matches the rule). Track the user story and record any clarification needed before using the generated case.</p>
+<details><summary>What if the AI says a ₹500 total should still incur a charge?</summary><div class="answer"><p>Check the requirement for the expected result. The phrase ₹500 or more includes exactly ₹500, so the approved assertion is free shipping.</p></div></details>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="ai-test-cases" aria-label="Intelligent test case generation completed">
+    Mark topic complete
+  </label>
+</section>
+<section class="lesson" id="ai-benefits" data-topic data-fast="false" aria-labelledby="ai-benefits-title">
+  
+  <h2 id="ai-benefits-title">Benefits and challenges of AI-driven testing</h2>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th scope="col">Benefits</th><th scope="col">Challenges and controls</th></tr></thead>
+      <tbody>
+        <tr><td>Draft cases and datasets more quickly.</td><td>Check invented cases and incorrect expected results against authoritative rules.</td></tr>
+        <tr><td>Explore more combinations and edge conditions.</td><td>AI may miss rare or biased cases. Check traceability and coverage against requirements.</td></tr>
+        <tr><td>Group failures and prioritize human investigation.</td><td>Outputs may vary. Retain reviewed artifacts and keep personal data and secrets out of prompts.</td></tr>
+      </tbody>
+    </table>
+  </div><p>Review AI assistance with measurable criteria. For example, compare time spent drafting and reviewing test cases, count approved unique cases tied to requirements, and check whether important failures were found earlier. Include review and maintenance time in the comparison.</p>
+  <label class="lesson-check" data-enhance hidden>
+    <input type="checkbox" data-complete="ai-benefits" aria-label="Benefits and challenges of AI-driven testing completed">
+    Mark topic complete
+  </label>
+</section>
+    <section id="recall">
+  <h2>Closed-book revision</h2>
+  <p>Try each prompt on paper before opening the answer. Aim to explain the idea, use an example, and show the calculation or diagram where it helps.</p>
+  <details><summary>10 marks · Explain keyword-driven testing with an example and benefits.</summary><div class="answer"><p>Define the keyword, driver and action library. Write a five-row login sequence with arguments and a final verification step. Explain how the driver maps each row to code. Give benefits of reuse, readability, easier authoring and centralized maintenance.</p></div></details>
+  <details><summary>10 marks · Give six checkout test cases and two tools.</summary><div class="answer"><p>Use navigation, cart, interface, security, compatibility and performance. Give a concrete action and expected result for each. Use Selenium for browser flows and JMeter for performance.</p></div></details>
+  <details data-full-practice=""><summary>5 marks · What is the difference between CI, delivery and deployment?</summary><div class="answer"><p>CI integrates and automatically validates frequent code changes. Continuous delivery keeps them release-ready and allows a production decision or approval. Continuous deployment releases them automatically when the required checks pass.</p></div></details>
+  <details data-full-practice=""><summary>5 marks · How would you use AI to make boundary tests safely repeatable?</summary><div class="answer"><p>Give the AI the requirement and valid data range. Request cases directly below, at and above the threshold. Verify expected results independently against the requirement. Save the approved inputs and assertions so future runs use the same checks.</p></div></details>
+  <p><a class="action" href="STQA_Module_3_Testing_Metrics.html#recall">Review Module 3 recall</a></p>
+</section>
+<footer>
+  <p><strong>Course sources.</strong> Supplied syllabus 4.1–4.3, STQA_Ch4 slides 2–10 and 17–42, and supplied past papers. Paper B is the paper with the factorial problem.</p>
+  <p>Read more in the documentation and syllabi for <a href="https://jmeter.apache.org/">Apache JMeter</a>, <a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/strategy-cicd-litmus/understanding-cicd.html">AWS CI/CD guidance</a>, and <a href="https://istqb.org/?download_id=6295&amp;sdm_process_download=1">ISTQB Testing with Generative AI</a> and <a href="https://www.istqb.org/wp-content/uploads/2024/11/ISTQB_CT-AI_Syllabus_v1.0_mghocmT.pdf">ISTQB AI Testing</a>.</p>
+</footer>
+  </main>
+</div>
+<script>
+(() => {
+  "use strict";
+
+  const lessons = [...document.querySelectorAll("section[data-topic]")];
+  const byId = new Map(lessons.map(lesson => [lesson.id, lesson]));
+  const groups = [...document.querySelectorAll("[data-index-group]")];
+  const indexItems = [...document.querySelectorAll("[data-index-topic]")];
+  const modeButtons = [...document.querySelectorAll("button[data-mode]")];
+  const checkboxes = [...document.querySelectorAll("input[data-complete]")];
+  const modeContent = [...document.querySelectorAll("[data-mode-content]")];
+  const fullOnlyPractice = [...document.querySelectorAll("[data-full-practice]")];
+  const count = document.querySelector("#mode-count");
+  const total = document.querySelector("#module-count");
+  const meter = document.querySelector("#topic-meter");
+  const continueLink = document.querySelector("#resume");
+  const storageNote = document.querySelector("#storage-note");
+  const key = "stqa-course-progress-v2:" + document.body.dataset.module;
+  const modeKey = key + ":mode";
+  const topicPrefix = key + ":topic:";
+
+  const done = new Set();
+  let mode = "full";
+  let storage = true;
+
+  try {
+    if (localStorage.getItem(modeKey) === "fast") mode = "fast";
+    for (const lesson of lessons) {
+      if (localStorage.getItem(topicPrefix + lesson.id) === "1") done.add(lesson.id);
+    }
+  } catch {
+    storage = false;
+  }
+
+  function save(item, value) {
+    if (!storage) return;
+    try {
+      localStorage.setItem(item, value);
+    } catch {
+      storage = false;
+    }
+  }
+
+  function render() {
+    const active = lessons.filter(lesson => mode === "full" || lesson.dataset.fast === "true");
+    const activeIds = new Set(active.map(lesson => lesson.id));
+    const completed = active.filter(lesson => done.has(lesson.id)).length;
+    const next = active.find(lesson => !done.has(lesson.id));
+
+    for (const lesson of lessons) lesson.hidden = !activeIds.has(lesson.id);
+    for (const item of indexItems) item.hidden = !activeIds.has(item.dataset.indexTopic);
+    for (const group of groups) group.hidden = !group.querySelector("li:not([hidden])");
+    for (const checkbox of checkboxes) checkbox.checked = done.has(checkbox.dataset.complete);
+    for (const button of modeButtons) button.setAttribute("aria-pressed", String(button.dataset.mode === mode));
+    for (const section of modeContent) section.hidden = section.dataset.modeContent !== mode;
+    for (const practice of fullOnlyPractice) practice.hidden = mode === "fast";
+
+    count.textContent = `${completed} of ${active.length} topics done`;
+    meter.max = active.length;
+    meter.value = completed;
+    total.textContent = mode === "fast" ? `${done.size} of ${lessons.length} done across this module` : "";
+    total.hidden = mode === "full";
+    continueLink.setAttribute("href", next ? "#" + next.id : "#recall");
+    continueLink.textContent = next ? "Go to next unfinished topic" : "Go to revision questions";
+    storageNote.hidden = storage;
+  }
+
+  function linkedLesson() {
+    return byId.get(location.hash.slice(1));
+  }
+
+  function showTopicForHash() {
+    const lesson = linkedLesson();
+    if (lesson && mode === "fast" && lesson.dataset.fast !== "true") {
+      mode = "full";
+      render();
+      lesson.scrollIntoView();
+    }
+  }
+
+  for (const button of modeButtons) {
+    button.addEventListener("click", () => {
+      mode = button.dataset.mode;
+      const current = linkedLesson();
+      if (mode === "fast" && current && current.dataset.fast !== "true") {
+        location.hash = "route";
+      }
+      save(modeKey, mode);
+      render();
+    });
+  }
+
+  for (const checkbox of checkboxes) {
+    checkbox.addEventListener("change", () => {
+      const id = checkbox.dataset.complete;
+      if (checkbox.checked) done.add(id);
+      else done.delete(id);
+      save(topicPrefix + id, checkbox.checked ? "1" : "0");
+      render();
+    });
+  }
+
+  window.addEventListener("hashchange", showTopicForHash);
+  window.addEventListener("storage", event => {
+    if (!event.key?.startsWith(topicPrefix)) return;
+    const id = event.key.slice(topicPrefix.length);
+    if (!byId.has(id)) return;
+    if (event.newValue === "1") done.add(id);
+    else done.delete(id);
+    render();
+  });
+
+  render();
+  showTopicForHash();
+  document.querySelector(".dashboard").hidden = false;
+  for (const checkbox of checkboxes) checkbox.closest("[data-enhance]").hidden = false;
+})();
+
+</script>
+</body>
+</html>
