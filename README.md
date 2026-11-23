@@ -24,6 +24,8 @@ Instead of relying solely on static PDFs, these notes are designed to provide a 
 |:---:|---|:---:|
 | Module 1 | Digital Marketing | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-1-digital-marketing.html) |
 | Module 2 | Search Engine Optimization | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-2-seo.html) |
+| Module 3 | Link Building & SEO Analytics | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-3-link-building.html) |
+| Module 4 | Social Media Marketing | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-4-social-media-marketing.html) |
 
 ### DevOps
 
