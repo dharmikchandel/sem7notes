@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>DevOps Module 5 · Deploying and monitoring the code</title>
+<style>:root{
+  color-scheme:dark;
+  --bg:#101418;
+  --surface:#161c22;
+  --raised:#1b242c;
+  --line:#343f49;
+  --ink:#ecf0f4;
+  --muted:#b0bdc9;
+  --accent:#86d6c0;
+  --warm:#f0c58a;
+  --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.65 system-ui,sans-serif}
+[hidden]{display:none!important}
+a{color:var(--accent);text-underline-offset:.2em}
+a:hover{color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.skip{position:fixed;top:.5rem;left:.5rem;z-index:5;background:var(--surface);padding:.5rem;transform:translateY(-200%)}
+.skip:focus{transform:none}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;overflow:auto;padding:1.8rem 1.15rem;background:var(--surface);border-right:1px solid var(--line)}
+.brand{display:block;padding:0 .45rem;margin-bottom:1.1rem;color:var(--ink);font-size:1.18rem;font-weight:720;text-decoration:none}
+.brand span{display:block;color:var(--muted);font-weight:450;font-size:.88rem}
+.modules{display:flex;flex-wrap:wrap;gap:.34rem;margin:0 0 1.4rem}
+.modules a,.jump a{border:1px solid var(--line);border-radius:.36rem;text-decoration:none;padding:.4rem .55rem;font-size:.88rem;white-space:nowrap}
+.modules a[aria-current],.jump a:first-child{background:var(--accent);color:#10231d;border-color:var(--accent);font-weight:700}
+.outline summary{padding:.4rem .45rem;color:var(--muted);font-weight:620}
+.outline nav{display:grid;gap:.15rem;margin:.4rem 0 1.2rem}
+.outline nav a{display:grid;grid-template-columns:3.3rem 1fr;gap:.35rem;padding:.42rem .42rem;color:var(--ink);text-decoration:none;font-size:.9rem;line-height:1.36;border-radius:.25rem}
+.outline nav a:hover,.outline nav a[aria-current]{background:var(--raised);color:var(--accent)}
+.outline nav span{font: .79rem/1.52 var(--mono);color:var(--accent)}
+.progress{display:grid;gap:.35rem;color:var(--muted);font-size:.85rem;padding:0 .45rem}
+progress{accent-color:var(--accent);width:100%;height:.52rem}
+main{width:min(100%,1030px);margin-inline:auto;padding:clamp(1.3rem,4vw,3.5rem) clamp(1.1rem,5vw,4.2rem) 3rem}
+.hero{padding:clamp(1rem,5vw,3rem) 0 2rem}
+.hero .tag,.lesson-head .tag{color:var(--accent);margin:0 0 .45rem;font: .9rem/1.4 var(--mono)}
+h1,h2,h3,h4{line-height:1.17;letter-spacing:-.025em}
+h1{font-size:clamp(2.15rem,5.1vw,4rem);max-width:17ch;margin:0 0 1.25rem}
+h2{font-size:clamp(1.55rem,3vw,2.3rem);margin:0}
+h3{font-size:1.25rem;margin:1.85rem 0 .55rem}
+h4{font-size:1.05rem;margin:1.5rem 0 .45rem}
+p,ul,ol{margin:.6rem 0 1rem}
+li+li{margin-top:.32rem}
+.intro{max-width:70ch;color:var(--muted);font-size:1.08rem}
+.jump{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.15rem}
+.jump a{font-size:.95rem;padding:.5rem .75rem}
+.lesson{border-top:1px solid var(--line);padding:2.25rem 0 2.5rem;scroll-margin-top:1rem}
+.lesson-head{display:flex;gap:1rem;justify-content:space-between;align-items:flex-start;margin-bottom:1.15rem}
+.complete{color:var(--muted);white-space:nowrap;font-size:.875rem;margin-top:.3rem}
+input{accent-color:var(--accent)}
+code{font:.89em var(--mono);color:var(--accent);padding:.1em .25em;background:var(--raised);border-radius:.25rem;overflow-wrap:anywhere}
+pre{overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:.35rem;padding:1rem}
+pre code{padding:0;background:none;overflow-wrap:normal}
+table{width:100%;border-collapse:collapse;background:var(--surface);font-size:.94rem;margin:1rem 0 1.35rem}
+th,td{border:1px solid var(--line);padding:.6rem .7rem;vertical-align:top;overflow-wrap:anywhere}
+th{background:var(--raised);text-align:left}
+blockquote{margin:1rem 0;padding:.55rem .95rem;border-left:3px solid var(--warm);background:var(--surface)}
+blockquote strong{color:var(--warm)}
+blockquote p{margin:.2rem 0}
+.source{font-size:.86rem;color:var(--muted);margin:.22rem 0}
+.source a,figcaption a{color:var(--muted)}
+figure{margin:1.25rem 0;padding:1rem;border:1px solid var(--line);border-radius:.4rem;background:var(--surface)}
+figcaption{display:flex;align-items:baseline;justify-content:space-between;gap:.3rem 1rem;flex-wrap:wrap;margin:0 0 .75rem}
+figcaption small{color:var(--muted);font-size:.82rem}
+figure img{display:block;width:100%;height:auto;border-radius:.23rem}
+.flow{display:flex;gap:1.28rem;align-items:stretch;list-style:none;padding:0;margin:0}
+.flow li{position:relative;display:grid;place-content:center;flex:1;min-width:0;padding:.5rem .3rem;margin:0;background:var(--raised);border:1px solid var(--line);border-radius:.25rem;text-align:center;line-height:1.35;font-size:.9rem;overflow-wrap:anywhere}
+.flow li+li::before{content:"→";position:absolute;width:1.28rem;right:100%;top:50%;transform:translateY(-50%);color:var(--accent);text-align:center}
+.answer{border:1px solid var(--line);border-radius:.35rem;background:var(--surface);margin:.85rem 0}
+summary{cursor:pointer}
+.answer summary{padding:.8rem .95rem;font-weight:650}
+.answer summary::marker{color:var(--accent)}
+.answer-body{padding:.15rem .95rem .65rem;border-top:1px solid var(--line)}
+footer{font-size:.92rem;padding-top:1rem;border-top:1px solid var(--line)}
+@media(max-width:980px){.layout{grid-template-columns:225px minmax(0,1fr)}}
+@media(max-width:760px){
+  .layout{display:block}
+  .sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:1rem}
+  .brand{margin-bottom:.55rem}.brand span{display:inline;margin-left:.4rem}
+  .modules{margin-bottom:.45rem}.outline nav{grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));margin-bottom:.55rem}
+  .hero{padding:1rem 0 1.4rem}
+}
+@media(max-width:520px){
+  .lesson-head{display:block}.complete{display:block;margin-top:.7rem}
+  .flow{flex-direction:column;gap:1rem}
+  .flow li+li::before{content:"↓";width:100%;top:auto;right:0;bottom:100%;transform:none}
+  th,td{padding:.45rem .38rem}
+}
+@media print{
+  :root{color-scheme:light;--bg:white;--surface:white;--raised:#f2f4f5;--ink:#171717;--muted:#383838;--line:#aaa;--accent:#155344;--warm:#73511b}
+  .layout{display:block} .sidebar,.jump,.complete,.skip,footer{display:none}
+  main{width:100%;padding:0}.hero{padding:0 0 1rem}
+  figure,tr,pre{break-inside:avoid} h1,h2,h3,h4,summary{break-after:avoid} pre{white-space:pre-wrap}
+}
+.modules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.modules a{padding:.4rem .25rem;text-align:center;font-size:.81rem}
+.lesson>p:not(.source),.lesson>ul,.lesson>ol{max-width:78ch}
+.split-flow{max-width:39rem;margin:auto;text-align:center}
+.node{padding:.5rem;border:1px solid var(--line);border-radius:.25rem;background:var(--raised)}
+.branches{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.down{line-height:1.35;color:var(--accent)}
+@media (min-width:761px) and (max-width:980px){
+  .sidebar{padding-inline:.75rem}
+}
+@media (max-width:760px){
+  .modules{display:flex}
+  .modules a{padding:.4rem .55rem}
+}
+.cell-label{display:none}
+@media (max-width:600px){
+  .two-col th:first-child,.two-col td:first-child{min-width:6.25rem}
+  .stack{display:block;border:1px solid var(--line);border-radius:.25rem;overflow:hidden}
+  .stack thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .stack tbody,.stack tr,.stack td{display:block}
+  .stack tbody tr+tr{border-top:1px solid var(--line)}
+  .stack td{border:0;padding:.45rem .65rem}
+  .stack td:first-child{font-weight:700;background:var(--raised);padding:.6rem .65rem}
+  .stack td:first-child .cell-label{display:none}
+  .stack td:last-child{padding-bottom:.65rem}
+  .stack .cell-label{display:block;color:var(--muted);font-size:.85rem;font-weight:650}
+}
+</style>
+</head>
+<body data-module="5">
+<a class="skip" href="#main">Skip to course</a>
+<div class="layout">
+<aside class="sidebar">
+  <a class="brand" href="#top">DevOps <span>Semester VII</span></a>
+  <nav class="modules" aria-label="Modules"><a href="DevOps_Module3_Code_Control.html">Module 3</a><a href="DevOps_Module4_Build_and_Test.html">Module 4</a><a href="DevOps_Module5_Deploy_and_Monitor.html" aria-current="page">Module 5</a></nav>
+  <details class="outline" open>
+    <summary>Contents</summary>
+    <nav aria-label="Course contents"><a href="#deployment"><span>5.1</span>Why deployment systems are needed</a><a href="#strategies"><span>5.1</span>A/B, canary and blue-green</a><a href="#cases"><span>5.1</span>Deployment strategies in the slide case studies</a><a href="#monitoring"><span>5.1</span>Monitoring, alerts and dashboards</a><a href="#docker"><span>5.2</span>Docker and the container workflow</a><a href="#kubernetes"><span>5.2</span>Kubernetes architecture and orchestration</a><a href="#github"><span>5.2</span>CI/CD pipeline with GitHub Actions</a><a href="#iac"><span>5.2</span>Infrastructure as Code, Terraform and Ansible</a><a href="#serverless"><span>5.2</span>AWS Lambda and Azure Functions</a><a href="#prometheus"><span>5.3</span>Prometheus, Alertmanager and Grafana</a><a href="#elk"><span>5.3</span>Centralized logs and the ELK stack</a><a href="#incidents"><span>5.3</span>Incident management and PagerDuty</a><a href="#exam"><span>Exam</span>Past-paper practice</a></nav>
+  </details>
+  <div class="progress" hidden><progress aria-label="Lessons reviewed" value="0"></progress><span role="status"></span></div>
+</aside>
+<main id="main">
+  <header id="top" class="hero">
+    <p class="tag">Module 5 · Units 5.1–5.3</p>
+    <h1>Deploying and monitoring the code</h1>
+    <div class="intro"><p>Learn how a release gets to production, how to contain rollout risk, and how to diagnose and recover from a bad release. Start with monitoring, deployment at scale, Docker and Kubernetes, and centralized logging for topics that recur in the papers.</p>
+</div>
+    <nav class="jump" aria-label="Shortcuts"><a href="#deployment">Start studying</a><a href="#exam">Past-paper practice</a></nav>
+  </header>
+  <section class="lesson" id="deployment"><header class="lesson-head"><div><p class="tag">5.1</p><h2>Why deployment systems are needed</h2></div><label class="complete" hidden><input type="checkbox" data-study="deployment"> Reviewed</label></header><p>A <strong>deployment system</strong> automates the journey from code to a running application. An automated pipeline repeats the same steps, records what happened and reduces reliance on one person following a manual checklist.</p>
+
+<figure><figcaption><strong>Deployment system</strong><small>Need for Deployment Systems · slide 3</small></figcaption><ol class="flow"><li>Code</li><li>Build</li><li>Test</li><li>Deploy</li><li>Monitor</li></ol></figure>
+<table class="stack" role="table">
+<thead role="rowgroup">
+<tr role="row">
+<th role="columnheader">Need</th>
+<th role="columnheader">What it achieves</th>
+<th role="columnheader">Teacher’s example</th>
+</tr>
+</thead>
+<tbody role="rowgroup">
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Need</span>Speed</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">What it achieves</span>Shorter release cycles and smaller, more frequent changes</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Teacher’s example</span>Amazon’s frequent deployments in the slide’s historical example</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Need</span>Consistency</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">What it achieves</span>Same artifact across environments</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Teacher’s example</span>Build one container image and use it on test servers and production</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Need</span>Safety</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">What it achieves</span>Early failure detection and quick rollback</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Teacher’s example</span>Knight Capital’s manual rollout missed a server running old code. The slide uses it to show the cost of a missed step.</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Need</span>Scale</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">What it achieves</span>Repeatable releases across many servers and services</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Teacher’s example</span>One pipeline template can serve login, cart and payment services that release independently</td>
+</tr>
+</tbody>
+</table>
+<table class="two-col">
+<thead>
+<tr>
+<th>Challenge</th>
+<th>Example and response from the slides</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Environment drift</td>
+<td>Staging may run Java 17 while production runs Java 11. Define infrastructure as code and ship the same container.</td>
+</tr>
+<tr>
+<td>Risky releases or downtime</td>
+<td>A bad checkout release during a sale can affect every user. Use a canary or keep a blue-green rollback path.</td>
+</tr>
+<tr>
+<td>Database changes</td>
+<td>A renamed column can break the old version still running. Add the new field, migrate the data, then remove the old field in safe steps.</td>
+</tr>
+<tr>
+<td>Secrets and security</td>
+<td>A committed API key can leak quickly. Store secrets in a vault and scan commits.</td>
+</tr>
+<tr>
+<td>Resource sizing</td>
+<td>CPU requests that are too large waste capacity. A limit that is too low causes throttling. Set requests and limits from usage.</td>
+</tr>
+<tr>
+<td>Skills and culture</td>
+<td>Train the team and share responsibility for releases.</td>
+</tr>
+</tbody>
+</table>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.1_Need_for_Deployment_Systems_and_Challenges.pdf#page=3">Need for Deployment Systems and Challenges · slides 3–17</a></p>
+</section><section class="lesson" id="strategies"><header class="lesson-head"><div><p class="tag">5.1</p><h2>A/B, canary and blue-green</h2></div><label class="complete" hidden><input type="checkbox" data-study="strategies"> Reviewed</label></header><table class="stack" role="table">
+<thead role="rowgroup">
+<tr role="row">
+<th role="columnheader">Strategy</th>
+<th role="columnheader">Goal</th>
+<th role="columnheader">Traffic and release decision</th>
+<th role="columnheader">Recovery</th>
+</tr>
+</thead>
+<tbody role="rowgroup">
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Strategy</span>A/B testing</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Goal</span>Measure which feature or design performs better</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Traffic and release decision</span>Route user groups to control and variant concurrently. Compare conversions, click-through or engagement and assess statistical significance.</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Recovery</span>Disable the variant if needed.</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Strategy</span>Canary testing</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Goal</span>Validate a risky release on a small population</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Traffic and release decision</span>Give the new version a small traffic share. Check errors, latency and CPU, then increase traffic in steps while service objectives hold.</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Recovery</span>Halt promotion and revert on threshold breach.</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Strategy</span>Blue-green</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Goal</span>Switch between two production-equivalent environments</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Traffic and release decision</span>Blue serves users while Green is tested. Route production traffic to Green after validation.</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Recovery</span>Switch back to warm Blue. Parallel environments cost more to run.</td>
+</tr>
+</tbody>
+</table>
+<h3>A/B testing</h3>
+<p>Bucket users by ID, cookie or segment and send each group to a version through a router or feature flag. A 50/50 split is one option. In the teacher’s Netflix thumbnail example, the custom artwork variant has a higher click-through rate than the generic screenshot. The experiment uses viewer behaviour to select a winner.</p>
+<figure aria-labelledby="ab-caption">
+<figcaption id="ab-caption"><strong>A/B routing from control and variant to analysis</strong><small>Deployment Testing Strategies · slide 3</small></figcaption>
+<div class="split-flow">
+  <div class="node">All users</div>
+  <div class="down" aria-hidden="true">↓</div>
+  <div class="node">Traffic router / feature flag</div>
+  <div class="branches">
+    <div><div class="down" aria-hidden="true">↓</div><div class="node">Version A · Control</div><div class="down" aria-hidden="true">↓</div></div>
+    <div><div class="down" aria-hidden="true">↓</div><div class="node">Version B · Variant</div><div class="down" aria-hidden="true">↓</div></div>
+  </div>
+  <div class="node">Analytics and statistical analysis</div>
+</div>
+</figure>
+<h3>Canary</h3>
+<p>The slide’s rollout diagram uses <strong>1% → 10% → 50% → 100%</strong> as an example. At each step compare metrics with the baseline or SLO. The Google/Kubernetes example in the deck uses one canary pod and illustrative rollback thresholds of error rate over 0.1% or P99 latency over 200 ms.</p>
+
+<figure><figcaption><strong>Progressive canary rollout</strong><small>Deployment Testing Strategies · slide 5</small></figcaption><ol class="flow"><li>1% canary</li><li>10% early</li><li>50% majority</li><li>100% full</li></ol></figure>
+<h3>Blue-green</h3>
+<p>Provision Green with the new version, run smoke tests and health checks, then switch traffic. Hold Blue ready to serve if Green fails. In the slide’s e-commerce example a load balancer shifts traffic to Green and Blue remains warm for rollback.</p>
+
+<figure><figcaption><strong>Blue-green architecture and traffic switch</strong><small><a href="devops/teacher-notes/Module_5.1_deployment_testing_strategies_AI_use_cases.pdf#page=7">Teacher slide 7</a></small></figcaption><img decoding="async" loading="lazy" src="data:image/webp;base64,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" alt="Blue-green architecture and traffic switch"></figure>
+<h3>Apply the strategies in Kubernetes</h3>
+<ul>
+<li><strong>A/B:</strong> a router or service mesh directs a user segment or header to a version. The deck names Istio and Flagger.</li>
+<li><strong>Canary:</strong> use weighted steps and Prometheus checks to promote or roll back with Argo Rollouts or Flagger.</li>
+<li><strong>Blue-green:</strong> keep two Deployments and switch the Service selector from Blue to Green.</li>
+</ul>
+<blockquote>
+<p><strong>For a compare-and-choose answer.</strong> Identify the primary goal first. Use A/B to compare outcomes, canary to limit exposure and validate health, and blue-green for a fast environment switch with a warm fallback.</p>
+</blockquote>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.1_deployment_testing_strategies_AI_use_cases.pdf#page=3">Deployment Testing Strategies · slides 3–11 and 22</a></p>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.2_Docker_and_Kubernetes_Orchestration.pdf#page=17">Docker and Kubernetes · rollout strategies on slide 17</a></p>
+</section><section class="lesson" id="cases"><header class="lesson-head"><div><p class="tag">5.1</p><h2>Deployment strategies in the slide case studies</h2></div><label class="complete" hidden><input type="checkbox" data-study="cases"> Reviewed</label></header><p>The <strong>heatwave early-warning</strong> example uses weather data and AI forecasts to produce advisories. Validate forecast accuracy against ground weather-station readings, check for model degradation and factual consistency, and have experts approve warnings. In this case, rollout groups are regions and weather stations.</p>
+<p>The <strong>SomaiyaSat</strong> example concerns an onboard router deciding what to downlink. The slides emphasize tight power, short communication passes and preserving telemetry, tracking and command data (TT&amp;C). The testing ladder is bench testing, hardware-in-the-loop simulation, a ground or balloon test, then orbit.</p>
+<table class="stack" role="table">
+<thead role="rowgroup">
+<tr role="row">
+<th role="columnheader">Strategy</th>
+<th role="columnheader">Heatwave example</th>
+<th role="columnheader">SomaiyaSat example</th>
+</tr>
+</thead>
+<tbody role="rowgroup">
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Strategy</span>A/B</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Heatwave example</span>Compare baseline and new forecast models on the same days by region against ground readings. Check temperature error, hit rate, false alarms, severity and advisory clarity.</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">SomaiyaSat example</span>Replay identical link, power and queue conditions for two routing policies. Compare TT&amp;C delivery, frames sent, energy and priority accuracy. TT&amp;C loss fails the test.</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Strategy</span>Canary</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Heatwave example</span>Shadow test in one region, expand to three with accuracy and resource checks, then to all seven with expert review. Revert on worse error or drift.</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">SomaiyaSat example</span>Progress from simulation to ground tests, then limited in-orbit use. Keep TT&amp;C rule-based until the AI proves reliable. A watchdog switches back to rules on missed housekeeping or low battery.</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Strategy</span>Blue-green</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Heatwave example</span>Replay past events with a retrained model, switch the dashboard to it before summer and keep the old model warm.</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">SomaiyaSat example</span>In the slide’s proposed dual-image design, upload Green, self-check it and switch on reboot. Boot Blue if Green fails.</td>
+</tr>
+</tbody>
+</table>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.1_deployment_testing_strategies_AI_use_cases.pdf#page=12">Deployment Testing Strategies · slides 12–21</a></p>
+</section><section class="lesson" id="monitoring"><header class="lesson-head"><div><p class="tag">5.1</p><h2>Monitoring, alerts and dashboards</h2></div><label class="complete" hidden><input type="checkbox" data-study="monitoring"> Reviewed</label></header><p><strong>Monitoring</strong> continuously observes a system so a team can detect problems early, recover faster, protect response times and uptime, and right-size resource use. The slide example compares discovering checkout errors from morning complaints with an alert at 02:01 and rollback by 02:20.</p>
+
+<figure><figcaption><strong>Monitoring process</strong><small>Need for Monitoring · slide 3</small></figcaption><ol class="flow"><li>Collect</li><li>Store</li><li>Analyse</li><li>Alert</li><li>Visualize</li></ol></figure>
+<table class="stack" role="table">
+<thead role="rowgroup">
+<tr role="row">
+<th role="columnheader">Golden signal</th>
+<th role="columnheader">What it measures</th>
+<th role="columnheader">Example</th>
+</tr>
+</thead>
+<tbody role="rowgroup">
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Golden signal</span>Latency</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">What it measures</span>Time taken to serve requests</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Example</span>P99 response time</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Golden signal</span>Traffic</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">What it measures</span>Demand on the system</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Example</span>Requests per second</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Golden signal</span>Errors</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">What it measures</span>Failed work</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Example</span>Share of requests returning 5xx</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Golden signal</span>Saturation</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">What it measures</span>How close resources are to capacity</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Example</span>CPU or memory pressure</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Metrics</strong> are numeric time series such as CPU use. <strong>Logs</strong> record events such as a database timeout. <strong>Traces</strong> follow a request across services. A metric can show a symptom, while logs and traces help locate its cause.</p>
+<h3>Real-time alerts</h3>
+
+<figure><figcaption><strong>From signal to action</strong><small>Need for Monitoring · slide 9</small></figcaption><ol class="flow"><li>Metric crosses limit</li><li>Alert fires</li><li>On-call notified</li><li>Fix or roll back</li></ol></figure>
+<p>Make the alert actionable, link it to user impact and assign an owner and severity. Match the channel to urgency. A site outage can page the on-call engineer, disk usage at 80% can send a team message and a finished deployment can add a dashboard note. Group related alerts and tune thresholds so repeated low-value alerts do not hide a real incident. The slide example alerts on an error rate above 1% for five minutes.</p>
+<h3>Dashboards</h3>
+<p>A dashboard groups signals for its audience. Business users need uptime, orders and incidents. Engineers need latency, errors and deployment context. Operations needs capacity and node health. Use a small set of panels, show trends, label status and link alerts or runbooks. Instrument services to reduce blind spots, sample data when volume is high, and set retention limits.</p>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.1_Need_for_Monitoring_Alerts_Dashboards.pdf#page=3">Need for Monitoring, Real-Time Alerts and Dashboards · slides 3–18</a></p>
+</section><section class="lesson" id="docker"><header class="lesson-head"><div><p class="tag">5.2</p><h2>Docker and the container workflow</h2></div><label class="complete" hidden><input type="checkbox" data-study="docker"> Reviewed</label></header><p>Docker packages an application and its dependencies so the same image can run on a developer laptop, a test server and production. The dependency mismatch illustrated in class is a Python application that needs 3.11 on a server with 3.8. Containers share the host kernel and start quickly. VMs run a guest OS and provide stronger isolation.</p>
+
+<figure><figcaption><strong>Dockerfile, image and container</strong><small>Docker and Kubernetes · slide 5</small></figcaption><ol class="flow"><li>Dockerfile · recipe</li><li>Image · package</li><li>Container · running application</li></ol></figure>
+
+<figure><figcaption><strong>Registry workflow</strong><small>Docker and Kubernetes · slide 6</small></figcaption><ol class="flow"><li>Build</li><li>Push to registry</li><li>Pull</li><li>Run</li></ol></figure>
+<pre><code class="language-dockerfile">FROM python:3.11-slim
+COPY . /app
+RUN pip install -r /app/req.txt
+CMD [&quot;python&quot;, &quot;/app/main.py&quot;]
+</code></pre>
+<p>The slide’s <code>FROM</code> selects the base image. <code>COPY</code> adds the application files. <code>RUN</code> installs dependencies during build. <code>CMD</code> specifies the startup command. A registry makes a tagged version available for deployment.</p>
+<blockquote>
+<p><strong>For 5 marks on the need for Docker.</strong> Start with an environment mismatch, draw Dockerfile → image → container, and explain consistency, portability, fast startup and resource efficiency.</p>
+</blockquote>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.2_Docker_and_Kubernetes_Orchestration.pdf#page=3">Docker and Kubernetes · slides 3–8 and 19</a></p>
+</section><section class="lesson" id="kubernetes"><header class="lesson-head"><div><p class="tag">5.2</p><h2>Kubernetes architecture and orchestration</h2></div><label class="complete" hidden><input type="checkbox" data-study="kubernetes"> Reviewed</label></header><p>Kubernetes automates deployment, scaling and management across a cluster. The <strong>control plane</strong> responds to changes in desired state and decides where to run workloads. <strong>Worker nodes</strong> run the application pods.</p>
+
+<figure><figcaption><strong>Kubernetes control plane and worker nodes</strong><small><a href="devops/teacher-notes/Module_5.2_Docker_and_Kubernetes_Orchestration.pdf#page=12">Teacher slide 12</a></small></figcaption><img decoding="async" loading="lazy" src="data:image/webp;base64,UklGRtZqAABXRUJQVlA4IMpqAADQpgGdASpMBeABPikUiEMhoSEQ6YzYGAKEs7d+Pkz9h7/+586wwc843tCP89PZq/kM4l/v+99lfzV+m/zf7b+zvzn4O/IfFXtB+gDwW6w+jP3aPOv1n/i/5H90v8v///qz/oPUl/W/+H/y/cI/sf9v/1/+G/yvtj/ul7iv71/1f/F7BP5x/e/+5/nvdy/2X/f/33ul/vf/B/8vuF/zH+8f8f2wPU7/xH/f///uQ/tV/1/Xo/bn4YP7L/1f2l+CD9fv+l+eXyAf+b2vf4B/9utv6H/yP8Sv25+bHx389/oP9o/YL+z/9T17/Gvl36Z/bv2K/r//S/2vxy/sPi89K/gf9z/l/U7+KfVz6p/Zf8f/mP6x+2H3d/Vf7N/dP2F/xP7G+0/wW/f/zO/wHyC/hn8X/rX9q/wf99/uX/d/0XHX6f/jf996gXq/84/uf93/zH+2/uv7r+1x/FfbR8IflP9r/yP95/db+4/YB/F/5r/g/7r+3v98////2+3v9/+uflF/jf8//s/7j+LP2A/yn+l/57+7/5D/o/5L////v8W/4z/ef4v/T/+L/Vf///8/FD80/tv/B/x/+i/9X+e////u/QX+Qf0L/P/3H/Kf9j/Ff///t/d77Cf2r/7fuefrZ/4/z/Ev1x7r+p5tjWcxMrvo1X4UhN8iV30ar8KQm+RK76NV+FITfIld9Gq/CkJvkSu+jVfegaQnNwiykqTja46rPo1X4UhN8iV30ar8KQm+RK76NV+FITfIld9Gq/CkJvkSu+jVfhRjCGwRz2yeBdqLMo00s+AsBYCwFgLAWAsBYCwFgLAWAsBYCwFgI6mIw5Lfcaki0fii/KVF+Mfs8j6Ii4UqL8Y/Z0bu7tokCKUcFbW18orvJ8RvYuZafvk4IUcmcqP0r7GkdiPlkwNu1oLhXfs+Vd10HpjlwigE4H7mig+tgXgV4IAX94/ULJiJElwMBS5Vp61jI0Z8Ploy4d+Rw+fEonzm7kqIvmgTAz/rP3cMRnkfREXClRfhuBpbgAShcYeSJJSMyyd4w4sAfUQxiouSVsQNRK7TxZ0Rw0INaRGA1MTKf1je25n8fCyXXm0IgD9NEY+4FCbaMgvt3BktuTHE4Wo42yplXJYv/mJQmdIUH6W24TlmIOae5bdyYzzF8JICIi4UqL8Y/Z4yycnFBkkISMQhskIuYsCj0TQjFjFxACR0w2fxGfqQAqbKs6EeXmg1SCZUr3x0JJee4oE3gCPCoIyUI2uKhTt9ks9aHVGgUYwtbd/14hW5D2EviRcVBE3qv51630QrvPRPVTjD9hwoY0E6ceDomXFtjY43eCQ+TVGhpXFxUN+Mfs8j6Ii4UPZ8RRJ1YIeIKQbfMWaL19z4NFos+woMMrEKXoGDgKtCwqLKH1EvzhVU6IFmDKItYbqVhEyeomi2Xsa7lddi06/06Mh7AbpZz3fvWLsDWyUp1MFTuYcSulWrFBT0+ho1o1VIUv69XH+T8NQvo5gjvCd3MHEksdzG+cvSPoiLhSovxgzuhlXUAi4LhxPT6g7H5AzKNDIuFKi/GP2eR9ERben4WCp2LqH4sueh3IEpph0FO4Q/Z5H0RFwpUX4x+zyPoh5ioqcGp2RcKVF+Mfs8j6Ii4UqL8Y/KjnOQcXRqdkXClRfjH7PI+iIuFKi/DbaeAaKeDM2gRE42h9tL10d+qoqgCG+6F++bQUAvPA8r/4NDra8j6Ii4UqL8Y/Z5H0PGA7NfZfXQWkjWNySsVUXFK/OAz38gsrKgVlKQ+RbHIi4UqL8Y/Z5H0RFt54E4uhtW2oFuxvonPnaIvpfkx3n10Qiqb4Vp6DnhOZC+NyrSVZMiurVZECZN5h/EJfQhIwVHX9/lhZB5DEWLs3ZeV8sCyLhSovxj9nkfREW3p+FgtB4qSCFDR7hbXxwEYCuH/ZWu9Ea6ezRYbrbv/kOGZQgjMjZ7atGXBe4+rSYQLOA20Jj5FsciLhSovxj9nkfREW3ngTisgEy6h7ZaKi79V0YRYHcgoESUEKrSJYU51pbXR+zyPoiLhSovxj9nkZelzVMhQwPotkMsao9zKlCaklMPizZgsFlk9F+Mfs8j6Ii4UqL8Y/Y0+J8GLY5EXClRfjH7PI+iIuFKi/GO/LJVKkRcKVF+Mfs8j6Ii4UqL8Y/Z4yycnDmYnDJVXxepqQtxdMbIs2dI+iIuFKi/GP2eR9ERSOlqQsNZ7xtm0OPykf2YMqL8KyW5dXciu7aUqL8Y/Z5H0PFjY1xhXiev5UGvrJsvmNiDzSywXOvnzy72TjNYsQ2fZ0tTkK+0/e546F/ygq5LCaLHDq89g4DlhJHEydMB3/X8/4aP6k1bJBjHFFsciLhSovxj9nke3MoFssyT2I4/vJZkkXP8Vwwl49uGa6Og7gKhOVlHJK+KGv8U/MtSdsxo0NdYKczoUbMD4Sp+OjIIpJkcZRtK+K8ywOOfSicuUcqxsBGByO/56Fv23G3ErHSL17wQl068IG+nV+fJ4/UU17xvseqnWcuY1xCeOUpxRbHIi4UqL8Ntp4C6njoCIZX4E8JQqezjGF3SWTrGQ4d58URRYYmg1agR1Y5R6HYYEvTzzRYnKleidJs8spU03vlKi/GP2eR9ERcKVFrzKdt7UIXpYmYAcawy2/4wcehtc2zc0yHtbz1xRbHIom7O01f0RMvdv5aJWLmbqO6q6TbzlGDKsPLcf5eQc2YJJSBXRfx3clRZi/rK1qhCMx0fs8j6Ii4UqLXd3ebylRhFxiKLY5EXClRfjH7PI+h4wHZz5FwpUX4x+zyPoiLhSovxj9nkZdPT6xEXChDxqmgb9ERcKVF+Mfs8j6Ii29Pwsw9y4FIuFKi/GP2eR9ERcKVF+MflQCKTy22Tf1VOQKjqOHh/nShnyvhi9amRlWdL/CmVXaqVbUTy0nXLHFcn1nRL+B2SFhci+Qs4/kqda3SFniOVBCmN7gJ2yjr3O3KNbZV2JFBfH2Ds/Tki4Nrtn9l25qSK++eXNC5GxfHTRP6gvAjCbfyyHdZSzmUE8j6Ii4UqL8NwNLcv9ctKD3BjP+XQ52cXfaL8aGazE15kVE7Cv+XJGMJmuzyPoiLhSovxj9nkfREXB0hieezIO/raNbE6a5Eow7oafDiCSmzVi3iOpBMbnRXQ3m47tBXeMIyrcd3KqbzOSLjJ3njVNCFfdWKc42aiuS47j36Nb5vDxn0rIKaGZbAdJ6TH4obhg2R4I0R6p89bakELdOP4pdNgcXsLwm58NWEnllJeN/RA9nkfREXClRa8ynbpRxM1y9RYDfUtFhmrvK9IE1Qiy+RE/Knh/ateZUyecZ5H0RFwpUX4x+zyPoiLg6QxPrGs2lKjOojht89tdiNB71pSovxj9nkfQ8YDs58qY7PI+iIuFKi/GP2eR9ERcKUJFKyIAb9ERcKVF+Mfs8j6Ii4UqL8YNG+1ujEUWxyIuFKi/GP2eR9ERcKVFru7u2Ttb6+1mW1VQ8R7mE446uZ+bJ1nz2rwpfacn41wpKVHTo3vcUhnaLDvGmN9jZuxTf536NzLSBNsPTC46o17Pi4zqfgXsWynXxdPMEC4HSOa2TF+Mfs8j6Ii4UPZ8RgFRfjH7PI+iIuFKi/GP2eR9ERSMTEvarFlCdoUXN591d561IC27U0M0K99XRMHnplEeOin6f74QF2wbzvUuSdArGqiW1Kfu9cHM+Q+Bo7C6pTdVi8fb/g37gklsgIKvb9S/PuhEP23E+XPCUZRllK2RLC1G1T/go3m3TT+Oxpvh2IJt7m96RPsY9+iIuFKi/GP2eMt0bIcKVF+Mfs8j6Ii4UqL8Y/Z5H0PFjY4EBts7Ekg4izYth8xTzISKRo/3D9lVMqOkUWxyIuFKi/GDRvtboxFFsciLhSovxj9nkfREXClRa7u7zeUqL8Y/Z5H0RFwpUX4x+zyPoeMB2c+RcKVF+Mfs8j6Ii4UqL8Y/Z5GXT0+sRFwpUX4x+zyPoiLhSovxj9njLdGyHClRfjH7PI+iIuFKi/GP2eR9DxY2ODFsciLhSovxj9nkfREXClRfjHflkqlSIuFKi/GP2eR9ERcKVF+Mfs8ZZOTvRiKLY5EXClRfjH7PI+iIuFKi15lO74tjkRcKVF+Mfs8j6Ii4UqL8Y776nmiKLY5EXClRfjH7PI+iIuFKi/DcDS4h9ERcKVF+Mfs8j6Ii4UqL8Y/Y0+J8GLY5EXClRfjH7PI+iIuFKi/GO/LJVKkRcKVF+Mfs8j6Ii4UqL8Y/Z4yycnejEUWxyIuFKi/GP2eR9ERcKVFrzKd3xbHIi4UqL8Y/Z5H0RFwpUX4x33frbJIjmkjOyC7HSRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7SRfaSL7MTcv8vYHmjxtjn0ar8KQm+RK76NV+FITfIld9Gq/CkJvkSu+jVfhSE3yJXfRqvwpCb4FPMuPIAAP73uPHBnvcpuQY8YFHTjfRLp+2ug914g8HyIEO345P+eW6/DXLIdfqQse1RfJKJBI2yg6SUi4BdVOfFAJG74GQ08NfFvyKpInmx6VykS0s0Jjw5OJSnk2e9PdnDI33lanjopoO1oJT3ZwyN95Wp46KaDtaCU92cMjfeVqeOimg7WglPdnDI33lanjopoO1oJT3ZwyN95Wp46KaDtaCU92cMjfeVqeOimg7WglPUJqtmuuQ/cPR0q9wKvc9gj3ow4K84DpLeiIIUarFStIvW0chJYozCw1M3M/4+BIwI5Pf7XM7o0VHujU670okUafhRi6NhN8cybfJogOM0V6Audja2xdYE1IJ8FNcK1whwRxay6HxkIgqfqggUzAJkQYCJZaWkk3GY5xstTYkgRtpenCQ5i1y/lwjvwqJVocausTx3xrmcOS72Jx743DmHGrrE8d8a5nDku9ice+Nw5hxq6xPHfGuZw5LvYnHvjcOYcausTx3xrmcOS72Jx743DmHGrrE8d8a5nDku9ice+Nw5hxq6xPHfGuZw5LvYnHvjcOYcVtluZnBZJEzJeWiyypEEqyn+H4335ipwg7zKryTE0tz+8EuZdCHN3LCeBBqNAv2nGMRXEdk1tjcDFNxx3hSEMrvT1KEb6o1mnrUFER4CIprnX5Ii2ir4ZloldbVFxkwootjwXSWQUt/2ctrbsSmauAWHL0ll/mqkkViOsd7a+XJR4PA4KYL6t8TUyBfGAc5/sXcxni3g3Jb9AOHCU3WF+Hdx9zAAAAAAAHURuceyf6SeOwfYSq7i4Am0wx5URroAArSHsTHMx3ocXa7QfsIYTdWGpSCPzyBEi8EvsRdYzmHqd7v3BxtH/J3KICk35lhqqWMX/J9ZbW19RHbLkQl10OOrxXXI4fG48w6ruUluNvJYEoptfXvc/+JSwsnGNQp7yodG5ktgKJ7wjbxBAAAAAAAAAAAAAAAATPIxtwetECW6emMikoVAyN6rGeGUaFevhbD9AYkWhCe462+tq/CZTAoBjLZtyVoGdSJq1ILZuBoEYMsJewW7Nw3PNSmnseAVqm7VaTtIvLDkO9qOlBou/vVnSAMfb2BHVP88WhiWS4Jg3miNOHXgjifTPl+/03KeFjfpHzOaBiQbqaufJAgdMlhnWKD/9XicypSRgOBwLYKKHniFgG63L/5fKpehPGpW9huVXP3oFLGcyqNfp84Hwnv18+sjqopWYPIC71MQ/eyZcqIMehMyLgAqyB2355GzetWzILo47IbJ9zts7LaUCNbHqIgEjkadGGcw3+EvG3ZjWm7RlJ7UDd8HfAtnEPVgzN8HKC8Os7rzpF8Kd1LPCQmECdpnSNYCXrpSC5XL6kG8nXxeYqDIY40/6et7duvkdCb1tmSgnDnSYLEcNeArXAB3RZ3DXNbr4FyecFDlGon3qpmeKcIJtTpltuBHJ0JCHXmUd8pR8hrt4IYsNzDds1Rcz5iH2JzxMUvalCawd22NNRdtWRkp/n62RiDVMP22wL9/Pqq6OGGcfDq8Tl7MHX03fR/msarj4cNlBjYHFPfZhknBihjxsFlxb7pCb+VqTD4G/r2ZMfsD32bHkWg5+w9eETMq8R9lD0WBPLBrHIWngffhNjKsg6P4mpH0zf9hfdnwLl1sdvfXOWeGM5MFOI6rYKBFImF2yfUTXMxCn3MMUDapQp0Px7NsVeSkKN9i2fZxz1llToSLQfYy3HHAU8utjmx0gJElhrrKSk0zpUugBq6aCxrtuRVbHAJdaqrmKjY6qPLeE+HBzqYkj+oNM6nRUIXCvrHlHzKLrXIV4OlcxFSBe4wyTVTtVHuH7oT+v5xSZr6IxFmEkzjoUFqrNU0rNens9K0Qygt8PAfFBRjku+7D9KXOjxYM32Arxa7tB5AN1Eayh+IOjf3NDf9Cu3t18sZbJuCK3i9TfqQQhOUGomnXY2ycUUOkw6A/mLKbOJBPPNVHeLmmEnpRGvesGmulEtOlgstvnsy4dO2X9gOJ497MOGoA+GB3oV/JrOmNpyNEjgGHGdG5qHlH1ICbeemSnXh6Cdmq4V91heY1JyqGpR7RV36sy/ZVoFKxo8GS+k5EcG6iSBRKCi46N/I183FMCFivIrObG/ElS4AiikLSoEXq121uKBi3idaGKb7qHo1+ng790p7Kg4f5llTeSvh5fT274qcKLx3AvDUkcD5DsHpYUHHLnzd8DvXTAGylaeLY+mqMtI3cnxNnl7v/BHUKsB0TvfOBeh7BbdD5DngX6Suq5L0NFXFoIWHLO9Ncte//hMiUwmQemFuq6Yjiw9GzJcbY97fYiju+Aq/OHYdav84Ik/iEC6eLuv6moAUDiZ2oO+By4hI8SHKCgYSf3ttQSMWfBNRiixAa1im+xLuqPBVjYzNhjwPazHziquuyaXS/JXKesMrKrZq0V3DcHIS5EkeKtDeIZ3VtxD2uI0nzMECpdD5T0G94rrP3zSiCzVl932f1mPgIBZzN7v9Db/m5Y9TH6fV1pBl1kGddj9xEfYMnIhBm2A9OHD4xuKvKkY4cfmgzp2m8z/7WFk61vAYmOFmkoA6Vfh5dTaO+XS882ZvPPnaGoR0KV3ZpXg9zPEDrCwSEK8tVq5tOfxhcowhyDRWUQZpc6J5EOdqFRnCfhGRFsut3DuI1E9ZIxHA5HcUkWhqDmD2nzSsWC7e8sz9bwDdfB62Wqv/+koL5U6JJIdlpJaZu7dP01Ba4DldwrSeEoHaLRW7hcyhZAb4Ljk+fOq9jr7NQdBE8exb6K9YdI1TFsnmGgcD42RQPjivHQ3HdKpDdbN36GG8x208KBAxrG86SY+IvGDna00kYb8BGBlTC3Uk0UtPJRY0zfUEfUOa/ELtQbbrutkDUtQ7STc5ekawab3JI1JFTz+3Kb21ZMmE4eGWTEtQqii1SwA3cuI0B2eoGtcHJbtnW8qy5jgSxZgOgak38YeDIk0n53Y4kgPyKYN0k1QoaBqABhNM6dLwVi+ckVvXW15JwiVHLMA2+ABpayldTO8FAgaywc4BYbs6s0XPJ+igvl4yeHZ7pS7g7hP2JRF5xpHtB9raXOmdYBvElvlf4zWbOALaotkXKiIIS6dlUWMLvy8ht5yz2IxaIWOKnAJ54otcekRK+h5vgPYt+VZwBJxUDzuucnyBbW/sI4b02DV0UdvXnSyZGvARz4fpMtvnoIhyXH1YBAsVHGkt6htr/VB4Fpx3kogEJ6x/46o+GoGZ5EfQyVvD536omLZ93jnpMKCs+PmG10vUIbIpz5Ay91lzBwhAs/wdah2jUpQ8+EJewcksa3b+ecYBb1OkI6n+WjKZ/tifMTOU0nGDJfaXMlxKGLikgmaT/gNbDg0Dp/Zv2CXOF65w8AeROrnR8TIVg+mn/63RkaGcJr3vA5rohBvQfX0fhjFQLXNdopbcM89xOHx0yf7xW/sq1lX0q1vR1Odwa3YSwR4JDdNxKozqI5ZPH89P+Nm58zX+fv1RcrP7loGEJBO2usVw5Z1Z2BntVc8oX5kLpEEcMfQEuymju1smgSAZMZJ1bP/l+cp5dS7BTemxcQ/G4X4aTnDfHY0rRfqnqfReHvbIE59jknPQO7yJ8UE+wxaH63+FKAeq+nUiy2MeYP0+71xQ3AXJz8JA13jdkQfQhAsnnt4hn1NAZ2WYyhoqq/fbo1UIkzP3vtrG+779Qyc1KnSnK3aS7Ugpj4YM93c/OH39EWNiSnZtEPUV8YYy8GoFLc1OdBOsCtGnKkpjYJHwnhi4iC3x6UqFEULs7sfkTL9CNPvOI3y88QodBz9LvAjVwMBnulNN3iibBY8geD2dMGIVffOO/kpVH06/NzC8s/lAi3YUdXwOvOuGUNCl06fItvTxAXqOyufSGsiZdNR+IT7H9d0AQpVVtmYgmqb8Wrpo5PP2hbSjLUMpVQ6mHEXlnaA1aOeTDZMgujHcMBCfVsnV4VPLBQ3uHfacTPSbHy1aH56e1XYRFqnHj73uiuHkitLbsjnEvGyHcURhTdYwK4hyOd7Hq7jlWio57Fr71hfqrN0pJo7uHJP98qdCcrTIKANoledaYHgzFrBB/Gw5JnFZUYH8mztACrEGaagUDXFXOpb0wpTN5L0C01kVMY6o7sBhT/sLzeU5mO5O5l4EjWKNbukg4ipXUPto0iMhEkB9Cl5D0wOjz0n60IMl/xTwNn+dtgKGWJdtfb5tgrkQe1/8SYAFBTscqkf9IW2UiM9T/q3eVpGwxIKmygRht1fHd5lKwOSw5Qu1RQHJ928IXq1w5PhA3Tev6Ed96Q0Z/YzVjnsGkKa9/XwO9o3HjdFrhJF0g0CpbDHP+udVCgD+1Bi/mV/CiW97mCwQHZf+N/b/cstjjNCvwNLSCtWQsPBqLQ5tkNqCrZbvlrwIIG2NFrsnIf3hOz8j4cRdSpB7Wk84Ov8msC0cuG2K3PXNaoAPUQoKN4ZjRMv/ITSrANWCctZw24M8QmzCi0cVwZqG0Y95m3EGrJaJH9ieAQXTovkvJOKJhKbysqhlvlUn1gOVzbMJmmFP4XJitYk4P3zMXa6npwylbL6NvX48LI/ajz4oQmsn1tfBY/Ca8PjTY6MWv//Bl8cTdIEmGfmklTPfs9f16NNZBvDVWN57uQux0cQbYXp29UjpZVUspQ97EgGyg4XGUf+ChQZ5erwzxmd64rk5faDUKT07kpXgriDJRSJpP2YPFP5HhjgGJe72vUYgmoDcTPkqa0IAuPuejytEqbWV/K8fFC962yFKz6/rQtPr2tiwIe1qYplEQZvkDIv1wjPz3DR3F0+cqHu2M7dROiy1OXcbiW22ZAMcKS78k9ESzmzejlZTB1Sf45fjeUUzeABof1IcGP+IAIa6uwp3k0gngbTvpAEKQTVFnbpBD6LJETRjiptpc+bq/BOZN9B+rhI08aCHqqbyJlmtvsN3hmFE+TisIKixLZ8WKJuYm2pkxHFiJV8pMqKTL3+Rl4jZCr/Rwu8ISvgydRAH9q8bhqnAqBtjR0yMAiPltxvBQSTXjE5PHNq+cZBcTYnM1RB1cf+Guas0RiDRBZwgwik0rq0YyhLt6/22PVzQMt3oliqvjUYglBo7efyaLDp7bFBN05aNoeF/mrRe32lbrDEIT3k84/GxpckoegK2UC4VTtSwORUgXSvqdr4DaDz3pZLdvvCvbyeSilk7QuqkrmOTGV6r3X8Ds4E9zYYvCMCosAH8TFQIz5IkaUoHeFDL7rb7ESprVmDQqCKVKu6Ipz1yxd02z/JHYBMJPT4mX1PPO3uhKDLMza4z+UGhp8WyfzOH8R0LjNgzZO384xuTUVEEvqsbpZFWtMEzkEF+p4iYTYP8GhptSDmgeQPzf4OdDPj2ZDpiY8YppjtoGZn1ntv9a5GCd4wC4kKQUTvXGeN7h1/gm/FRaIVlzrWiZ9rn/di5PYEY17v/JNXeKOm0KKh8ttYWEbLPy76AH+TiYd3F0a/MrUz9xXzwWUK3megDaXzksF9YsnvolV71O3ez/HBtGnHfwtDFkR0/e2tN2mxnQf8DOcMWtnEYMQN1uLn8yK9fiMdGcbCVJfthbPwbL15ScRJYVvmRCyyiq57XXZuYbvDE++2gPM+KhxKaqccjV1YteMiYbqUdriAgUW3wnUhHgTImqRrg5oV4pRk0sWZxn1KI6v+nsRL4TLMyDMGDBdWGLyAbJfH33cQxlGCIYRAbl4Ij0nb6wWiZF9PV3z6yGVLoBZna9zDzpHllP1+OjW0NqT+cXKni/GwuDo/FoAGT7rElMJJrEjaeYBRZP0NFTAu+NyWCmHOyG7hXpzTg8A3GxBH3pQ0vm81a88oftn9SEEkTW2PLxgQxncwcdgOCVxNM6ucXo5HHIpepUBjwp458V3hvILGKg1WcN1ZcYRZfAso0qxQGcrZvPgXq5IBdpvX416aCkvKSGOUBKbpL/RA2+FUo0rDEfY5qr4dzNi4X2YCiCtBgz86XEDuNU717XiXi4ERkaKxhqTwp6FQ91WRi1OwJDloB72jWHLcS7j3ENCmO+5By6DbqeTJ+L9pkQaXEOKLvdSzdosw4GyjFkUuMfMv2Gk+r8Np2t687Miv9jRW9VaPR/hgRssk8PdMbpYwWcLy892d/16yMCOKfZegqNjZ3p0WjfmsvJja7ZThJctZfdIZOMcNNZuffZguCC+DwTHMPpN48ACe+xgQp4CLkrinMKhmA0+B4D4AftRkbqhVIhjNQuK6PYmYiN1fEyiZNNN9P4PfywrvJGlIMivhQKN6CdGtvr2c+roaahbne1nW4iYXvSkDtzuJZdPEMBlIKbCTgoesu4x6ECcpeFwWdkNXO8FgwmJcLQYpO67Dpc32b19rPi0v5BIysgEoecKqJdvK5kA764rbAIIzpv+FG/K8DDmVAdjWvPoCxQUdZZGcClFFLONVWUWzJd1tNK8DEnY/f9KOn9p3ezTvxlNa/swRzbEPOKpL5NluphhizGhw/mZfUvkf/mtlY/VqOB9jW75x1leRIpVhsbE0VDdWyHMd15ElgS2DkU+4f8Z5EXyF80q5uUwspBuFV7uJWiCODCZZi3C5zGuQ/OLPqPwefwDspebRaSceegLpFt81Um9Iu8ZgYcN5W5Q/UH9S6gj/wxjxqsjvxFBbly8Z3jcUK3NW2J3HAwhlF6PdjIji2WkkoAoelDpNMXMqEWlfktqGrit9nbVF32SWrSuufY7AGAjYD8RnCKl6UWe+ne1rS1+S2SAVIq3CATdRo8w5JUmR0Ij+C4DDcAzUTzN1vFMK+CsBBNYQ3tGRr4CY0PPFlTlmLuJ0snV2JCANUGgAaRAtjdXiYuVWwvdVmBWidG6VP/orN8jZVkrLts/KtCAnjKtApAY6E6vi72xcVn5yBNU3lH6AVNKSnkPMR2W00dng57/1vLHtuxduNMw5olVFzONjmgXIiITlvSsWiJQXWj7808wreMoLELUVgLzPiXbKas0lU33ZzB/yIdf3w8ctMZyTLzgE42DUi0Nh+Es54sAkCdzzV1Fijo+2ixDQ9/FXL3Cwbig+hkFeqV8N5phhL40q/bItHkbob9dHlPP9EQ2ncKm4HRk44jOHFqC3dxMu1/pWglSEKNLSOTP+zap5+qZXkzHOgOP3V1FN8x1xayy4SaxsEtszg9adPRagSVAvsExzEN0YcQZeD6xPYwNoON4nQAFKMDoXEkz0BMtg2+4VAitpSTMYYINhmNY5NPGOnwAIJuPQMMVvAZ2BiXQDiWjRJTsOv8GY7BnQBMR2WFvI9UpkBIKE3P6YEZHcKUQ38I7OW+bMxpYCb6dW4mPYvAKSddaPvuI6hIwNj9+xGiRkJvqgzgnclvfCZWxGe7FGQAwLj+u62eSfGKn94Ex9Fq1WBAArB75ZRfR1LVyr2HtZBWiLCvhggZVl97vmmIPZ6sZDP8uqa9TSeVw8zoLf1Sdgxt7+qhaczBaJYsbO3jyCkZtEWNmjbyNCLOAoxiiKKwv8cqH6AxICO1rlZMwfeB6uYBnJkmArLvNaRqUYk3OXxsSE5GR3Xee+Zs85flFK3kYD4ohjZIRgtm0BoSKUti1KGsK638ch0vQgR0P9LkNinuPL7VCKF1mxa0GhUaukYZS/UTjPEsLanP2wK5mmZIyBj0cshJaWY5Uc/WWIMv+GnkiG8kWsejoQf8OI+CvfyslhvPkJbGiNIzfDPy0n6Hf7cbz32q+/s+glfA2ik/ttOYsxDD4O9oJkdpz+sgIYMLr7cMyFZTZ+TKjecNamzX6h+sFRiOurtZC+JY2ptO8xlDmqjDmff/DJBwH5xIXrGSx6eFE4uf+P3/dLfGOZu6NBt0CZua21MQ5Ae9rEDnydebXj8WUhjo25yYBiKm9bP7eTL8A2OOI2N0WqsDdbawRaMPyTOSBGsf+0518sx7unIdGfr2Pes2VZViN0HMgq5OFpZBUA0ZCPZdRvqPXzDvHpGkFDKoJf4l7POaG33W4cOOTOqoNX0bAjY7rOE9TwcKMzZPn8G/qgEyOHBz3r/txhBZdittECi1lTjjgVa7VpzrlfZQRSdwZjj6ARFbkn0F4cXu05wkA7iqWsjRO7akZRxx1WPJlW1Q/KS7OU+CsH15oarZbU5DyDQXUCYOl/Iq+Ry/ARRO+KavYXXFZk9cFZXXHL7e6RxaPkJvQUuxbYnE80TM+6I16UoFOTHL+Oclby9bMKkx+V+su5wHFJboaUfxCuXlBmrKO32tpcS0ZHFgARwkA0OPxUcai2tONKFcR/J5FZt55826o4LVdya822ElSl9InPvsMT9/W9h2DnCAkK0stgQiy7xMkF1l8gohTYId76E05PCvt0HiZ75yXwEX94DapR7jEIX/nMg3id+DHtxqnxPUNNgao1oO7pkalvaw5GFpP6OheLXrMfe8myGeZqquMGuACtoP1g5bdfWFeizeS7s0M3M20fQwbv5LlqsQ0D3ly2g1QE7uBGFEbVrQiazeMi3MD6IBw2fh/+/Dkfr+Yd3GTE8uPcxEBPanBGuBr+j7QBgPJRXT72P6O3etyiy0FOGsmzEar+FP9FnuFaCWPCX3X3CU0kLZb9dqAjazNgPK7iiAew6TKQQg5oY1dsOtdPF4Ack/8LzC3G9HxYaWzD6fFFMuE3HnOoHCRPmvrKgKvBAqJN+vbz3DrPteB2fhUyyT8ubZEE11x9Exi9LACB2YhagXgvPgxn8PNLrwGkBPGgMgfFqsZ6jpLgizwTNoS14cRpjn87JJdB7j9YfzH3wt2hAzoVs9N3hft9FFJn01BihHP/3x1KMd+JfGKeM6G5nO6O3q7wwcd9LmxwRY3eNETkDhuIDo7q9ocp2F4Bdenjf7mnTjP2lykgn18amWHUXooEfAdxmBmzFeixi6TEGoXNmdOrqYuXzpSzOYKN4SX/iaqsR8epX2cUl1kUKC7xKUcz9LGq2+A/oqzPwpzbrUMalZajBlCEVsWxzsuNl+nqt8nSfeeh/aRAf7fz7V1QE5EgzIDal/uf2RwfXnIb5xSu32KJx69oXTvBhY1N7KtF8C+B6IP66yvz0IyYEl0Bqakh3Bw5+jqtuyP8vYyVjMY4AylfbLCZWA7kVf2vYu2ruI6ahslL8qzlMm0iagbA4T0sGZ6ApEkAoYIWvUJTT/tf2cOwAzmbGMhf/1PlbW87Rx0IcjxKRFXe3/NSEVw2OoiuI60xPXjJbBUwyGXVSn4+s101lgj6bLJfa1cTaPmYSyNpk53vDhSnhFQGmkbqC6+yED6Um282/aC2k7FcheYaoodfGsMuIIvOguDKPxki7BhNXNBVvpSciHCfQ8JoFIupWTjbX+0Ax7tjb5gd343CW6ri6zOoyWbWHK6/U7/qQu8i0KxsOD/iZzlYC0wdLJ5GTK7PMjyR3HegvENqCd7Cj+5D3J6arvJV7/CTnKkeES3/MH47QkGnmm1JRib/2DeKEBJzvPTC9pD3nHUOf1bhXmMNaja2ha4WjIlVf4u+7VwWnn85V+V/oluPD0++3osDdxjPv+HcQiNrZ7/LwyFW3tyFH5AiKFFUyXWAsQV2n7361gF7xtrEdESEM9S8/7rLh9S1oj8orz2fce44sOeHNk87s6ovIjosblJqFZmgtEzhtD92STORbFDSG1W4gJf4Z5xfJ38p34ERO8aFI+oovIhsn+4DMwGru3F7EainFt0xE/Ru8Uyk5vap80XhcrtS/CRA9SMtcSU2SzFe1OBfFS0y5NfLjWvLFuK0wU41S6iVlzdtYl0iokBPbvLAIp5skMLmcN6fw3NxqD4aVghkdw73W40mrc5KROk60+5VxLRO1uwfFKqaHA+6UXDgWe5xXEszOp4PKkJC8MkQvI6c2IhF3o8uSsSHshk1hXHLmyZC86k4W00m5JE4nYYzLhxjyXhJsFdaQ8Pik21tkArIPyCnPQJtAmdBgvzA0l2ve/YeIM/qKfWIr58qEsE6EzGDE7HFRdjgekRMhM7n6CTw76JXzvHusmdoAAAAcKQb0OHD2qcgOPuSd70Hz8KSTaYWfaWUUBlAT5UQAAAAWwGiLUbAJGQYhhoufeGjeuf0HyWV8ocKrNTXjC1pSMIJBrj0FYN8ZU3jLGcsWdWRBfK5YzN73JwHq1Ko901lfA6PLX+W0F9+/DLlazH64Gt+FRGFJGYTVrWy+5bfmzuvo+KPqxQBCc02vC/0HZZWJAMthNrTQoVxjOXVLdVMEnV6S4BfVGt4SBLy9o5CnP/gWQlQ6q9pQl8qYvV9PqkVW/J1ueAwg0W3WNs6jNcZcgkZm4bMmjsugFKVMl2pYVJs+JekzI0pfh7zkpRe/dKlj9QAAAAAAAAAKco4AAAAABEtmm8XK5X/p17xWCukQLruZODxbuxminrDvNQmRIqrt4PiVhnNdg8Dq/11NSla01LmeeF9XisbuWXg36lmnP3IcZVUTcsB4zVfKG8J5zTELdyi0Q2m91qOktrCDOiRxNoBKvae498EKEopcG69+ktOsfhuaULYdrvSCrnBMJksO7w3sRCg8eDnThk+8DmdDC/0s/d1VWZIYB52sAlnyk5ywWQF/y+3qjia6mXiLHoil7NwuHUrgqPKKbVYXj9CaQbRqU0T1iTF2h6l4q/SbwX/TC0D8WoF75lHsWyRC6uMUcRVIZa9MRghmXUwj9UQvdrawolgpz81hVapJONDhDMwPdsLfzDplMA5lTn2DanB5zUFCqYPGxncJA6uNvLa/YiJyJNCKXOBDHAncb8SdJMP6rVFNqeEwTTH1Vw5+Tq4bB3eGEeAnM2qJfM0Ki3MoPIuRScW7liuHQBGfRZzBi6ZwH3U3G/0NrY+H2zPdXAo58+m8Huoi6HhLG5zHM99AmXmWWvR7xRv7sUJLzeYkW5QmjTt9eTuNt0+f1AB8on8pOGu7R9zZ+SbWgV3MvoGpeXe8Do6IZhUXASMTMN+Z55b1QZ0SHzz5NdAoJXMh3lGkRCEyS1HKDCq3zgAk/4pptfQxbTKLp2x31kqyDt/D1e1Z+GTribxoF5s21OYfBjYzU8hwyINXa9n9+TetbIXYLUoQvN7DJ21UBAHZaEAhC6muFHbgfsegXBNeTCb0b4pibZ1DUaYB3UMYhXomDhZoK6Cc3AKvETOZp9IUERQYtC+jqzNegHczbZhWDf+2jfGgTX8uTthudKJOltjQaLi3qFon07QyK65Fj9Gba0YhOw4nEyARG4aEALpHihW9oSoDlcQRrTTNzNZvJCFXURhKFGrRHbo7dfimm19DFtMounbIfmz2UEf4yZL7GuJP+dVnpth92Caob9OJQonP0oJMEvJ1EWdl0TUVbcoZlvIqNmLoI0tmPrIRGsfJzklxinyfP4p04bOpUOHA8yuTimyxNFXJz+kjnCQlGbJ+LtNs+USbznZ3Jv1ouIw73/uQTqI9PmZ0Ibe69qKLrQIHTrNghTEJfcnfMtA/YvzkAVYS/cawqrAwv0WgFLNBhjB0D7NZXf1Jvy7e5wDut8VCzPDnU50bMUo9jkKH9XpZ6Tfc2QsCHCOMpb6l+ZczNq35rUhgaE/PGo2o4Ibxy5xAzf3ktWR06i5AXCF4rTmSpP5EoxRwVES91Vq+c6Svnmlw0fV4UoAKHov+jTSCgznW2tVapL2caHD+h/LaekYRpZzpjVearV4ffMEalOm4I5Gx44J9Jh2r5m8vtECo0L2SE1cjDnPEV+vaO6AS6vZJQH5ajrGI/2sOlq/I0ILmnPHDN/8bBc61Z12rEmED5IqC2EuWIAMTdhcJqesEdDZNBzMq5R9W/oGCynnSqiQoJXxCaKCgBd9m4uXU79T6X3TDlXhjKRh+rcfwrj5OVNAdUh6+YORzb64wMW1jpq72CbpBQU8buYeKNXZKubrkaup+k2f5LfyXMsKWhGkTmFuE6x2HTOnlEnpMWBVsc+MniupUIn8XzZCTK0Rc9zLjYcR17AoIMHjm1X8oF3vQZqMTnqKmuhKp60Z39qEMCFJAXvwp7eAwOwoJH5ogFsO9r0EC802cMNK+WuXa0WIQc9NH1Vx58sZAFEgfo70xKtZyNZU+5dxuScjNXhfHmJp7rlzWEwkrWJkLDN5VSviDwmr+7ZYxK6/yNgfXhtWCuInxVCxUCZGhRrRMQgb7B8D7jiZN+ejU3iKSpluBloZpPh4/DTk09qkXTLsDBxe07lvhq6DZ+SYmcPDeZ/arBs4vIoKBNleeF9IJEbbLDdUIFQTBngcrqQy1zssieaj9ATkM1tiaxcJXFh9legzbKNyZ1YfkvXFLsUXDfTUZB4EQXrlukJvdHVVlF64Q1+nLZLzHQ2fzk3oHqMtBpM5MTGkiJCbTc4bg7GuniR4sXHAOk6+J06d45hsRzN+Xjr1FVb+vLdoSW2EcQfnvukceoLHDBPihvdMz00Ipc3MB0oTWdEvvB1/5jYfqeI9WXpdZ+OeVTdjS1G4hnvdaX9cLl4/wslLx3EpCVONShBSt8zduNIfmzOAYFCRalqsU+JtkfaTGq9dyMM4HUJsmIW0elZR9Pja8ewNX27T4p+b8zKQB96Fx7YP0eUC7PlnxmB2crJbzEOB1V+bpeD4mmHj/a6YoKqvQk4TfgBWoFSLvxkKMry/Pto4vJWPeQXCm87IeGkqHSPcewoZk5AreNk0OqDXucNZDkuRwFKuqKYNUW3d/DILmqD72f0Y1FnjhQtVine2iVb8/jKKjBR74OSJ1jzhvSWTV5tnJL7qSdD4rH10bQJR9HRNEkW96stMtgeplU2cFX5hGQXMHqMqm1I7rJL/nVAUqLA+V5neExjNiXB1QqFNv1XhZsLGaAAzBvYN3+XRZZ48HBBe/UHeGYjg/0a4Vzv3xYVPu9/ZOvR38kkl9ErxGunh68sAnRvctH1ysHzw8aAf62W3O4SreklrZV2zc99ccJSjU6FaX0AznGkeCIE5h2I4WAu8FYJfpYRnX9DKSi9tzHAtS7Tp59/j3Ip9fF564TQOsSjiW2VAyP/yPsuI1c6mGSoYaweOlvmrHqf4Taoy1P4ds+VJBuW5euQP0ifJMqgINBqaktnBL5ECyGsNMnbvepAm4gzx32XEokU1Cj03pFh+b4uW5COXzd4U1Ziq99Ht31UxDyxLCxCu48RAwGMbRIh76DzAZAgrbCvinXw7scvRQwz/5lGYFWaDiyIVBVqp6iNTJJIUXGpzoH9mQb2lVe8hKbCm+7D8aBEtmuPv8yysSIw2Owi24JtaGY1HxKl8HvXh9C+ZxVPwud+IbvaTDD1Lmk6CqYLPbeWbuk6k39fOAqAzwMK+0CpAH1aEJCp1tiDehUEXcxff1mY4f1Y7+yXAb85PfD8RoGT8uhv5tlF/krAGltMCXYLLYF5o2jGC9QrI26WlAy2yYyEaE7jcPAqYe2zOcH1nO+94Al/va2uf1BvCtViWUxsFrl2CM/QZ8lVk9ezWSUOmjWqc0XfBN7MijtqVZ06gc9hqXsfELUXxJyEimS69xtRqhUDxc0PqB9fnixEqEiLyj0vS8VA1QuMbp1P7WcpSKl12xYiQGQx0hCatvkdGa9XerxRlL2Z/O4BXP5hmmzVGdOjE67YFkkxb4t8P4wljpVu108qqavzow++gxBy1hPyG6VHV2RScnKVmdLUcCyf6LjSC2DF3u32MlUqGGylRg1FWJveQXM9KLjzB5+ua3gh/aju5m4OSgWAPvIbQo57JADZq7UmKOHLANeDgotSOh3JgwghRaqedof1ADmmoBJq2jlHFqTciwTcBCWuRuSojMkhE6szFOFRn6TIRNHLgECQlsdXjp3v7zPXUjjzpQQUa6KCSvr7hD4mwm4HDsf0pFu+oAELEl9X5tECEHd0ZC3inuLtQ19y+0KBYUztyonKVixYebdUZmulMy2NC30AZnjGajBpmP9D5gfTtIHVQ0dHyFt9KvfSfDNzKlXJeihroe6dcMMeoIv4W8aD5CXVAZSEMcf2sB+DMb6Lr/T4Qujmozc6P3xKsb6WYvlK+eFCF9K6nmzJe/ZYOlQD2Zz9+MU1UkAHw4I4rrwQACfguCR4TJvAwtNouXZJW2dvN5vrZAlkah3L+TYvRbHAX3UGoT69Rql0VV5iqiGwKSvGKrLHdM60NiCCjV2Vs9h6BFpqO+D+YXw7kzub2490net7XWCvw7WyFspCvCjbxqmjibDPgMQXdcaj2Z1rRrWORFry9s2kvTZO1KbRe9G12tm1Mp4124WJHqtafL4AU1QYdnZQrBhKmlSb6Sa6u5vLfUzeDNWKoQw8yMmbAH9bI2AuGjH6Uuj64AABtUNadYDz73r89gy1Sk1/Kt99G18SnIwHeSM/Xnuo+Ha1zLZBhlGEXQXO1odrvNTZ9W3WX0PlxrlUEZGk7wnnku/wtsVuePir6u7oj5Pzrq5gpu/f9CS2UZlxbuRfbIbJAdHwkY+G5juFL07/GyVXlrpvl3h7ONIvOOar2YnzYSEBzTa5yCW9kiaNUNHh3mGgi/0lPx7sHacHH55OM1v19L+6cwZtC9eZHqBEl0+iA7UMSnn4WWK/sW4u2bSeCOYsQ6RCcnDdTpZ2Jy1YMtJZz7/uS5bVDZAgeeMdI9FkocIxIqT/H2uqR7y2CCOU8uDXwXSVEJxn0rOVpzHhnc7+3NnLge5J47vXTjzK2sEWSSPVDlMDOR0bF4VLVcHvrHpd0UhCSj1TBLr4i4NG5hXaX7PxF1kvD4AOwhQAAAAAA+UHMED7U34ZPjEgY9sIGqFNaHRFkDCPq3g/AgoeCXeV6j9RE5fBsKCuYioo9dcgjpiInqbJsTPotlsU4D3uB0xgexxRvRxHM7xOo8P7LLUvHQvr0iaU71/FNNr6GLaZRdO2PI6/Cs1rmIfIcZIEGvGQOpYUdFs5mMLyv94hRCDNtpvxOjVuoPQuAYRChqP+DzZo4X8BzsQmDh3DSfRa+DjgaftHAtjYasTs2Op7t4ACWayeCAKrDM41FWWZOWxsYJTDd2l2938Nmn5AR6XBU/WIl6QH3xGhjK+bgpFeyoUB71L20iv8h9Ey+tBvLVexGEMx9kht/5D6X9PkaOt+BfgruAM+MYeDLaadxnIMJZtZOXrmmmQOZqGxFlcnFNliaKuTn9N/PgCoVNtWkNF3WQPz8WweLIrPa97kRbNSDsuFpUb1OWyOeEEtcXYyNQ8BSLjk8Pv3Gu1aeJixAQhHBeZoPmovYsh81vJRWLqFJC2hZyqeYW0kC38miywJMRWp1/WW8mIk+4nWQ+3C/4PBMuMUBXoTUXNYJK1uIdoIHRZo/+XXHE7O5t6nknVGwYCzakzzPRM8auXVaGU/uzQVLwdksVYbBZSZDHWphVknddbtytJUpBnvnUP8NtjigkOMzZT7m4tDuo/BkaabVtLdy0JwfxyPInpmpDB7mR/RrFwSIMoWNlaYcg37tX7muygIygi2f6vB2efLPo3gmTSH3cX/GuhTUW8wjo3qCapu6Vip/wKNsjw/9ABra56ZeU6bw69KCVtmbwolw6tfyDa+XfRimIvGCSzW/u5qMEEL1TDMxh5mrFMZxt3JYfzamVudDcHOZi5TGfnqKbTfSbuO+P/XRDIO1TpKfe0NVGKvRt6BBAjL32QE0uCY7XbfmeKaZf0ZbgYtgkA61SytzNjL8p43kNDvzXtWfy2poGAQU9WsIFL/ePrR6CwfjOKKlmkXZ717Db+KPzjropyVzZ9Vm9uJpDLG9Cm1Ax/1XtSx0TuHRZNUv2VAV7teCHoJwwC9EG4v4Z3XEpTm9e87h7UVoLvWuU/aUaniEjCOE8TI1KUjBhFyt1ttUFC/KpiOJJWA9VR9MujiXkMmZ1VDK81KUHHl7dFUiKCnzQBaR5LkBkpwwen/WwIKyUUuQUDEHdPrqGGqqzkFdcOpUquWg8ipNWv4SnBpnSOcJ+JeAcoJFP4O/qRFaahN6627EuTFNB0u1IE12MD0C3qK02F5LG1VxpuqtS55tZURFFbqTXLK4a+RFLx3SSTW/bRZJ+Qvk87Ful4MaJcAhGYMysJ5j3s9XD7sbAwIyB4W8xxdaFALnxtXsc5KwzkzQziKaxUrMlPZuh+smbzZ9gS6ydNCX2ywn773U8MW0s2K6rYGd/uGPgucajmjyKegkJYUbLV7Iex8KaEC6f3xS3t7am+M6zgCvdRiqngF+6JREDG89W6vCbon/GIedMQp9HafX0cII6SOCI85IZ2Q6BAygNzhO+2LJ3u5d9xQIH2r6Ohg0MPr5tPrBABuDnKqDJzMjR2dLhqp5Ikqz++W2oCtgTIF03fYPgCnqNL4weMoEB3tV52qA/TRWbwxplECCeGlujcKtm62xny6Tfvi7rpdrQPZAcad4tnk4UBY7ex8XRctoEfj+TgTMb3U+v5hmmzVM8HKZq7UjC+NpHkY7GwG+jvV7X9pZjtb9UON6WF2GQSZGpTG+o5GbvArJzHtWmsvez+tkjUDQU+WKkcsoNDvOktlh6atcA97KlB0t7U//Lb7t4MzJxiZADPeizbq22KeM+fzSkFLcpzwaKnZAlghfrrQTpdBzC0yXD6Spp9WfsqSMRqtSnYevuREQFlw/DW/LeIih0nhq3Q9GvppVn9gGQ+JQ5ZJvAAXzh2XiW8+YWGHLKU0pXW93brgsZSs1jhXlMsoK6EE9F0+oH2EglP6HcWVgkZExIj2NMbtlaXAMcXetnpu2fggFHxTTDWIAX0RaittLi3s9cGMNWjlQbB1Mywqjh8kiHHjiOw6+0A7x/0DkeJc0IuEsfxa2n2ehG95eivsoQRzjvHCN0U07JWVo+AfiBBZRZtpB0/mO9vBWbT+B5MNKdu4kGOAqRYmLhrVpK48qf6pZ/Dn8GDgljjIslWlJl1w0wSRYUIssdfJCSrTQ2MPcUd8y4boPDK/AkerJpMwx1lTyLOyRV430Gl4yoU/ZNbBDd4eEhKTprJDQAqm/0YWvNfkmMRRWOG9MjqgZD74MaGo/ZH5q3MaWG7XbPpo5cvOD9D3WrorySOcENZ0WUjE4tIhr18tO0Gko6bCeI4gmcgcDZN5TeRDGjcFTLo2Wo2+x+ITdWilMnidYvUtssiJuL3Wxlvh5tQGpZcDdxa6uZ+q9sqEO/gd52uOt4i7aaB0gc4HeYre9ZIPfymQ/Rh1WDWAlu0EZAE9+QRyg/GNmRhjGKOS/Knao8yUS5RA96s4PzA5Q5guGB5d4gIH2xV92s1TYo1ZUrOluzp1c9J82CzCHwB2BEDImuCQZIFx3xsCd6VTzzH8SN5ab3V4KEn8pknD1IAMgOzH94k1OWO1V3aW/kvjrmDmiW25pZkMl4W6GQQctUlWHRchAc7A/bDCnwce/HowrEd3qKCUdIsWu33ljxgBgWuwNeG2OYtfNRWv9gVx4cVSjL1FC1MkUiUZ2brc9gD4m1wljMn5bLUk+YR+FDWWL9EOghkQ2OgofyM/q3RVwME93czhXgvGJAKWe7apdB+8+V3i5Yprs3fv3kmAgorHaaZRvhL2gsHAhDs3PEa3put9FJ8D0C1Xm2mbLcZY8lk6mhZhKtQmRkOc5cQnj3cSHCqER40qLzlOP7bYgJ9ophBUj7E6xIDmbS/VHX6kmS0FLhd3HFQemjsO/rpXoKZKtMr4pS3Kg7gQzFmNyiQlbVNErutsqXHIf8c/Mxrb7rSnNh4zIuNTqzbKgTWvRcJdYjniFaS2EbjeKfv677Q4J5QEAL1y6dMcRi/RlccTcyJGMZJvzPp+qd0OxtUgCPk0ZPUqol0CRo9Eq5P47NHsxiNC/4cODnaE4UTdL/yrBu3U+aLtzdi7ie6XT1uuzwOU6wUHKSVvMniZpbxf5H4slG38B2WMg/ilLGSxoY1VUrFoj55SPpaCvcF8VH/d4hFgoHx4QZlf+9tMHlKhDZH4eXUM3ai1P1o00BYXOihjSy1rrTqyjqxUvqTcIFBsblHTSOPMNTGIZwoBgdw5b+CVHxKEWltRp6lRiDIXvhjEyfbDV/clX2xDZQ65ftpg8pUIbI/Dy6hm7UWp+tGmgLC50RodzfQxB/98PKtSmPkAdDjXhD2vqJ4ylW3O+9/HI6g/YKwtaXIiPPAJCBhkX+PMsjG1z5mTO3YiwHB4rUVk78FT00AxKhVG30lGyVpfg2RZBrgl8X2um9lV0ww4zlE4cNvBMEZy9FTTxKubBMv6nf6hLzs+FNw8uKULP8DMIQhaOyXkBSI8vVpm0FhZcnUO4AZXK7LOrQfzwSni25GvKOm1/8xdEImR8wOgzLg33p5TZlt9ibqcgk6XNlPKkLRwtocmatBK/OwwIvg6Kbp/WDvcD9bBUFQwJPxzc+ubXmXbJib+FbSBOvp3+Ur0cH5ELu+hpvoE+Yi3BWjKgqfMnesMJJNkQLH3iAfDzz8/7iqMfRXtZpNk2h5XDYAmjsYGYO+3X5H7gLtpHpKWISr3EW4FY8BNLrtVz3cE6VLxObO4bILZ4rOnQIE3kn6AuVVpCo2a/aWawSK+U3DoMCF+XneycVrO9DQJlPoa7zx+rGcA89dq9595RbuD82mTkX00VBvvW56Ktp5L37+y2hYyizoPStubG54g0u+o2wpDm1VqvSZX2wnWKIrwOEo0kKuamHwb7o26hvm08UogqhTp6A07fpUsp4fONqz6clHKDRhZYoWYvAEAljwS0ZQWEVJvZvY3kpHZyQVrk5Ws9feQvyDYwabe7FmlMeFkIaemKQhdulkUMFI1833L+Ti2yABvb0Rd+/E2vREc8+iAYfKapeswbQjW7TIDnq2OY2yNhYEQyzFT1TXxRoNqQ+d2u7ddXPvKVOu7Gkj+p6gHDjO43BZv+A9GEJ9/NbCJonabZ0FbjAcS3+Ls1pMRVwEw2TCjONoeKn8uBlJBz7Wi8uUNdDLxAcKfFhxdgJEYG2mL/rxwcUMOkN1KAq1KQVyMzSqmdX1OTjQ96b5CatpLkhx5Qf/mGabNU/8+X3Ie7fr37oZVRoyexny6X2lhcm0RFxdGH3d9oJHnrJjs+V+ZgtJip8IsFA3FnjAyruAzMm9OvfEYPfUU5xzatIFo4v5faSnYahIdya909HhmpHeqG90+wVfIEolCClaYeIZ2qx/7ndym7zHZVTGt2trLGdTK4qXJO9gkNvhnA/sPsiyEW0q3OlrDVUTiJfoRxdmE9StU0CqSdqt1YVkx8L1goM/rBz0coXSUKgA/BHKCVw2tDM0gslNObMZH+qqgkKAwgPh1SXIkFLgO+trtPCY2jeojXTDLMIGBInn5JKh7DJ4F2EA3Ck/rwWyucB5hyHPkzFU12AwLRZbqia/p4ZV7stEyrdSVe2OE3Pn+pbCKfp6F/UW2ke7hCFSp2IB7ViYQMehRSO43R+v8gB9eiwKD7npbLWcSm0fBHMtsWoPhwR6k2GIdXLjbybTnGsfpZbStHSJYGmOUAQLAYYvgKyjORaghe4qo6p8e2OL0Tjm9tAhIADV5XvN9sJ6Hq2Qa1cqEpU9M7bHSQWEI956p4U3WdRsvaSS5JsYMURYCt+mAMi439G9WFBg4vfeI/Cl0rxtP2XlfYRhJNv0N6RoCeEJtEZw6nMNv8Ld1lF7PDVlc0sV3Ofm1U5FyJ9DPbjyseWW0NifJ2V8TtCdVHoxg/w/UiGnK0dTE/Cjq2qpcjAmYPB+R6cA8fcH8Feu6XOc6OX2AlO2L293vJl3c3289d9rmK5xTZiIh1FiQHNIz+XqJFawKgiDHRFisAOWWaddt90CU+GLAGB1qI7wfnCq6QNWP6yvO6YsIzkl+lecvkBQcI1K86HgyVLzMSl+PaDcgRCpdTJRpFiwFIZW1QLaDSud/4U3O4cGTnroW8KgE8AxXbQazUoPiSsnQVY1cFYFsVEyqcB3hv8E2KA9zsqR2LT2oC1HuDbFqZ/U26W1PhRH8i/23EyLFYBJUN/bnGfVg8ArUsT5lBotxOCiV3q80ZItX69617bRPntYmKs7mjNTgXKgArmg5jPbYUH98unfavR6B90QQWlFraSr5t4bdt7yQGRc5k6prCDDk9SQTZ3y95pFVlyYjvMZLRtMake3Dnp84pInEwswgIwGZe85zhXgQ+v4v+t0h53WSssuj/6pTE8dwuObU8WaNAVEk6ITP6eh8WBpSoukqdbXbpVheIGeA1Comlq/xanWc7MMbpstBGkiRlZ/3McdqkySYWnAEpmLC0TP+qVpQotGObL/rbiAUz76m73uQqxKGG3/pwhIHYjmeI6N3V7AhKQcsjtv8pjs0NufUJdHoEk9Q6jxluU55KQCUnTTayYmUynwRrPOsonyn+f7N3gWcMDZ2Omd7L4/HX1XTpHD2sZBAGcvFy6R/9vRKwf0ye3aJ/3VvUD8/uZA8Bpi9rGtYdGzvPMkBT4W9+UkR3PSytZK47cnlbhphq8emSLelQRZDYXoxEwxsDne04vUlyFhmFEq1VCuJYr502NEl6DKuJ1Zy0xT8HMQowRju4w+wAtCOphUq16bbUR111K8OVlYivjlG+ZyVyD1hpsudd8H9oitB0hK+ffy5n9wMmcNqPXviFH2OxJ9f4yG2w+2iP5+3EGrzAWWYbAIPnyTuYUnhquPL6lD6fOdw8y0nONoeygi71rCywrrJFiEs39S1Q/YKxZPI+uYj1UMnJowU9OsBAUghKJxKIkjL5TfYfHu8Zyu0JcWOWxXGORFEKmw/d+KdvIABDaiPFQjjBUZFEX3qClPJX7JOdY3Y4PFznoEHX0jeWReKmE6frOJDF9hQlbPlM2VVQruudQ/VI6GUPquOXgZ7vAfZR4GJJnw7VvebyMS25Q6xZ6gl1ejB4L6R5qvLtDySgZ2Duib2gWq+ixQ0QoBXpFWEnDpzs5kU7wYk/eG/N2dKszLdJlTDfqM0i1i52xH/D6ccHQrBoyeemrRiN2KxOGqVyNMtwwoi3kwgoqW9Dau+Zma8SCX7MwJzcOLJwuqidqwPRBVtS5/P1hC3VvJUd+cDzqpmLnqGEpRRLX+F5rtgn5J3MKTw7anHIhjPYLILu2Igibz68l21/4Ix4MeEwRDU+ap2Wm7DbNv2BExyJvm+03boRm0ZokeU3K3DeypZq4wXpZG1+avBzPsqN5QVqX0KGbicdahTOOr6y/Ns1Tsk7NwyMFwF4U6wIzByWMjcGPCtwDK4ol88OuMLuTvABxb0xrZHX03O/5K5PnfgZHvuy0TBl6Tn35ZaGN014sdiPVpJyAX1Y5FX18G2gJLfjdiu+5lC3khaaepY4seSijnu61Dr/n4mr2IbIx1XeKWzYVv6bxwI/5kMOCb//AycUjpsCaGwUGdVg2L9ixqksk5b1phB+fdxM0yTLKgZxUgMrrYPUl8XWRmw4s63yjO7uC+sbaSmUbx6eJ1X5pTF+TEztxKqnd/T+kqfLMoAYHCgAAAAAAAAjEynfiX5cZ7A7LTfh+n2lOZ3meI3JA53yeUf8/cPlF7ynCaMsbFk70aIRa82w9wCI3FlEyygAU01jJuzHc+yqUon82viPTV/7rQkLc5KrciOABPiNVUs0+GSUTLcuBryAijvMC90K7HNLCcVECM8p2BkK+bzPullOCjKIzfxZs1znFcHO9c8MOV/oTQUplL7dDAWrWrWm/sKrhCs+DEjgzcWHxf3tnadTzGbWc6S4ZuFfPBD5HY8g6z4sKF7L1YYvvkXZI51GyFJgnIApXO0h/ZmO+O6ewLUCHg/vNRx7GlMdPjui/8UHeYgaJwgYEnW094M6UV1JmxeeYqGcn/2NVz6C3GUNjHV6HUYsaMcsbmUdfLhGP57YPNy3MOr71iCx8aVlNx5Ob17kLbF3vkB19sEF4ZuVpcWFddiJ4QoqAVf9JpfdGsvw0qXPmP9ZrbCo+1sXWK5wYbmISL1TpMDQEmo9wHPHkYCBWtlrUZT8jezYJBL6FunkUDl9proQz8Z4ab12cKIGSudzAgaBvS03aDmXcRqXI7DBr9/heQcX/BdQ2Yu/RMP7FhSN8Ae8uaaii8fB6o0JerBiVES17Tdwoqm5cme3eNdd0Otc7ClIO1kam6HxGuJ9SCymlsCrrtDBXWePxr1CtZS5KLA/AF/sPDND6lajVHXZBO7W2tQsJP3PDXcZnduVdqF3rBXb1IazZ7pwqyaNiC6hTrQ+5+DkjW5zOHLCJGd5j8u7ge1uZGK6+my02ELKoWkGIUZcSuST8CX+ccJd6PhsmnvjRApVSPhyM6Kf7vKj7n//NdVCUspUx+DwLS1VaV5aI8AuuohV+aGWRlGcGloVkpIbNZ63yDjS1n1JdJiqpmbgAiNPD3WiOmfzYv/wWFjrdUbNK09Y91LL9stzLCz5b5t7vIoUKZ0FLufAMbuiTrrNc4GoolanjYdAsqdUBd2zZDKAtvQ8rUIh9wrURdigT/5KJkzawh6aUDWBNQ/VgusU1z0xn/tic9Y/YtAhKIYAd0wLmfAgVNgOdv+5qCCb8xPnuARxVn1pJRUYAzHco45RVReyWBehHv63QT/1JxzxFKfwR6qygOjaH1bxvDEDtDxH/WGH6H/0y6OGE75088zpN9o61mT+T9PgIK2Hj/3b9IB//dkmTohgp6Z0MZdWzLV2P76OvTCeWBSNwyUZyWSjexTHWD6hIj1e7Y2nkkKwr5bpQkBY60tLCo4dcaFnMelVnVgBQi+/oFVEM3JCr8XbaDfbQCbHVcfED6eVcb1P74Tq/YrbhGCdW80vi1XV9j8dajYYLVAsRT047k8WU3ReDhtVw4EW5kJibKkB9NmNc9E7tMToGje6MvzvANy6tFI38y8q4TRC4v9CCKwvD/7McIP6mn6xu1DlMri+gaAlVGAVFxcU5c8bLqQRgTW4wxqQeMuFotgsjz0yvEu2YnG24zKLqju597ZH4ffsN7zOxjvQFhUaGg+36XrhNOaYN+vbeVvbltMTB8cHe8D7i6S8Xobfyfj63Wk9/Zvcq+nbMPMdu19Sdq02XPFSGRSd6znwNg00eDEBw4meQaWAHvqDLHbOoD3typV3ohb/AlkH5Nu1pDs1gFMU/OnBASus5Me3mc3TKMo/+ZCxPxQn3fpKG5kCRFKbqfx5r9KUM/6Ye7uoPhg1JdAJlVpwN4BF90iUlpQUmagaEt7s8ZxoqgWHT3ObEqjT+NGazPnwU/DjRQiTvqWB9LsLj9p2oDyKn87tjulKzDoDed5pzNC0AD45wVSuY+6j1H/OXi7+8fr3XH3ByDxxLDcl1Jt6QwARot2LoDfdIx1e8ks0WyARJI53MnNDnygy4inME6Hs2RsOer5tnMvXlEelKrH3gKhftFmvMr4CSxtefChInE6x16kHYgdXpShJfQy8YRpRzWQe4KuPWHIT6hebnM8TPvxAckzj8mryz3bCaUYx0/VaJ9dz130Cl2OrId4uuORrIisBWP7CUXlyGrgWo1ZcTljF3a6opHqKsb1dB7Jn+wGKmKi9kx8CNslH1l24vqo1n3y9vplCRMtc1FdfF/hXrOWui0tDhhnBFUEi1sea7LH0w0RJ4IPHjFgL7xBLa1CoxS7tmczzSGotuXDIMdCEUe/X3NoO8322RHS+Gb0AdUdXQczGDxe3R1KWEfm3ZqkM7V1xzX5EKBx9TW3mLwOaLvibdDY+FnlwS9tRd3dTdn/4K7Evg5sOqJrvfqQhuyybgej3aJlIeVqT6DpkxDvatRmvdlxrP+Dt13jsVL9ZezNd0I4yR5kVg4aMQGtetNewzPyTGEfhWZeokxN83dDH0zoKpNITXb5gOzrocwRh1BRR3ktAZ4ZFQWtRK37paesyJnraoukSATVw1Ke0+oqiNaCftJahCyPvrCNxnwDxLcqCFBZ+i9sp4DTiwZfJFpprabdAWIdTy/gflX7paS4x1udWbk0d4l5Tf/uGjdY2O/weKodE2KEhm88BxPy2Fnk+ALj9vvT7xJokp0X48AkY/4lxsshXK/LhCFjt5BqW9zlL83bOLoZc0JdGwZO7y14PFhTAw9JguE/sINxryUSxva+oaLYHjeGxh14gwbx+AAp8P4YnfRllLcbINn6n7DbdHiKlYb8uIo5+uzVyZy1tMU0rPiMQWJUlrYC5Onhy1YA9hvgW4IWA0gAdYVgZSj20eWpJ0lzA3nDe02k4k9BNdph3Mgloqa4yfKXQNlbQol2KxIAzBrkcUO5qkEv7OgTZTtdzjG1sRYHpGqGsgegbRRmLeQn7DVc09xggwAvIcuK6RDpB6GER3mZy+4+xC+p0UcDqn+J6exizLxiwD6alvwaowP9biSHuVI9QYYmjQ7wJDx0V69Sj+5t35uQ3tNrqKusBB2JPuFJvIfrAePaSvIN6+MO8KVtxEuxo4Zs0waMLl9dfO/VDKyjO22keZ/7h/nvaiigMNUxplUc6W/oEBHjvBT/t3dZPyDwsIShE/z+czw9w26qfUqEKrXokdIJt/yfSzT/5FPRkm7+VgQGSyT7KjK3Js5jC8yg/ZeynNF4kKO5X6FHxtqDk+/+SxUQAadjatPjDt6C0fKGMp1V/EoBHFRKgohaG1uy/Bod4VTz08jxABimrDU0tPnjgdG/M+oyKdvA66tAGAjKuJZG8F0hJCicjplQ+omq1Rto84TNTmqGVgfdAw2uzCw0bRZqlhmsCv37kjy8ZotfThA+K/HHGsr90xzFv2VNXDKD8Vj+GsjzZyQ0g8vZER1HOOE3GDW6yLd9Lb8eMsPqmK1fvuJaYUhmxRJDAHxjJ3OuLq0puM68LsMKMHR0blzWnT/Jb+qzGThUSPFJxjt4NKpplq8IqgfM9rGu2ezoYMjAZSVu1FXPMww3xrui0fAPx9y3XULvTjJ211njTc+F5Qa8y3BXAo0AJRq9mysGjiYdCZeBkQxQyBDvmZeozpN8uptx4vWIZitRbWN6SQyFs0lQelSDpQE83gNmzfmQ4rSTiCMPv9sxQYGBKKskbWDmV4MSPBxlAncF//xLFo3ZFDsDQgyqCAeHmHpIyfyq6a2PJig8cHnKRf2lZlEih53IMrDAXSK8HpC426S8CP3gBJenXkmFIAzZ4oitez4ltFpaUU9g9k735dl1OW60Hjcb6JgJigvNMMnSu2Ea5sDni3gjxg1Ams3CF69Vp1BCKibdzebnVMGSOAU5waRi8CI+y7KNpXhUm16unhz9I5Nt59pGXuUqwfM8A5TiKRGpRDboACiT4wzYNsOWY79EjhBIyDSMW8tcuNIm7lltyBHc9SJLoQttjsxiBbw6TgNwubri1ty0und8wZhkpGn0Ihp3vlmDWB02ZKN2dIvvP8fU0GOcvalCSFuHOFxWflR2SgU+b9TPe9UgXEJ+7xDfSPbkm7PjJy06/6649Zp3o5a6BPC5T3UnIZblid0ZxW8L+bPMAvyEAquoqqLZk+QY9nb9EadhaNW6CxnRjzc1YXM23WYolSupdWW1tTMAk2+c60gdn9ovC1EWVztBZBAhRqcFEkmYgJr5fW+FFBlgi+2Ds0EjSzuQPbhtkAM0YnFtOgpKXIJScNk0LjdxmQfdbWWfePuXdatHgoqW3p25ugH+4HTFWz/uWsTntxa2jrthOc9e2AZ8anU9jd2QeH/E7DgMYEEAZAEV7cB5NkIeKGeSX25eNgP+Ng375CZZ8J1TKEJvnnn4C/0kwdPk5+RrcOj3AJXeC5q5Loukr2Jz6+0iHzFgpRV3sOiujKvWNFLWlRcy7Ltp8Pl2Mq7HzANFwtSSyrEpKzH/5oQ0INzL2FMwyYW548PBr34Oipf8Hj/m1PCSrU49M1NNKXEOPmhnyGW/V2AxmWQIea42VQ5XFtQKnv/VrWeFVUELueRLTXOhAKKQDnNDe0VxVICYBL6TVhJNNfembis1LYZ9mP+FD3RSV3+kpNy0bPasQgie3OgFjJnj4az7d1oWQEmM72YZlE7ky3aXiN4keHoASYOowtJHydlnjBcmJuSfuczaGX2SJNVIe3qyQnuQfevL1WS1qsFKRsGewA2MxZV4/X8wBIllRJYyD2PE5Zm875BHRqhJVG80U50nr6z/QBHeSilMDTU0b1uyHQrSWtfgheor8373mjw0R17YElHV/Z1Qlcv97Qg2wgc/NBNRXQrpt/EhcBTOs+62jTMxSu1Fs3JT5nCujky91E/8nbYbwpQEZuAp89hC7b2eDca7GWzbP3cJujtm564GmZlCs1qqlBk8AVCtykm31YM9YfmBix9VolqrRGHMaJcl+1KFDZA4B1HT0FJ2+0/GeJFE/nGb6eY9ZjyOAlNxwv1u3jSOjPnczdGrlg4PDMRZeuIIrWt6BF1b2YdsPtCmbT92XoAk7AukeoXOqrzlUCRq1x77t61BI4kWjq3UZyR992kKbD0Sv9Ldogv6liKOtCdpVfo53p27Mlwd/VtRF1br+dpS4TuWCZst/jAOQ+HKUih/P6vmAYCLM346rADT9aJxMw83QTvxzclw+B4p/9KvVP5PT/r6ypyn+Jb7//gn5lk+E0/7J4BTfJc9cEo5VbQEfXTPak/MTvFo8ugqvCzCUhzBcXwkXZab5GMvN2PxC5vWRsibMFF5YYMwjnqHqQtpzSnhwS96pGABTcoZ0FavhFjrhbmzTi4oazc/moXVw8JVSFhHxd2Rt7cScygM4FrDTcuXrURy05uCmcGAoKUhfPVN+RL14dZtSQL1lH5B3DwLr90NnhNPzs6DI5+Mg0XVJlP+kA0MK96nUDv65nX3a6GGItrTex8S8uAH4aSs3O6NEZvdtGmMQk3Ik2qgNWHJ/5cqOamJQq59QLrb/tMWCvdshlRvelK4Et02poP9DIkp2s1ucpco33zea4GZJm7U4ZZnPOa2YfdqEooAkKbSrzbOCh8GBnYi9y3ko54jnIcarRkyDYzSoIsUN5phSty4h+5pNwNZnJe0Gj+CXtDXpAMDuWpK8ru3EPeeZF4f+rqeiX2OPb1Tl4YVDoaZn0s30DGNY/+QVdzqVJ2C7dvHey9DYKmVklmHlffWAZ8yrwtP0bHOw+zr6Gl4zQaVEO8VLnOt9SiVxVHYWAzVXdyAyq9aXLXGjfrcp3PujwsEn3d+KZngIpnq8cXPiBuvMiJAHgAoyZhxZIlUnAypr1lAA6iFAAAAAAAAqvV1v7sWgCg6vbVKgPklFduv8LEkgg0iF+txxYjIBJ+41jTt4lMMPWT1JWEBgAAAAAAAT/hgAAAASoyLlIsACQzYLgGJcMup/mny2sq6wNgbWP40pVbT0GfcfqEAmY4SpcjLh+XkB/TJw5i18e/0KsfEHO3gXckePaUBckULHV891hgQVT5OFoRy4NrQp9H+TGteG13X/hZUoZ4VtWQ2EgHRKJ3v+A5Z27AdOpCBShzsaT9UI7/1mENMbsBhI9H6kQgU9O7eCZwbPNu0gnx3Og0Bt49qf+Yd6IByyDukrNIFf9ar4+35Xeu/9rLHoUYKvDwTVUCDfnESo4Fpt3z9q1CQnJr405+xMz1kgl67ZDMcZ4V5z08ekMprjqR6DDdVj6hQU6s4aWX4ZKp/RhgiouUtDWmwjAbdOqKGUKRLR4EoS+NiOApXFIbYqtFHgHFOR5VXwY1T+XcsZoLetV1BeYF4ayxP+DvGLMnftUmOSv56tzjXPFKAe8U7CFOoDHzqHacKqvytEMl/mJvMDmqgwm2yoKoX4mxwEDJOHhUcG3n2so0j4tZto+dgJborvkPghfK2k87KhzJtKg9QRyVlxapaQxxLn1ZcILN7cJ9cWW72nXWKZIZS84OuuZZs7UDBEcf4jVSkaQRxG8A/Us6q4UyFNq7aKMDHgPWBen4Xc0u2sEMhEu6S8dDvshxnVX+UxTKO1EnPhGhgURToDvDS2189szr1qsMocvZ4Fmg0YT8a3en+l3zwl1zNoP4N7AjeYEMmb27G7AHHFFtvzLcyGnEzlZPe0fTSCq05Qcaodx7oRdA5wwVVYpDFSRkxWWbuXq0+ZEX5pX/VMvrauhi6elG+kpGpORSWyGBxXmt9ooZEKRuGRp4yw7bVQ66tLAd3XQQhPr4Cv1LRM9MXvUEwUhQwvcFjK97OA8v5gPWw8ouJ4h1ZKl83y7mN6gMJdceD12YrA2/diGhuIJZNBtyIOs1fPYiMTmXN8Lr41Y3QCZVacDeARfdIlJF7a0wtUvhcn5OFQwSB5Gq+CJycm9BofpouWNogNxHdV9IGPgQMGrxh0M4HH40pqReFf1jgOQQLw7FTdZ404G/81YPKpOQa9IY6m5GbHoWYG+Fdjvr3FvMbiuWEiXYlyr+wcLKgaB24wbc0PJuyxg1ninDqvm/koMQ2+BAWprx6cQ/s616HsfK0/YuKVDOWDK6FtKidoy8ugQ4wGSfHGTiH+SZ4Jvk+GehlIPZBaeUknnLYurShUzgvNrtGVnvRDERDbh7J0BiX7XedczuaomifN3i8YWIZChfNrcDP2ydFXbxR7FHuwqa4+2DxRBDMn8Hm3c3oxZMgJWTbuSm/n8CUYRekReTzfzjHjO15nE+aEOTnmbSz5lElhIoBNdp7tcqVx6047P7P3s/G4fXytAfBcqHPh492qV73vhJLb2BZPH8OHyf2+YtfH8N+oD1MtCr0Fl6Y74JSgwdJKylubKeEkUQcmfb4erllDYx1eh2iej7WJtcHvwcS5WD01LcqR0Uf5gZcA+MRHn2ne+uKDi3sj6Sh8VxvPXcp5nFFxCUgGRqEvp9DVwj14Oa8r/LwzRQK3tZPX//PcRvmxrs2QQiucGG595f40LR5Gnup35hxYM8qZwHho/MTF1mnLLBosl5EEZo2Iw8mY78PYHjxqEhzR0XE39nxMSWL+2y7IpambSMDfCDlytNbnYi9U1aNLM56PgPyk671+oYCJnUzNsM3jSW3r3LqTrfIL/mYLz8fEV3q+1rchcoiEUFTd4L2CHjWWskG62pHtQqukjFdHAMeMvCC1gdtinHGrkWhPaiEc7W4v1MgIDC9/GrplNG2rMO160JXuXXzZgxXzeclEdOBb1fYPRC7Kz6kUmxh1VwX9y27gjfBFx7zG7WaJV3DWlF7Af4As5VE86GQyGLsrQQlijAl8XiAAAAaVzRhXw4xCZtDJ8bjuvKswldTpX+4fAQgtM8wXOBWcgIhOiiUHbrIGCKdwBFOh8UuijdB1oSx7YToz5K9OA0jHty0lc1oYPzHXBKg0tSaB4rsJpjpHLOmtOLEyds7l9dC1uqJ68vdI8fxqQb27QbFdf3jaLlnnqEhBvn4d878VJVi4C/drXr2RzoQsUFHxlz2ZVLjtWQ799dOXGAvN0o9fOQqnLyPLS5ngKvTTjGp437yoJ5XD64OAazrRbCZi90kyOON6hQ2kZiF8eoI97yABHIGTncHVe/Op/7l9xCUhm6cdFiiCe/z+zoOs1CWvm198cc5SMH/sc3J9MtOD6q0S1zNN4chfuBmH9rGl+3iQwqgggvC5DzKhmN5Rk5NfNEWJ+Ov/WW0MFpcmohcrNOF16Xs6oQASSWUqMLceEsPbTybnfFswqJ7IkDoReWkYBWqi4nLGaVa+pVc1m72scyGjeA2vLtEPpcTHb9l6YaLhw0NVFUJlqSzFZaaPwVEY8/TEEwp78YUf5PQYu2jA+RDp8LIQcceTOMzd4yO23U6uUcorLqvMS3Lf2sPvBjWbhFXuRScudoKOxzga34o1fHt7D3TpIHPTpO1Imck25R+YZkM97nvrlFu/R/OTj+xZRxoAVRvi/tHlFe0+3GTBfVmZJeyGvv32ziG/ivyCcABH00wXQyPmsX6woqwNJLEk6/Hqits4FCx5pnQ2C6hMMEuy4RGzo0NbtLZEZrLzLaT+ML4U+/jHVrohyuNRyAT4KSdm+iF2qayb+87KChrOqBX6iGTiWth1hdY7yoC6Xhq7H1FsJ9gqv5uVBtihgqqqznRzFucouMui0qVAiBkHduhZLVM4KSUB251REw5+gMkOzu7aO8pRWKmGszrvTUzZJfrEoA57YvcmS40Ez0aMj5Fwb1vnrCjBffMcQGpSb2j0PdGxAU4wvp+RHqkYYKlC23BFSZpGqIj9tbecXgncPXhYfivjVZnWZXOpbmaSTbzB4cN73C3R9rzvrvI3iSYb+dWO6BEqxFe5lL7n1HPBQnZtH28JAo5KV2ZdV4p28aW38Hj/m1PCQ+0VuZkUgwGnM4/oECScqSNHRTu7VpvzKArmuvF/xJR/kbr861ktDtGvNuBgEjH5Hv9qtWR4PX7EkVdtbPFqN01Za2YyV37cqdc+FJAPFJb91sU2LOBFQNF8lAYPl5QaCl6zLUbH+hNjR3Mw/mwy5XUIZ87TaaFW8ojh4rxcSq5yXvqtQMCdpKHvyOJUnyXjKbvbPYOqHStfw5+hNhs1aYI+5QXypE3nyixrV3/JSVrM8TCnN2/df6qnF6c4cXSQS10qNfgpbh/P6kj/8pkYVdlIIIk7wyAxx7DM/JMYSzGH8DRJv6nR1L5YSjgs9xnwM3G5cLBE65NU3K24VuOKWrnAwGxRnrC/IX2NJPYP4k8EWVxd+pApX2rBaWZzwRnL7eMTWXupbzdIE8UcdXdzTWIDISV55IU2gaRXfJ1ySyAcUkSNbuRYSXan5goxfp7Aj4jtpZvsdaxWkeoMsl7jDQC2lonbGvBQCrrvEBu0fydXiQidrIwpsvA2eDftFCWxq6eM+kPcD99zyIiuLYwcZERWyjNBhkK/5ZjXVcP2k6M1EotyIS+kXHVuhhb4kiZPcKP0uXbYILmYOBIzHKle9ZJvafo9JcX10MyxPHC5Zl/U1ahvwEmNXKx35WnSnQi5wS32s7PvqDD1VfATAKjTFLAytdAQvSfmFYiWzMedjM2yW/XcNDSyUfpjAcBteqbotk3HpgXEeMp766DSD5+9IUye7WfR5K+KTRFgazOzI2PT3+f2dB1moXxTEK/UutoyzZZsLcp2A7zAfIdA8jxWwsGwjdmO5YcMaJXoi1v3ijfrJflMR+DUN6m2/jsUrfBCEMZ9nTHZJjN55fBm/aYbfHs6sBSurrSlelJxgLIoWYyHGVpctQbONk5QAB3wRYDno0X+bpWlOjib4O8Q4xXjlWDXoyp5Kr8M5SV6nYcj4cdTdZeQGk9foGU9UvBUT4angrTq3Tb4/eYKqoMj2xmCo9l2aQNtuV3kIto9mWEtlPYgZcwQsO8OizefQ5q3pY0Lb/7wn+A5uwpRugrlqz2i1J6v7mjsuP4h4lvFrXse8E5SH6WdiWbC9kvDK7WnLvpBvt6HyTr5uhPpxP764DtVlf6Aoum+cO/pFOxDL8CgCirHXRvhhxDkKYPzV0Iwzk4yWsjS7r4GveM/Whx3O50ilzTsGkI+Xpv3y7q3zIgIcflhwKJlZScBP88Izz5m1ZslOUxMXcT+RNAG86g07Xp15CLxy8Z+iMdojmmbodrhj1FC4Dblxdt8ZDJbyoUq7vjNNVKE+ljI+sZlhHWoTNgAAAlwjAAURc7OcSmsEuik5SHIhQUnaduum/iXbKSC8fELOnB7xgVDIOygTHeAcEh8IOOhEgjUAAAAAKoXdzl2J/ZQnc5fdP9NK7r40bWqnPhrqpev0j7noesg4c7Lp6JiqKxXKh6VNRZeDFfbMAAABlZHAAAABUVHAAAABn5HAAAABUVHAAAABn5HAAAABUVHAAAABn5HAAAABTN2TQyO91FxcXux3tKDCkBPAxts0wW6gZRhu0BU8JG2fIxw3/hObnMBv/Cc3OYCbF8Ff7DKcuS2gKNcHi87wpBDwGloDJYT0FMALofiTfxXgC6H4k38V4Auh+JN/FeALofiTfxXgC6H4k38V4Auh+JN/258GvvKYInCkrs2A0reM+DNkyjBLt0NqXcpcMPz5iDxT8Ai5wE6hI6zyw5kdROH33sy3iGiG5q1cC0WR103b+Qy+xfepH1neYPQsn380LINN5BmwGwfKPq7CDgMS3gNZInAkz+r6lhnzUSfwFLPgz7CsxTu/pFcJwnCcJwnCcJwnCcJwnCcJwnCcJwnCcJwnCcJwnCcJwnCcJwnCcJwnCcJwnCcJrHwSKs9Ff90g2tPRi9D7kQoJIo6nA4sIfxkJvNMkP1MeWbFIzMqEsEZN3UfYCpDAAAA==" alt="Kubernetes control plane and worker nodes"></figure>
+<table class="two-col">
+<thead>
+<tr>
+<th>Part</th>
+<th>What to label in the diagram</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API server</td>
+<td>Entry point for cluster operations and deployment requests.</td>
+</tr>
+<tr>
+<td>etcd</td>
+<td>State store for cluster data.</td>
+</tr>
+<tr>
+<td>Scheduler</td>
+<td>Chooses a node for each unscheduled pod.</td>
+</tr>
+<tr>
+<td>Controller manager</td>
+<td>Runs controllers that reconcile actual state with desired state.</td>
+</tr>
+<tr>
+<td>Kubelet</td>
+<td>Node agent that acts on pod specifications and starts containers through the runtime.</td>
+</tr>
+<tr>
+<td>Container runtime</td>
+<td>Pulls container images and launches containers.</td>
+</tr>
+<tr>
+<td>Pod</td>
+<td>Smallest deployable unit that wraps one or more containers.</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>Deployment</strong> maintains the desired replicas and handles updates. A <strong>Service</strong> gives the pods a stable address and balances traffic. In the deck’s example, a three-replica Deployment runs behind one Service.</p>
+
+<figure><figcaption><strong>Applying a Deployment</strong><small>Docker and Kubernetes · slide 15</small></figcaption><ol class="flow"><li>kubectl apply</li><li>API accepts desired state</li><li>Scheduler picks nodes</li><li>Kubelet calls runtime</li></ol></figure>
+<p>Orchestration adds <strong>self-healing, scaling, service discovery, load balancing and rolling updates</strong>. The sale-day example scales from 3 to 30 pods and back to 3. A resource <strong>request</strong> informs scheduling. A <strong>limit</strong> caps use. CPU above the limit is throttled, and a container exceeding its memory limit can be killed.</p>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.2_Docker_and_Kubernetes_Orchestration.pdf#page=9">Docker and Kubernetes · slides 9–21</a></p>
+
+<p class="source"><a href="devops/teacher-notes/Module_4.2%20DevOps_Host_BuildSlaves_Software.pdf#page=4">Host Infrastructure · node roles and kubelet on slides 4 and 10</a></p>
+</section><section class="lesson" id="github"><header class="lesson-head"><div><p class="tag">5.2</p><h2>CI/CD pipeline with GitHub Actions</h2></div><label class="complete" hidden><input type="checkbox" data-study="github"> Reviewed</label></header><p><strong>CI</strong> integrates small changes frequently and builds and tests them automatically. <strong>Continuous delivery</strong> keeps passing changes ready for a production release, with approval where required. <strong>Continuous deployment</strong> automatically releases passing changes.</p>
+
+<figure><figcaption><strong>CI/CD stages</strong><small>CI/CD Pipeline with GitHub Actions · slide 5</small></figcaption><ol class="flow"><li>Commit</li><li>Build</li><li>Test</li><li>Package</li><li>Deploy</li></ol></figure>
+<table class="two-col">
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow</td>
+<td>YAML automation file under <code>.github/workflows/</code>.</td>
+</tr>
+<tr>
+<td>Event</td>
+<td>Trigger named under <code>on</code>, such as <code>push</code>, <code>pull_request</code>, <code>schedule</code> or <code>workflow_dispatch</code>.</td>
+</tr>
+<tr>
+<td>Job</td>
+<td>Set of steps executed on one runner. Jobs can run in parallel unless dependencies are declared.</td>
+</tr>
+<tr>
+<td>Step and action</td>
+<td>A step runs a shell command or calls a reusable action.</td>
+</tr>
+<tr>
+<td>Runner</td>
+<td>Execution machine. GitHub-hosted runners give a fresh supported environment. Self-hosted runners can reach special hardware or networks and require maintenance.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-yaml">on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci &amp;&amp; npm test
+</code></pre>
+<p>This is the slide’s first workflow. GitHub starts it on a push, assigns a runner and reports the result on the commit. Add <code>needs: test</code> on a build job and <code>needs: build</code> on deployment to enforce the order. The class example restricts deployment to <code>main</code>.</p>
+<ul>
+<li><strong>Package and deploy.</strong> Log in to the registry, tag the image with the commit SHA and push it. Use cluster access to apply manifests and check rollout status with <code>kubectl rollout status</code>.</li>
+<li><strong>Secrets and approvals.</strong> Use repository or environment secrets and give tokens least privilege. Environments can require reviewers so staging deploys automatically and production waits.</li>
+<li><strong>Speed and reliability.</strong> Cache dependencies, test versions in parallel with a matrix, reuse actions and use path filters. Run fast checks first, pin and review actions, fix or quarantine flaky tests and cancel outdated runs.</li>
+</ul>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.2_CICD_Pipeline_GitHub_Actions.pdf#page=3">CI/CD Pipeline with GitHub Actions · slides 3–20</a></p>
+</section><section class="lesson" id="iac"><header class="lesson-head"><div><p class="tag">5.2</p><h2>Infrastructure as Code, Terraform and Ansible</h2></div><label class="complete" hidden><input type="checkbox" data-study="iac"> Reviewed</label></header><p><strong>Infrastructure as Code (IaC)</strong> represents servers, networks and storage in versioned files. It makes environments repeatable, reviewable and faster to recreate. The slides use manual edits and differing server setups to illustrate <strong>configuration drift</strong>.</p>
+<p><strong>Declarative</strong> code describes the desired end state, such as three servers. The tool works out the steps. <strong>Imperative</strong> code specifies steps in order. <strong>Idempotence</strong> means applying the same desired configuration again has the same result once the target state is reached.</p>
+<table class="stack" role="table">
+<thead role="rowgroup">
+<tr role="row">
+<th role="columnheader">Aspect</th>
+<th role="columnheader">Terraform</th>
+<th role="columnheader">Ansible</th>
+</tr>
+</thead>
+<tbody role="rowgroup">
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Aspect</span>Main role</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Terraform</span>Provision infrastructure such as instances and networks</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Ansible</span>Configure packages, files and services on hosts</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Aspect</span>Language</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Terraform</span>HCL configuration</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Ansible</span>YAML playbooks</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Aspect</span>How it tracks or reaches targets</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Terraform</span>State maps configuration to real resources</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Ansible</span>Agentless in the slide example, using SSH from a control node</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Aspect</span>Reuse</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Terraform</span>Modules for reusable infrastructure</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Ansible</span>Roles for reusable tasks, shared through Galaxy</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Aspect</span>Review or protection</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Terraform</span>Review <code>terraform plan</code>, store state remotely with locking</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Ansible</span>Check mode where supported, Vault for secrets</td>
+</tr>
+</tbody>
+</table>
+
+<figure><figcaption><strong>Terraform workflow</strong><small>IaC, Terraform and Ansible · slide 9</small></figcaption><ol class="flow"><li>Write HCL</li><li>terraform init</li><li>terraform plan</li><li>terraform apply</li></ol></figure>
+<p>Terraform <strong>providers</strong> connect to platforms. A <strong>resource</strong> declares what to create. <strong>Variables</strong> parameterize settings such as instance size, <strong>outputs</strong> expose values such as server IPs and <strong>modules</strong> group reusable blocks. The state file maps configuration to infrastructure, so teams use remote state and locking to coordinate changes. Review a plan before applying and require approval for changes that could delete resources.</p>
+
+<figure><figcaption><strong>Ansible building blocks</strong><small>IaC, Terraform and Ansible · slide 14</small></figcaption><ol class="flow"><li>Control node</li><li>Inventory</li><li>YAML playbook</li><li>Managed nodes</li></ol></figure>
+<p>An <strong>inventory</strong> lists managed hosts. A <strong>playbook</strong> specifies tasks, and a <strong>module</strong> performs a unit of work, such as installing packages or managing a service. The deck’s playbook targets the <code>web</code> group, uses <code>become: true</code> and ensures <code>nginx</code> is installed with <code>apt</code> and <code>state: present</code>.</p>
+
+<figure><figcaption><strong>Terraform and Ansible together</strong><small>IaC, Terraform and Ansible · slide 18</small></figcaption><ol class="flow"><li>Terraform creates VMs</li><li>Output IP addresses</li><li>Ansible configures hosts</li><li>Application running</li></ol></figure>
+<blockquote>
+<p><strong>For the 200-server drift scenario.</strong> Explain the risk of inconsistent manual edits. Keep the desired package and service configuration in a versioned playbook, target the servers through inventory and reapply the same configuration. Review changes and protect secrets with Vault.</p>
+</blockquote>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.2_IaC_Terraform_Ansible.pdf#page=3">Infrastructure as Code, Terraform and Ansible · slides 3–21</a></p>
+</section><section class="lesson" id="serverless"><header class="lesson-head"><div><p class="tag">5.2</p><h2>AWS Lambda and Azure Functions</h2></div><label class="complete" hidden><input type="checkbox" data-study="serverless"> Reviewed</label></header><p><strong>Serverless</strong> shifts server management and scaling to the cloud provider. The deployable unit is a function. Events such as an upload, timer or HTTP request invoke the function, which can save a result, return a response or notify another service.</p>
+
+<figure><figcaption><strong>Event-driven execution</strong><small>Serverless Deployment · slide 5</small></figcaption><ol class="flow"><li>Event arrives</li><li>Function runs</li><li>Save, reply or notify</li></ol></figure>
+<table class="stack" role="table">
+<thead role="rowgroup">
+<tr role="row">
+<th role="columnheader">Aspect</th>
+<th role="columnheader">AWS Lambda</th>
+<th role="columnheader">Azure Functions</th>
+</tr>
+</thead>
+<tbody role="rowgroup">
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Aspect</span>Triggers</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">AWS Lambda</span>API Gateway HTTP requests, S3 uploads, EventBridge schedules or events, SQS/SNS messages</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Azure Functions</span>HTTP, timer, Blob Storage and queue</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Aspect</span>Deploy</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">AWS Lambda</span>Package code as a ZIP or container image, upload and connect an event source</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Azure Functions</span>Develop and test locally with Functions Core Tools, then publish a Function App</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Aspect</span>Integration</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">AWS Lambda</span>Lambda event and context are passed into the handler. Step Functions orchestrates workflows.</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Azure Functions</span>Bindings connect functions to services with less glue code. Durable Functions supports workflows.</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">Aspect</span>Rollout example</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">AWS Lambda</span>Weighted aliases for canary traffic</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Azure Functions</span>Deployment slots and swap for blue-green</td>
+</tr>
+</tbody>
+</table>
+<p>The benefits include automatic scaling, usage-based costs on relevant plans, rapid deployment and reduced infrastructure work. Good fits in class are short event-driven tasks, scheduled jobs, spiky traffic and small APIs. Long-running work, large stateful apps or consistently low latency requirements can fit poorly. A <strong>cold start</strong> is the additional latency of initializing a fresh execution environment. Small packages and provisioned concurrency in the Lambda example help reduce it.</p>
+<p>Keep functions small and stateless, right-size memory and timeout, store secrets separately, and monitor errors and cost. In the slide pipeline, push triggers tests, packaging, deployment, then monitoring.</p>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.2_Serverless_Lambda_Azure_Functions.pdf#page=3">Serverless Deployment · slides 3–23</a></p>
+</section><section class="lesson" id="prometheus"><header class="lesson-head"><div><p class="tag">5.3</p><h2>Prometheus, Alertmanager and Grafana</h2></div><label class="complete" hidden><input type="checkbox" data-study="prometheus"> Reviewed</label></header><p>Cloud workloads change as services scale and pods restart. Monitoring must discover targets, collect time-series metrics, alert on symptoms and share dashboard views.</p>
+
+<figure><figcaption><strong>Cloud monitoring stack</strong><small>Monitoring Cloud Applications · slides 4 and 6</small></figcaption><ol class="flow"><li>Expose /metrics</li><li>Scrape</li><li>Store time series</li><li>Query</li><li>Visualize and alert</li></ol></figure>
+<p><strong>Prometheus</strong> pulls metrics over HTTP from endpoints such as <code>/metrics</code> on a schedule. Applications can expose metrics directly. Exporters expose metrics from systems that need an adapter. Node Exporter provides host CPU, memory and disk metrics, cAdvisor provides container usage, and kube-state-metrics exposes Kubernetes object state.</p>
+<table class="two-col">
+<thead>
+<tr>
+<th>Metric type</th>
+<th>Meaning and example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Counter</td>
+<td>Cumulative total that rises until reset, such as total requests.</td>
+</tr>
+<tr>
+<td>Gauge</td>
+<td>Value that can rise or fall, such as memory in use.</td>
+</tr>
+<tr>
+<td>Histogram</td>
+<td>Observations counted in buckets, such as request-response times.</td>
+</tr>
+<tr>
+<td>Summary</td>
+<td>Observations with quantiles computed in the instrumented application.</td>
+</tr>
+</tbody>
+</table>
+<p>A job groups scrape targets. The following is the static target example from the deck. In Kubernetes, service discovery can find changing targets automatically.</p>
+<pre><code class="language-yaml">scrape_configs:
+  - job_name: &quot;web&quot;
+    scrape_interval: 15s
+    static_configs:
+      - targets: [&quot;web1:8080&quot;]
+</code></pre>
+<h3>PromQL and notifications</h3>
+<pre><code class="language-promql">up
+rate(http_requests_total[5m])
+sum by (job) (rate(http_requests_total[5m]))
+</code></pre>
+<p><code>up</code> shows successful scrapes. <code>rate(...[5m])</code> estimates the per-second increase over five minutes. <code>sum by (job)</code> combines that rate by job. The deck’s alert rule checks <code>up == 0</code> for two minutes to avoid reacting to short blips. <strong>Alertmanager</strong> groups, silences and routes alerts to channels such as Slack or email.</p>
+<h3>Grafana</h3>
+<p>Grafana queries sources such as Prometheus and displays their data. A <strong>data source</strong> supplies the data, a <strong>panel</strong> presents a particular view and a <strong>dashboard</strong> groups panels. Use time-series panels for trends, stats for one number, gauges against a limit and tables for details. Variables and time-range controls help focus diagnosis.</p>
+<p>In Kubernetes the slides show a Helm chart installing Prometheus, Alertmanager and Grafana. High-cardinality labels and long retention increase storage use. Limit label values, set retention and group related alerts. Compare actual CPU with requests and actual memory with limits to right-size pods.</p>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.3%20Monitoring_Prometheus_Grafana.pdf#page=3">Monitoring Cloud Applications · slides 3–23</a></p>
+</section><section class="lesson" id="elk"><header class="lesson-head"><div><p class="tag">5.3</p><h2>Centralized logs and the ELK stack</h2></div><label class="complete" hidden><input type="checkbox" data-study="elk"> Reviewed</label></header><p>Logs spread over servers and short-lived containers are hard to search together. Centralization keeps events available after restarts and lets teams trace requests, debug faster, audit activity and apply retention. <strong>Application</strong> logs record code events, <strong>system</strong> logs record OS and service events, <strong>access</strong> logs record web requests and <strong>audit</strong> logs record who did what and when.</p>
+
+<figure><figcaption><strong>ELK logging path</strong><small>Centralized Log Handling · slide 6</small></figcaption><ol class="flow"><li>Filebeat ships</li><li>Logstash processes</li><li>Elasticsearch stores and searches</li><li>Kibana visualizes</li></ol></figure>
+<table class="two-col">
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Beats</td>
+<td>Lightweight shippers. Filebeat sends log files, Metricbeat sends system metrics and Packetbeat sends network data.</td>
+</tr>
+<tr>
+<td>Logstash</td>
+<td>Accepts inputs, parses or enriches using filters, and forwards to outputs. A grok filter can turn a raw text line into searchable fields.</td>
+</tr>
+<tr>
+<td>Elasticsearch</td>
+<td>Stores and searches JSON documents. An index groups documents, and shards distribute pieces of an index.</td>
+</tr>
+<tr>
+<td>Kibana</td>
+<td>Web interface to search in Discover, build visualizations and combine panels in dashboards. KQL filters records.</td>
+</tr>
+</tbody>
+</table>
+
+<figure><figcaption><strong>Logstash pipeline</strong><small>Centralized Log Handling · slide 9</small></figcaption><ol class="flow"><li>Input · Beats / files / Kafka</li><li>Filter · parse / clean / enrich</li><li>Output · Elasticsearch / files</li></ol></figure>
+<p>The teacher’s basic Logstash configuration listens for Beats on port 5044 and sends events to Elasticsearch. A filter is optional in this example.</p>
+<pre><code class="language-text">input {
+  beats { port =&gt; 5044 }
+}
+output {
+  elasticsearch { hosts =&gt; [&quot;localhost:9200&quot;] }
+}
+</code></pre>
+<p>The slide’s grok example parses a <code>GET /login</code> access-log entry with status <code>500</code> into client IP, HTTP verb, path and response fields. In Kibana, <code>response: 500 and request: &quot;/login&quot;</code> narrows the error search to the login path.</p>
+<p>For Kubernetes, have applications log to stdout. Nodes keep the files and Filebeat can run once per node through a DaemonSet. Use structured JSON logs and a request or trace ID, mask sensitive data before shipping, and set index retention. Filter noisy logs and use hot, warm and cold tiers when appropriate. Prometheus metrics can surface a spike and centralized logs can explain the events behind it.</p>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.3_Centralized_Logging_ELK.pdf#page=3">Centralized Log Handling and ELK · slides 3–23</a></p>
+</section><section class="lesson" id="incidents"><header class="lesson-head"><div><p class="tag">5.3</p><h2>Incident management and PagerDuty</h2></div><label class="complete" hidden><input type="checkbox" data-study="incidents"> Reviewed</label></header><p>An <strong>incident</strong> is an unplanned event that interrupts or degrades a service. A workflow gives the team owners, roles, actions and a record of lessons from the failure.</p>
+
+<figure><figcaption><strong>Incident lifecycle</strong><small>Incident Management Workflow · slide 5</small></figcaption><ol class="flow"><li>Detect</li><li>Respond</li><li>Mitigate</li><li>Resolve</li><li>Learn</li></ol></figure>
+<table class="two-col">
+<thead>
+<tr>
+<th>Step</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Detect</td>
+<td>Find the issue through a monitoring alert, a log spike or a support ticket.</td>
+</tr>
+<tr>
+<td>Respond</td>
+<td>Acknowledge, assess impact, set severity, declare an incident if needed and assign roles.</td>
+</tr>
+<tr>
+<td>Mitigate</td>
+<td>Restore service quickly by rolling back, failing over, scaling or disabling a feature.</td>
+</tr>
+<tr>
+<td>Resolve</td>
+<td>Check that metrics are healthy, close the incident, update stakeholders and plan the permanent fix.</td>
+</tr>
+<tr>
+<td>Learn</td>
+<td>Write a blameless postmortem with the timeline, root cause and actions with owners and dates.</td>
+</tr>
+</tbody>
+</table>
+<p>The slide’s severity example pages immediately for <strong>SEV 1</strong> (most users affected) and <strong>SEV 2</strong> (key feature broken), responds in hours for <strong>SEV 3</strong> and opens a ticket for <strong>SEV 4</strong>. The incident commander leads, the technical lead investigates, communications updates stakeholders and the scribe records the timeline. Measure <strong>MTTD</strong> (detect), <strong>MTTA</strong> (acknowledge), <strong>MTTR</strong> (resolve, as used in the slides) and incident count.</p>
+<p><strong>PagerDuty</strong> receives alerts from monitoring tools and routes them to the responsible engineer using on-call schedules. Escalation calls another engineer if the first does not respond. Notifications can use push, SMS, phone or email. The slides also cover alert management, incident tracking, automation and incident analytics.</p>
+<blockquote>
+<p><strong>Example from the slides.</strong> 02:00 Prometheus detects an error-rate spike. 02:01 PagerDuty pages the primary on-call engineer. 02:05 the alert is acknowledged and rollback starts. 02:20 the incident is resolved and a postmortem is scheduled.</p>
+</blockquote>
+
+<p class="source"><a href="devops/teacher-notes/Module_5.3_Incident_Management_PagerDuty.pdf#page=2">Incident Management Workflow and PagerDuty · slides 2–18</a></p>
+</section><section class="lesson" id="exam"><header class="lesson-head"><div><p class="tag">Exam</p><h2>Past-paper practice</h2></div></header>
+<details class="answer"><summary>2025 Q1(iv–v) · 5 marks each · Deployment at scale and configuration drift</summary><div class="answer-body">
+<p>For deployment at scale, state four goals: speed, consistency, safety and scale. Explain a common CI/CD template and versioned container image, while using infrastructure code or inventory to accommodate environment requirements. For drift, explain how manual changes leave servers inconsistent and how versioned Ansible playbooks and idempotent tasks restore the intended package and service configuration.</p>
+
+<p class="source"><a href="devops/papers/DevOps.PDF#page=1">November 2025 paper · Q1(iv–v)</a></p>
+
+</div></details>
+
+<details class="answer"><summary>2022 Q2(a), 2024 Q1(iii), 2025 Q1(vi) · 10, 5 and 5 marks · Monitoring</summary><div class="answer-body">
+<p>Explain the monitoring phase and choose signals appropriate to the question. For slow responses after a release, watch P99 latency with errors, traffic and saturation. Set an actionable threshold, alert the owner, inspect dashboards and logs, and roll back if checks fail. When asked for monitoring methods, explain metrics with Prometheus/Grafana and event logs with ELK, with an example of each.</p>
+
+<p class="source"><a href="devops/papers/SEM%20VII%20I.T.%20DEC%202022..pdf#page=1">December 2022 paper · Q2(a)</a></p>
+
+<p class="source"><a href="devops/papers/I.T.%20SEM-%20VII.pdf#page=1">November 2024 paper · Q1(iii)</a></p>
+
+<p class="source"><a href="devops/papers/DevOps.PDF#page=1">November 2025 paper · Q1(vi)</a></p>
+
+</div></details>
+
+<details class="answer"><summary>2024 Q4(ii) · 10 marks · Continuous integration and continuous deployment</summary><div class="answer-body">
+<p>Define CI and continuous deployment and explain their significance. Show commit, build, test, package and deploy. Give one trigger and one test gate, tag the artifact, then describe automated rollout and post-deployment checks. If discussing continuous delivery, indicate where approval can be required.</p>
+
+<p class="source"><a href="devops/papers/I.T.%20SEM-%20VII.pdf#page=2">November 2024 paper · Q4(ii)</a></p>
+
+</div></details>
+
+<details class="answer"><summary>2024 Q5(iv), 2025 Q5(iv–v) · 5 marks each · Docker and Kubernetes</summary><div class="answer-body">
+<p>For Docker, use the environment mismatch and draw Dockerfile, image and running container. For Kubernetes, reproduce the control-plane and worker-node diagram. Label API server, etcd, scheduler, controller manager, kubelet, runtime and pods. For deploying with Docker, build and push the image, then reference it in a Kubernetes Deployment and expose the pods through a Service.</p>
+
+<p class="source"><a href="devops/papers/I.T.%20SEM-%20VII.pdf#page=2">November 2024 paper · Q5(iv)</a></p>
+
+<p class="source"><a href="devops/papers/DevOps.PDF#page=2">November 2025 paper · Q5(iv–v)</a></p>
+
+</div></details>
+
+<details class="answer"><summary>2021 Q1(A) and 2024 Q5(ii) · 1-mark items and a 5-mark short note · Ansible</summary><div class="answer-body">
+<p>Recall agentless execution, YAML as the playbook language and Galaxy for shared roles. For the short note, define configuration management, draw control node → inventory → playbook → managed hosts, explain modules, roles and Vault, and use the Nginx task as your example.</p>
+
+<p class="source"><a href="devops/papers/DevOps_2UIE724_ND-21.pdf#page=1">November–December 2021 paper · Q1(A)</a></p>
+
+<p class="source"><a href="devops/papers/I.T.%20SEM-%20VII.pdf#page=2">November 2024 paper · Q5(ii)</a></p>
+
+</div></details>
+
+<details class="answer"><summary>2025 Q5(vi) · 5 marks · Use of log handling</summary><div class="answer-body">
+<p>Explain why logs from short-lived containers must be collected centrally. Draw Filebeat → Logstash → Elasticsearch → Kibana. Give the role of each component and show how a 500 response on the login route can be searched. Close with a benefit such as faster diagnosis or audit retention.</p>
+
+<p class="source"><a href="devops/papers/DevOps.PDF#page=2">November 2025 paper · Q5(vi)</a></p>
+
+</div></details>
+
+<details class="answer"><summary>Syllabus practice · Contrast canary and blue-green, then explain what happens if a release fails.</summary><div class="answer-body">
+<p>A canary limits initial exposure, promotes in steps after metric checks and reverts when a threshold is breached. Blue-green validates a second environment and switches the router, leaving the original ready to take traffic again. Add the slide diagrams, identify the health signals and describe when PagerDuty pages the on-call engineer.</p>
+
+</div></details>
+</section>
+  <footer><a href="#top">Back to top</a></footer>
+</main>
+</div>
+<script>const outline = document.querySelector('.outline');
+if (matchMedia('(max-width: 760px)').matches) outline.open = false;
+const boxes = Array.from(document.querySelectorAll('[data-study]'));
+const progress = document.querySelector('.progress');
+const progressBar = progress.querySelector('progress');
+const count = progress.querySelector('span');
+const moduleNumber = document.body.dataset.module;
+progressBar.max = boxes.length;
+for (const box of boxes) {
+  const key = 'devops-course-' + moduleNumber + '-' + box.dataset.study;
+  try { box.checked = localStorage.getItem(key) === 'true'; } catch {}
+  box.parentElement.hidden = false;
+  box.addEventListener('change', () => {
+    try { localStorage.setItem(key, String(box.checked)); } catch {}
+    updateProgress();
+  });
+}
+function updateProgress() {
+  const reviewed = boxes.filter(box => box.checked).length;
+  progressBar.value = reviewed;
+  count.textContent = reviewed + ' of ' + boxes.length + ' lessons reviewed';
+}
+updateProgress();
+progress.hidden = false;
+
+const outlineLinks = Array.from(outline.querySelectorAll('a'));
+function highlightLink() {
+  for (const link of outlineLinks) {
+    if (link.hash === location.hash) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  }
+}
+window.addEventListener('hashchange', highlightLink);
+highlightLink();
+</script>
+</body>
+</html>

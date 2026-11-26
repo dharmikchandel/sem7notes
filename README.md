@@ -17,6 +17,7 @@ Instead of relying solely on static PDFs, these notes are designed to provide a 
 | Module 3 | Testing Metrics | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/stqa/STQA_Module_3_Testing_Metrics.html) |
 | Module 4 | AI & Test Automation | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/stqa/STQA_Module_4_AI_and_Test_Automation.html) |
 | Module 5 | Software Quality Management | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/stqa/STQA_Module_5_Software_Quality_Management.html) |
+| PYQ  | Analysing PYQ Weightage & more | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/stqa/STQA_previous_year_questions_by_module.html) |
 
 ### Digital Marketing (DiM)
 
@@ -26,6 +27,8 @@ Instead of relying solely on static PDFs, these notes are designed to provide a 
 | Module 2 | Search Engine Optimization | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-2-seo.html) |
 | Module 3 | Link Building & SEO Analytics | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-3-link-building.html) |
 | Module 4 | Social Media Marketing | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-4-social-media-marketing.html) |
+| Module 5 | AI in Digital Marketing | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/module-5-ai-in-digital-marketing.html) |
+| PYQ  | Analysing PYQ Weightage & more | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/dim/digital_marketing_question_bank.html) |
 
 ### DevOps
 
@@ -34,6 +37,9 @@ Instead of relying solely on static PDFs, these notes are designed to provide a 
 | Module 1 | Foundations | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module1_Foundations.html) |
 | Module 2 | Pillars | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module2_Pillars.html) |
 | Module 3 | Architecture | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module3_Architecture.html) |
+| Module 3 | Code Control | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module3_Code_Control.html) |
+| Module 4 | Build & Test | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module4_Build_and_Test.html) |
+| Module 3 | Deploy & Monitor | [**Open Notes ↗**](https://dharmikchandel.github.io/sem7notes/devops/DevOps_Module5_Deploy_and_Monitor.html) |
 
 ### Honours (MARE)
 

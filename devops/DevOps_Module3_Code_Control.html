@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>DevOps Module 3 · Source code control and SCM migrations</title>
+<style>:root{
+  color-scheme:dark;
+  --bg:#101418;
+  --surface:#161c22;
+  --raised:#1b242c;
+  --line:#343f49;
+  --ink:#ecf0f4;
+  --muted:#b0bdc9;
+  --accent:#86d6c0;
+  --warm:#f0c58a;
+  --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.65 system-ui,sans-serif}
+[hidden]{display:none!important}
+a{color:var(--accent);text-underline-offset:.2em}
+a:hover{color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.skip{position:fixed;top:.5rem;left:.5rem;z-index:5;background:var(--surface);padding:.5rem;transform:translateY(-200%)}
+.skip:focus{transform:none}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;overflow:auto;padding:1.8rem 1.15rem;background:var(--surface);border-right:1px solid var(--line)}
+.brand{display:block;padding:0 .45rem;margin-bottom:1.1rem;color:var(--ink);font-size:1.18rem;font-weight:720;text-decoration:none}
+.brand span{display:block;color:var(--muted);font-weight:450;font-size:.88rem}
+.modules{display:flex;flex-wrap:wrap;gap:.34rem;margin:0 0 1.4rem}
+.modules a,.jump a{border:1px solid var(--line);border-radius:.36rem;text-decoration:none;padding:.4rem .55rem;font-size:.88rem;white-space:nowrap}
+.modules a[aria-current],.jump a:first-child{background:var(--accent);color:#10231d;border-color:var(--accent);font-weight:700}
+.outline summary{padding:.4rem .45rem;color:var(--muted);font-weight:620}
+.outline nav{display:grid;gap:.15rem;margin:.4rem 0 1.2rem}
+.outline nav a{display:grid;grid-template-columns:3.3rem 1fr;gap:.35rem;padding:.42rem .42rem;color:var(--ink);text-decoration:none;font-size:.9rem;line-height:1.36;border-radius:.25rem}
+.outline nav a:hover,.outline nav a[aria-current]{background:var(--raised);color:var(--accent)}
+.outline nav span{font: .79rem/1.52 var(--mono);color:var(--accent)}
+.progress{display:grid;gap:.35rem;color:var(--muted);font-size:.85rem;padding:0 .45rem}
+progress{accent-color:var(--accent);width:100%;height:.52rem}
+main{width:min(100%,1030px);margin-inline:auto;padding:clamp(1.3rem,4vw,3.5rem) clamp(1.1rem,5vw,4.2rem) 3rem}
+.hero{padding:clamp(1rem,5vw,3rem) 0 2rem}
+.hero .tag,.lesson-head .tag{color:var(--accent);margin:0 0 .45rem;font: .9rem/1.4 var(--mono)}
+h1,h2,h3,h4{line-height:1.17;letter-spacing:-.025em}
+h1{font-size:clamp(2.15rem,5.1vw,4rem);max-width:17ch;margin:0 0 1.25rem}
+h2{font-size:clamp(1.55rem,3vw,2.3rem);margin:0}
+h3{font-size:1.25rem;margin:1.85rem 0 .55rem}
+h4{font-size:1.05rem;margin:1.5rem 0 .45rem}
+p,ul,ol{margin:.6rem 0 1rem}
+li+li{margin-top:.32rem}
+.intro{max-width:70ch;color:var(--muted);font-size:1.08rem}
+.jump{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.15rem}
+.jump a{font-size:.95rem;padding:.5rem .75rem}
+.lesson{border-top:1px solid var(--line);padding:2.25rem 0 2.5rem;scroll-margin-top:1rem}
+.lesson-head{display:flex;gap:1rem;justify-content:space-between;align-items:flex-start;margin-bottom:1.15rem}
+.complete{color:var(--muted);white-space:nowrap;font-size:.875rem;margin-top:.3rem}
+input{accent-color:var(--accent)}
+code{font:.89em var(--mono);color:var(--accent);padding:.1em .25em;background:var(--raised);border-radius:.25rem;overflow-wrap:anywhere}
+pre{overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:.35rem;padding:1rem}
+pre code{padding:0;background:none;overflow-wrap:normal}
+table{width:100%;border-collapse:collapse;background:var(--surface);font-size:.94rem;margin:1rem 0 1.35rem}
+th,td{border:1px solid var(--line);padding:.6rem .7rem;vertical-align:top;overflow-wrap:anywhere}
+th{background:var(--raised);text-align:left}
+blockquote{margin:1rem 0;padding:.55rem .95rem;border-left:3px solid var(--warm);background:var(--surface)}
+blockquote strong{color:var(--warm)}
+blockquote p{margin:.2rem 0}
+.source{font-size:.86rem;color:var(--muted);margin:.22rem 0}
+.source a,figcaption a{color:var(--muted)}
+figure{margin:1.25rem 0;padding:1rem;border:1px solid var(--line);border-radius:.4rem;background:var(--surface)}
+figcaption{display:flex;align-items:baseline;justify-content:space-between;gap:.3rem 1rem;flex-wrap:wrap;margin:0 0 .75rem}
+figcaption small{color:var(--muted);font-size:.82rem}
+figure img{display:block;width:100%;height:auto;border-radius:.23rem}
+.flow{display:flex;gap:1.28rem;align-items:stretch;list-style:none;padding:0;margin:0}
+.flow li{position:relative;display:grid;place-content:center;flex:1;min-width:0;padding:.5rem .3rem;margin:0;background:var(--raised);border:1px solid var(--line);border-radius:.25rem;text-align:center;line-height:1.35;font-size:.9rem;overflow-wrap:anywhere}
+.flow li+li::before{content:"→";position:absolute;width:1.28rem;right:100%;top:50%;transform:translateY(-50%);color:var(--accent);text-align:center}
+.answer{border:1px solid var(--line);border-radius:.35rem;background:var(--surface);margin:.85rem 0}
+summary{cursor:pointer}
+.answer summary{padding:.8rem .95rem;font-weight:650}
+.answer summary::marker{color:var(--accent)}
+.answer-body{padding:.15rem .95rem .65rem;border-top:1px solid var(--line)}
+footer{font-size:.92rem;padding-top:1rem;border-top:1px solid var(--line)}
+@media(max-width:980px){.layout{grid-template-columns:225px minmax(0,1fr)}}
+@media(max-width:760px){
+  .layout{display:block}
+  .sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:1rem}
+  .brand{margin-bottom:.55rem}.brand span{display:inline;margin-left:.4rem}
+  .modules{margin-bottom:.45rem}.outline nav{grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));margin-bottom:.55rem}
+  .hero{padding:1rem 0 1.4rem}
+}
+@media(max-width:520px){
+  .lesson-head{display:block}.complete{display:block;margin-top:.7rem}
+  .flow{flex-direction:column;gap:1rem}
+  .flow li+li::before{content:"↓";width:100%;top:auto;right:0;bottom:100%;transform:none}
+  th,td{padding:.45rem .38rem}
+}
+@media print{
+  :root{color-scheme:light;--bg:white;--surface:white;--raised:#f2f4f5;--ink:#171717;--muted:#383838;--line:#aaa;--accent:#155344;--warm:#73511b}
+  .layout{display:block} .sidebar,.jump,.complete,.skip,footer{display:none}
+  main{width:100%;padding:0}.hero{padding:0 0 1rem}
+  figure,tr,pre{break-inside:avoid} h1,h2,h3,h4,summary{break-after:avoid} pre{white-space:pre-wrap}
+}
+.modules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.modules a{padding:.4rem .25rem;text-align:center;font-size:.81rem}
+.lesson>p:not(.source),.lesson>ul,.lesson>ol{max-width:78ch}
+.split-flow{max-width:39rem;margin:auto;text-align:center}
+.node{padding:.5rem;border:1px solid var(--line);border-radius:.25rem;background:var(--raised)}
+.branches{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.down{line-height:1.35;color:var(--accent)}
+@media (min-width:761px) and (max-width:980px){
+  .sidebar{padding-inline:.75rem}
+}
+@media (max-width:760px){
+  .modules{display:flex}
+  .modules a{padding:.4rem .55rem}
+}
+.cell-label{display:none}
+@media (max-width:600px){
+  .two-col th:first-child,.two-col td:first-child{min-width:6.25rem}
+  .stack{display:block;border:1px solid var(--line);border-radius:.25rem;overflow:hidden}
+  .stack thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .stack tbody,.stack tr,.stack td{display:block}
+  .stack tbody tr+tr{border-top:1px solid var(--line)}
+  .stack td{border:0;padding:.45rem .65rem}
+  .stack td:first-child{font-weight:700;background:var(--raised);padding:.6rem .65rem}
+  .stack td:first-child .cell-label{display:none}
+  .stack td:last-child{padding-bottom:.65rem}
+  .stack .cell-label{display:block;color:var(--muted);font-size:.85rem;font-weight:650}
+}
+</style>
+</head>
+<body data-module="3">
+<a class="skip" href="#main">Skip to course</a>
+<div class="layout">
+<aside class="sidebar">
+  <a class="brand" href="#top">DevOps <span>Semester VII</span></a>
+  <nav class="modules" aria-label="Modules"><a href="DevOps_Module3_Code_Control.html" aria-current="page">Module 3</a><a href="DevOps_Module4_Build_and_Test.html">Module 4</a><a href="DevOps_Module5_Deploy_and_Monitor.html">Module 5</a></nav>
+  <details class="outline" open>
+    <summary>Contents</summary>
+    <nav aria-label="Course contents"><a href="#need"><span>3.3</span>Need for source code control</a><a href="#tools"><span>3.3</span>Source code management tools</a><a href="#branching"><span>3.3</span>Branching strategies and GitFlow</a><a href="#configuration"><span>3.3</span>Configuration items, baselines and change control</a><a href="#migrations"><span>3.4</span>SCM system migrations</a><a href="#exam"><span>Exam</span>Past-paper practice</a></nav>
+  </details>
+  <div class="progress" hidden><progress aria-label="Lessons reviewed" value="0"></progress><span role="status"></span></div>
+</aside>
+<main id="main">
+  <header id="top" class="hero">
+    <p class="tag">Module 3 · Units 3.3–3.4</p>
+    <h1>Source code control and SCM migrations</h1>
+    <div class="intro"><p>Start with the repository’s role in DevOps, then study distributed version control, branching and migration decisions. Practise the 5-mark source-control answer and the 10-mark branching question.</p>
+</div>
+    <nav class="jump" aria-label="Shortcuts"><a href="#need">Start studying</a><a href="#exam">Past-paper practice</a></nav>
+  </header>
+  <section class="lesson" id="need"><header class="lesson-head"><div><p class="tag">3.3</p><h2>Need for source code control</h2></div><label class="complete" hidden><input type="checkbox" data-study="need"> Reviewed</label></header><p>Source code control maintains the revision history of the code a team works on. In DevOps, the repository also gives teams a shared place to trace the materials they use to build, operate, test and document a system. The slides’ <strong>“everything is code”</strong> principle applies to applications, infrastructure, documentation and even aspects of hardware that can be described in code.</p>
+<table class="two-col">
+<thead>
+<tr>
+<th>Role</th>
+<th>What belongs in source control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Development</td>
+<td>Application source code and its revisions.</td>
+</tr>
+<tr>
+<td>Operations</td>
+<td>Infrastructure expressed as code, such as network topology and expected package versions per server.</td>
+</tr>
+<tr>
+<td>Quality assurance</td>
+<td>Automated tests written with tools such as Selenium and JUnit.</td>
+</tr>
+<tr>
+<td>Documentation</td>
+<td>Product documentation and runbooks. Keeping wiki content with the service gives different roles a consistent place to find it.</td>
+</tr>
+</tbody>
+</table>
+<p>A repository makes earlier versions traceable and gives teams a common reference for parallel changes. For example, the slides describe keeping a server’s expected package versions alongside the application, and keeping a service’s runbook with the service it describes.</p>
+<blockquote>
+<p><strong>For 5 marks.</strong> Define source code control, explain why the repository is central, then give examples from multiple roles. Close with the revision history or synchronization benefit.</p>
+</blockquote>
+
+<p class="source"><a href="devops/teacher-notes/Module_3.3_Source_Code_Control.pdf#page=2">Source Code Control · “Everything Is Code” and repository roles, slides 2–5</a></p>
+
+<p class="source"><a href="devops/teacher-notes/Module_3.3_Source_Code_Control.pdf#page=13">Source Code Control · revision history and parallel changes, slides 13–14</a></p>
+</section><section class="lesson" id="tools"><header class="lesson-head"><div><p class="tag">3.3</p><h2>Source code management tools</h2></div><label class="complete" hidden><input type="checkbox" data-study="tools"> Reviewed</label></header><table class="stack" role="table">
+<thead role="rowgroup">
+<tr role="row">
+<th role="columnheader">SCM family</th>
+<th role="columnheader">How history is stored</th>
+<th role="columnheader">Examples from the slides</th>
+</tr>
+</thead>
+<tbody role="rowgroup">
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">SCM family</span>Centralized</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">How history is stored</span>A central server holds the full history.</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Examples from the slides</span>CVS, Subversion, Visual SourceSafe and ClearCase.</td>
+</tr>
+<tr role="row">
+<td role="cell"><span class="cell-label" aria-hidden="true">SCM family</span>Distributed (DVCS)</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">How history is stored</span>Each full clone carries the project’s history.</td>
+<td role="cell"><span class="cell-label" aria-hidden="true">Examples from the slides</span>Git, Mercurial and Bazaar.</td>
+</tr>
+</tbody>
+</table>
+<p>The teacher’s slides present <strong>Git</strong> as the widely adopted DVCS with broad tooling support. <strong>Mercurial</strong> is an alternative valued for a simpler command model. <strong>Bazaar</strong> is a less common distributed alternative.</p>
+<h3>Four benefits of distributed version control</h3>
+<ol>
+<li><strong>Offline work.</strong> Developers can commit locally and push later when reconnected.</li>
+<li><strong>Speed.</strong> Local operations can avoid a round trip to a server.</li>
+<li><strong>Privacy.</strong> Developers can work locally until they’re ready to share changes.</li>
+<li><strong>Resilience.</strong> Full clones and multiple remotes keep the history from depending on one server.</li>
+</ol>
+<p><strong>CVS</strong> is the centralized example in Unit 3.4. It uses a single repository, stores differences between versions and gives developers separate working directories so their changes can be merged. Build automation and change-request tracking are separate concerns.</p>
+
+<p class="source"><a href="devops/teacher-notes/Module_3.3_Source_Code_Control.pdf#page=6">Source Code Control · distributed systems and their benefits, slides 6–8</a></p>
+
+<p class="source"><a href="devops/teacher-notes/Module_3.4_SCM_Systems_Migrations.pdf#page=2">SCM Systems and Migrations · SCM families and CVS, slides 2–3</a></p>
+</section><section class="lesson" id="branching"><header class="lesson-head"><div><p class="tag">3.3</p><h2>Branching strategies and GitFlow</h2></div><label class="complete" hidden><input type="checkbox" data-study="branching"> Reviewed</label></header><p>A <strong>branching strategy</strong> is the team’s agreed pattern for how work moves through branches. It determines where changes are made, how they are reviewed and merged, and how the team gets release-ready code. Choose a pattern that fits the team’s pace and pull-request workflow.</p>
+<table class="two-col">
+<thead>
+<tr>
+<th>Approach in the slides</th>
+<th>How the team uses it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trunk-based or lightweight approach</td>
+<td>Centre work on one <code>main</code> branch and use short-lived feature branches when needed. The slides give a fast-moving application as the example.</td>
+</tr>
+<tr>
+<td>GitFlow</td>
+<td>Keep release-ready code on <code>main</code>. Use <code>develop</code> to integrate ongoing work. Create feature branches from <code>develop</code> and merge them back when complete. Use a hotfix branch for an urgent production patch so it can reach <code>main</code> without waiting for the next release cycle.</td>
+</tr>
+</tbody>
+</table>
+<p>Two benefits to explain in an exam are <strong>a clear review and merge path</strong> for ongoing work and <strong>a predictable release path</strong>, including an urgent route for production fixes in GitFlow. The slides recommend starting with a simple model and adding branch complexity when the team needs it.</p>
+
+<p class="source"><a href="devops/teacher-notes/Module_3.3_Source_Code_Control.pdf#page=9">Source Code Control · strategy, GitFlow and workflow fit, slides 9–11</a></p>
+</section><section class="lesson" id="configuration"><header class="lesson-head"><div><p class="tag">3.3</p><h2>Configuration items, baselines and change control</h2></div><label class="complete" hidden><input type="checkbox" data-study="configuration"> Reviewed</label></header><table class="two-col">
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning and example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basic object</td>
+<td>A single unit such as a source file, test suite or part of a specification.</td>
+</tr>
+<tr>
+<td>Aggregate object</td>
+<td>A named collection of basic or other aggregate objects. A design specification can reference a data model and class diagrams.</td>
+</tr>
+<tr>
+<td>Baseline</td>
+<td>A reviewed and approved version that serves as the reference point for the next change.</td>
+</tr>
+<tr>
+<td>Version control</td>
+<td>The tools and procedures that manage revision history. Git records each revision.</td>
+</tr>
+<tr>
+<td>Change control</td>
+<td>The process of requesting, reviewing, deciding on and applying a controlled update. A pull-request review determines whether a change can merge.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Access control</strong> determines who may change an item. <strong>Synchronization control</strong> helps prevent parallel edits from overwriting each other. For example, when two engineers edit the same configuration, a merge conflict makes the collision visible so they can resolve it before merging.</p>
+
+<p class="source"><a href="devops/teacher-notes/Module_3.3_Source_Code_Control.pdf#page=12">Source Code Control · configuration items and control, slides 12–14</a></p>
+</section><section class="lesson" id="migrations"><header class="lesson-head"><div><p class="tag">3.4</p><h2>SCM system migrations</h2></div><label class="complete" hidden><input type="checkbox" data-study="migrations"> Reviewed</label></header><p>A team may migrate after a centralized tool loses support, to gain DVCS benefits, to shorten onboarding, or to fit an ecosystem that expects Git. The main decision is <strong>how much history to move</strong>. Keeping the entire history takes effort and is most valuable when old decisions or contributor attribution still matter.</p>
+<table class="two-col">
+<thead>
+<tr>
+<th>Situation</th>
+<th>Decision and justification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Long-running open-source project</td>
+<td>Preserve the full history to retain attribution and trace design decisions.</td>
+</tr>
+<tr>
+<td>Visual SourceSafe or ClearCase to Git</td>
+<td>The history models map poorly to Git. Where the cost outweighs the value, import the current codebase and keep the old system online read-only for lookups.</td>
+</tr>
+<tr>
+<td>Subversion to Git</td>
+<td>Its history model maps more readily to Git. Mature tooling makes it practical to retain commits, authors and messages.</td>
+</tr>
+</tbody>
+</table>
+<h3>Migration checklist</h3>
+<ol>
+<li>Decide on full history, partial history or a fresh start.</li>
+<li>Choose the cutover window and briefly freeze changes in the old system.</li>
+<li>Migrate and verify a sample of known commits in the new system.</li>
+<li>Retrain the team on the new tool’s workflow and branching strategy.</li>
+</ol>
+<blockquote>
+<p><strong>For a migration scenario.</strong> State the old and new systems, explain the reason to migrate, weigh the history against migration effort, then justify the decision and give the cutover steps.</p>
+</blockquote>
+
+<p class="source"><a href="devops/teacher-notes/Module_3.4_SCM_Systems_Migrations.pdf#page=4">SCM systems and migrations · slides 4–11</a></p>
+</section><section class="lesson" id="exam"><header class="lesson-head"><div><p class="tag">Exam</p><h2>Past-paper practice</h2></div></header>
+<details class="answer"><summary>2024 Q1(iv) · 5 marks · Explain the need for source code control.</summary><div class="answer-body">
+<p>Source code control records revisions of the material an organization depends on. A repository is a shared reference for <strong>application code, infrastructure configuration, automated tests and documentation</strong>. Developers work on code, Operations can keep expected server package versions as code, QA can version tests and documentation teams can keep runbooks with their services. Revision history makes changes traceable. Access and synchronization controls protect shared work by governing who can edit it and surfacing conflicts between parallel edits.</p>
+
+<p class="source"><a href="devops/papers/I.T.%20SEM-%20VII.pdf#page=1">November 2024 paper · Q1(iv)</a></p>
+
+</div></details>
+
+<details class="answer"><summary>2025 Q3(iii) · 10 marks · Explain GitHub branching strategies and write any two benefits.</summary><div class="answer-body">
+<p>A branching strategy defines how changes are developed, reviewed, merged and released. Explain the two approaches in the slides.</p>
+<ol>
+<li><strong>Trunk-based or lightweight approach.</strong> Use one <code>main</code> branch and short-lived feature branches where needed. The teacher uses a fast-moving application to illustrate a lightweight workflow.</li>
+<li><strong>GitFlow.</strong> Keep release-ready code on <code>main</code> and integrate ongoing work on <code>develop</code>. Start each feature from <code>develop</code> and merge it back there when ready. Use a hotfix for an urgent production issue and bring the fix to <code>main</code> without waiting for the next release.</li>
+</ol>
+<p><strong>Two benefits.</strong> A known branch path makes reviews and merges easier to organize. A distinct release path keeps release-ready code identifiable and lets urgent fixes ship independently of the normal release cycle. Finish by explaining that teams should start with a simple model and add complexity only as needed.</p>
+
+<p class="source"><a href="devops/papers/DevOps.PDF#page=1">November 2025 paper · Q3(iii)</a></p>
+
+</div></details>
+
+<details class="answer"><summary>2024 Q3(iii) · 10 marks · Explain source code management for Spotify.</summary><div class="answer-body">
+<p>The teacher’s slides cover SCM principles. They give no details about Spotify’s implementation. For an applied answer, frame the following as a <strong>proposed workflow for the application in the question</strong>.</p>
+<ol>
+<li>Keep application code, infrastructure definitions, automated tests and runbooks under source control.</li>
+<li>Use a distributed tool such as Git to give developers local history and let them work offline before sharing changes.</li>
+<li>Keep <code>main</code> release-ready. Use short-lived feature branches and pull-request review to control merges, or explain GitFlow if the scenario calls for distinct integration and release branches.</li>
+<li>Use revision history to trace changes. Explain who may approve changes and how merge-conflict resolution protects parallel work.</li>
+</ol>
+
+<p class="source"><a href="devops/papers/I.T.%20SEM-%20VII.pdf#page=1">November 2024 paper · Q3(iii)</a></p>
+
+</div></details>
+
+<details class="answer"><summary>Syllabus practice · Distinguish version control from change control.</summary><div class="answer-body">
+<p>Version control records and retrieves revisions of an object. Change control governs whether and how an update is made through request, review, decision and application. Git’s revision history illustrates version control. Pull-request review illustrates change control. A reviewed and approved baseline is the reference point for the next change.</p>
+
+</div></details>
+
+<details class="answer"><summary>Syllabus practice · When would you preserve full history in an SCM migration?</summary><div class="answer-body">
+<p>Preserve history when contributor credit or old design decisions matter. Give the open-source example, contrast the effort of a Visual SourceSafe or ClearCase migration with the more compatible Subversion-to-Git case, then specify what to verify at cutover.</p>
+
+</div></details>
+</section>
+  <footer><a href="#top">Back to top</a></footer>
+</main>
+</div>
+<script>const outline = document.querySelector('.outline');
+if (matchMedia('(max-width: 760px)').matches) outline.open = false;
+const boxes = Array.from(document.querySelectorAll('[data-study]'));
+const progress = document.querySelector('.progress');
+const progressBar = progress.querySelector('progress');
+const count = progress.querySelector('span');
+const moduleNumber = document.body.dataset.module;
+progressBar.max = boxes.length;
+for (const box of boxes) {
+  const key = 'devops-course-' + moduleNumber + '-' + box.dataset.study;
+  try { box.checked = localStorage.getItem(key) === 'true'; } catch {}
+  box.parentElement.hidden = false;
+  box.addEventListener('change', () => {
+    try { localStorage.setItem(key, String(box.checked)); } catch {}
+    updateProgress();
+  });
+}
+function updateProgress() {
+  const reviewed = boxes.filter(box => box.checked).length;
+  progressBar.value = reviewed;
+  count.textContent = reviewed + ' of ' + boxes.length + ' lessons reviewed';
+}
+updateProgress();
+progress.hidden = false;
+
+const outlineLinks = Array.from(outline.querySelectorAll('a'));
+function highlightLink() {
+  for (const link of outlineLinks) {
+    if (link.hash === location.hash) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  }
+}
+window.addEventListener('hashchange', highlightLink);
+highlightLink();
+</script>
+</body>
+</html>
