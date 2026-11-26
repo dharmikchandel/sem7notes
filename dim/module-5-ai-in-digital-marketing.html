@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Digital Marketing | Module 5 Exam Notes</title>
+<style>
+:root{color-scheme:dark;--bg:#11151c;--surface:#181f29;--panel:#1e2633;--line:#354156;--text:#edf2fa;--muted:#b7c3d5;--accent:#91efcf;--lavender:#cecdff;--amber:#ffd897;--page:1220px}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:5.5rem}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent);text-underline-offset:.22em}
+a:hover{color:#d1ffee}
+:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+h1,h2,h3,h4,p{margin:0}
+h1,h2,h3,h4{line-height:1.2;text-wrap:balance}
+h1{font:500 clamp(2.75rem,7.2vw,5.5rem)/1.02 Georgia,serif;letter-spacing:-.055em;max-width:13ch}
+h2{font:500 clamp(1.8rem,4vw,2.65rem)/1.1 Georgia,serif;letter-spacing:-.027em}
+h3{font-size:clamp(1.3rem,3.4vw,1.8rem);letter-spacing:-.025em}
+h4{font-size:1.06rem;margin-top:1.4rem}
+p + p{margin-top:1em}
+.wrap{width:min(var(--page),calc(100% - clamp(2rem,7vw,6rem)));margin-inline:auto}
+.eyebrow{display:block;color:var(--accent);text-transform:uppercase;font-size:.72rem;font-weight:750;letter-spacing:.105em}
+.hero{border-bottom:1px solid var(--line);background:radial-gradient(ellipse at 76% 12%,#203b3e 0,transparent 53%),linear-gradient(135deg,#1b2431,#121922);padding:clamp(2.4rem,6vw,5.1rem) 0}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(230px,.8fr);gap:clamp(1.6rem,5vw,4rem);align-items:end}
+.hero h1{margin:.65rem 0 1rem}
+.subhead{max-width:60ch;color:var(--muted)}
+.hero a.next{display:inline-block;background:var(--accent);color:#10241d;font-weight:750;text-decoration:none;padding:.58rem .92rem;border-radius:8px;margin-top:1.3rem;max-width:100%}
+.hero a.next:hover{background:#ceffed}
+.route{padding:1.15rem 1.3rem;border:1px solid #476562;background:#17282c;border-radius:14px}
+.route h2{font:700 1rem/1.3 system-ui,sans-serif}
+.route ul{padding-left:1.1rem;margin:.55rem 0 0;font-size:.92rem}
+.route li{margin:.28rem 0}
+.progress-shell{position:sticky;top:0;z-index:2;background:#141a23;border-bottom:1px solid var(--line)}
+.progress-row{display:grid;grid-template-columns:max-content minmax(70px,1fr) max-content;gap:1rem;align-items:center;padding:.65rem 0;font-size:.87rem;color:var(--muted)}
+progress{width:100%;height:.66rem;background:var(--panel);border:0;border-radius:99px;overflow:hidden;accent-color:var(--accent)}
+progress::-webkit-progress-bar{background:var(--panel)}
+progress::-webkit-progress-value{background:var(--accent);border-radius:99px}
+progress::-moz-progress-bar{background:var(--accent);border-radius:99px}
+.progress-row a{font-weight:700}
+.layout{display:grid;grid-template-columns:minmax(208px,255px) minmax(0,1fr);gap:clamp(1.35rem,3.5vw,3rem);align-items:start;padding:2rem 0 3rem}
+aside,main{min-width:0}
+.index{position:sticky;top:4.7rem;max-height:calc(100vh - 5.8rem);overflow:auto;scrollbar-width:thin;padding:1rem;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.index h2{font:750 1.06rem/1.3 system-ui,sans-serif}
+.index label{font-size:.84rem;color:var(--muted)}
+.controls{display:grid;gap:.45rem;margin:.8rem 0}
+.controls input[type=search],.controls select{display:block;width:100%;padding:.45rem .55rem;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font:inherit}
+input[type=checkbox]{width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none}
+.controls .check,.completion{display:flex;align-items:center;gap:.48rem}
+.index ul{padding:0;margin:.5rem 0 0;list-style:none}
+.index li{padding:.5rem 0;border-top:1px solid var(--line);line-height:1.35;margin:0}
+.index li a{display:inline;font-size:.87rem;font-weight:650}
+.index li small{display:block;font-size:.72rem;color:var(--muted);margin-top:.12rem}
+.index li.complete a::before{content:"✓ ";color:var(--accent)}
+.meta{color:var(--muted);font-size:.82rem}
+#status{min-height:1.2em}
+.overview,.topic,.practice{padding:clamp(1rem,3.4vw,2rem);border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.overview>p,.practice>p{margin-top:.75rem;color:var(--muted)}
+.jump{display:flex;flex-wrap:wrap;gap:.4rem .85rem;margin-top:1rem;font-size:.87rem}
+.table-wrap{overflow:auto;margin:1.05rem 0;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;text-align:left}
+thead{background:var(--panel)}
+th,td{padding:.65rem .75rem;vertical-align:top;text-align:left}
+td{border-top:1px solid var(--line)}
+td:first-child{font-weight:680;min-width:7.8em}
+table{font-size:.93rem;line-height:1.55}
+.chapter{margin-top:2.65rem}
+.chapter-heading h2{margin-top:.3rem}
+.topic{margin-top:.9rem}
+.topic:target{border-color:var(--accent)}
+.topic p{margin-top:.7rem}
+.topic-heading .paper{display:inline;font-size:.82rem;color:var(--muted);margin:0}
+.topic-heading h3{margin-top:.4rem}
+.priority{font-size:.7rem;border:1px solid currentColor;border-radius:99px;padding:.15rem .45rem;margin-right:.35rem;font-weight:750;white-space:nowrap}
+.p1{color:var(--accent)}.p2{color:var(--amber)}.p3{color:var(--lavender)}
+.question{color:#dce1fc;font-weight:650;border-left:2px solid var(--lavender);padding:.12rem .7rem;margin:1.1rem 0!important}
+.answer-label{color:var(--accent);font-size:.90rem;margin-top:1rem}
+.topic .definition{font-size:1.025em}
+.example{border:1px solid #476562;border-left:3px solid var(--accent);border-radius:8px;background:#17282c;padding:.75rem .9rem;margin-top:1.1rem}
+.example h4{color:var(--accent);margin:0;font-size:.91rem}
+.example p{margin-top:.35rem}
+.topic li{margin:.42rem 0}
+.topic ul,.topic ol{padding-left:1.45rem;margin:.65rem 0 .95rem}
+.diagram,.exam-tip{background:var(--panel);padding:.65rem .8rem;border-radius:8px}
+.diagram{color:#d0f5e8}
+.exam-tip{margin-top:1.2rem;color:#dee5f3;font-size:.92rem}
+.exam-tip p{margin-top:.22rem}
+.exam-tip>strong{color:var(--accent)}
+.completion{margin-top:1.15rem;border-top:1px solid var(--line);padding-top:.85rem;color:var(--accent);font-weight:700;font-size:.92rem;cursor:pointer}
+code{overflow-wrap:anywhere;color:var(--lavender)}
+.practice{margin-top:1.6rem}
+details{border-top:1px solid var(--line);margin-top:.65rem;padding-top:.65rem}
+summary{cursor:pointer;font-weight:700}
+summary .eyebrow{display:inline;margin:0 .5rem 0 .25rem;color:var(--lavender)}
+details p{margin:.5rem 0 0 1.2rem;color:var(--muted)}
+footer{margin-top:1.35rem;color:var(--muted);font-size:.88rem}
+footer h2{font:750 1rem/1.3 system-ui,sans-serif;color:var(--text);margin-bottom:.35rem}
+[hidden]{display:none!important}
+.skip{position:absolute;top:.5rem;left:.5rem;transform:translateY(-200%);background:var(--bg);color:var(--accent);padding:.2rem .5rem;z-index:3}
+.skip:focus{transform:none}
+@media(max-width:790px){
+.hero .wrap,.layout{grid-template-columns:minmax(0,1fr)}
+.index{position:static;max-height:none}
+.index ul{max-height:17.5rem;overflow:auto}
+}
+@media(max-width:470px){
+body{font-size:15px}
+.progress-row{grid-template-columns:minmax(0,1fr) max-content;gap:.25rem .6rem}
+.progress-row progress{grid-column:1/-1;grid-row:2}
+td,th{padding:.5rem}
+}
+@media print{
+:root{--bg:white;--surface:white;--panel:#eee;--line:#ccc;--text:#111;--muted:#333;--accent:#164f39;--lavender:#3a3461;--amber:#723c09}
+html{color-scheme:light}body{font-size:11pt}.hero{background:white;padding:1rem 0}.hero .wrap,.layout{display:block}
+.index,.progress-shell,.hero .next,.route,.completion,.jump{display:none!important}
+.question,.diagram,.exam-tip{color:#222}.example{background:white;border-color:#777}.topic{border:none;padding:0 0 1rem}
+h2,h3,h4{break-after:avoid-page}
+}
+.hero h1{max-width:15ch}
+.model-body{padding:0 .6rem .6rem 1.25rem}
+.model-body p{margin:.6rem 0 0}
+.model-body li{margin:.42rem 0}
+.model-body ol{padding-left:1.45rem}
+.model-body .example p,.model-body .exam-tip p{margin:.3rem 0 0;color:var(--text)}
+.model-body .exam-tip{margin-top:.85rem}
+@media(max-width:470px){.model-body{padding-left:.15rem;padding-right:.15rem}}
+.topic:first-child{margin-top:0}
+.topic-heading h2{margin-top:.4rem}
+.topic h3{font-size:1.08rem;margin-top:1.3rem}
+.topic h3.answer-label{font-size:.9rem}
+.topic .example h3{color:var(--accent);margin:0;font-size:.91rem}
+.index #status{margin-top:.75rem}
+.study-map{margin:1rem 0}
+.study-map dt{font-weight:750}
+.study-map dd{margin:0 0 .8rem;color:var(--muted)}
+.study-map dd a{color:var(--text)}
+.overview h3{margin-top:1rem;font-size:1.1rem}
+.overview ul{padding-left:1.3rem;margin:.45rem 0 0}
+.overview li+li{margin-top:.4rem}
+.overview + .topic{margin-top:1.3rem}
+</style>
+</head>
+<body>
+<a class="skip" href="#study">Skip to the study notes</a>
+<header class="hero" id="top">
+<div class="wrap">
+  <div>
+    <p class="eyebrow">Digital Marketing / Module 5 / CO5</p>
+    <h1>Introduction to AI in Digital Marketing</h1>
+    <p class="subhead">Study the subtopics under each syllabus heading, then use the model answers to practise writing for 10 marks.</p>
+    <a class="next" id="next-topic" href="#impact">Start with 5.1</a>
+  </div>
+  <nav class="route" aria-labelledby="syllabus-title">
+    <h2 id="syllabus-title">Syllabus</h2>
+    <ul><li><a href="#impact">5.1 · AI Impact on Digital Marketing</a></li><li><a href="#social">5.2 · AI and Social Engagement</a></li><li><a href="#insights-ethics">5.3 · Leveraging AI for Social Insights and Ethical Engagement</a></li></ul>
+  </nav>
+</div>
+</header>
+<div class="progress-shell">
+  <div class="wrap progress-row">
+    <span id="progress-label" role="status">0 of 3 answers completed</span>
+    <progress id="progress" value="0" max="3" aria-labelledby="progress-label"></progress>
+    <a href="#topic-index">Topic index</a>
+  </div>
+</div>
+<div class="wrap layout">
+  <aside class="index" id="topic-index" aria-labelledby="index-title">
+    <h2 id="index-title">Topic index</h2>
+    <div class="controls">
+      <label>Search answers<input id="query" type="search" placeholder="Try chatbots or privacy"></label>
+      <label class="check"><input type="checkbox" id="hide-complete"> Show unfinished answers only</label>
+    </div>
+    <p class="meta" id="filter-status" aria-live="polite"></p>
+    <ul id="catalogue"><li data-topic="impact"><a href="#impact">5.1 · AI Impact on Digital Marketing</a></li>
+<li data-topic="social"><a href="#social">5.2 · AI and Social Engagement</a></li>
+<li data-topic="insights-ethics"><a href="#insights-ethics">5.3 · Leveraging AI for Social Insights and Ethical Engagement</a></li></ul>
+    <p id="status" class="meta">Checkmarks are saved in this browser.</p>
+  </aside>
+  <main id="study">
+    <section class="overview" aria-labelledby="study-map-title">
+      <h2 id="study-map-title">What to study under each heading</h2>
+      <dl class="study-map">
+        <dt><a href="#impact">5.1 · AI Impact on Digital Marketing</a></dt>
+        <dd><a href="#customer-decisions">Customer segmentation, prediction and personalization</a>, <a href="#marketing-applications">content creation, advertising and customer support</a>, <a href="#marketing-impact">benefits and limitations</a>.</dd>
+        <dt><a href="#social">5.2 · AI and Social Engagement</a></dt>
+        <dd><a href="#social-content">Audience interests, content and posting decisions</a>, <a href="#social-interaction">chatbots, replies and moderation</a>, <a href="#social-measurement">measuring engagement</a>.</dd>
+        <dt><a href="#insights-ethics">5.3 · Leveraging AI for Social Insights and Ethical Engagement</a></dt>
+        <dd><a href="#social-insights">Social listening, sentiment, topics and trends</a>, <a href="#ethical-engagement">privacy, fairness, transparency, honesty and accountability</a>.</dd>
+      </dl>
+      <h3>How to use these notes in the exam</h3>
+      <ul>
+        <li><strong>Broad 10-mark question.</strong> Use the model answer as a structure. Define the main term, explain the relevant subtopics under headings, and end with a short example. If the question has two parts, give each part its own heading.</li>
+        <li><strong>Question on one subtopic.</strong> Define the specific term, explain how it works and why it is useful, then give one example. A question about sentiment analysis calls for what it measures, how it is used and where a human check helps.</li>
+      </ul>
+    </section>
+    <article class="topic" id="impact" aria-labelledby="impact-title">
+<div class="topic-heading"><span class="eyebrow">5.1 · 10-mark model answer</span>
+<h2 id="impact-title">AI Impact on Digital Marketing</h2></div>
+<p class="question">Explain the impact of AI on digital marketing. Discuss its main applications, benefits and limitations.</p>
+<h3 class="answer-label">Definition</h3>
+<p class="definition">Artificial intelligence (AI) in digital marketing is the use of computer systems to analyse marketing data, learn patterns, predict likely outcomes and support decisions about audiences, content and campaigns. AI can also generate draft marketing content for review.</p>
+<h3 id="customer-decisions">Customer analysis, prediction and personalization</h3>
+<ol><li><strong>Customer segmentation.</strong> Segmentation groups customers with similar needs or behaviour. AI can analyse browsing activity, purchases and feedback to find these patterns. Marketers use the groups to decide whom to reach and what message fits.</li><li><strong>Predictive analytics.</strong> This uses past data to estimate a future outcome, such as a purchase or a customer leaving a service. Marketers use the estimate to prioritize follow-ups or offer support to customers who may need it.</li><li><strong>Personalization.</strong> This adapts what a customer sees to their likely needs or preferences. AI can recommend products, tailor a message or select a relevant offer, which can make useful information easier to find.</li></ol>
+<h3 id="marketing-applications">Content, advertising and customer support</h3>
+<ol start="4"><li><strong>Creating marketing content.</strong> Generative AI can produce draft captions, emails and advertising copy. This reduces the time needed to prepare variations. Marketers check facts, tone and suitability before publication.</li><li><strong>Improving advertising and campaign decisions.</strong> AI can estimate which ad placements or audiences are likely to contribute to a campaign objective. Marketers can use results such as conversions and cost per acquisition to decide whether to continue or adjust the campaign.</li><li><strong>Supporting customers.</strong> AI can handle routine enquiries and route complex requests to staff. This can improve response times and free employees to resolve problems that need judgment.</li></ol>
+<h3 id="marketing-impact">Benefits and limitations</h3>
+<p><strong>Benefits.</strong> AI helps marketers process large volumes of data, work faster, personalize communication and make decisions using evidence. Its value can be assessed by comparing outcomes such as sales, response times or marketing costs.</p>
+<p><strong>Limitations.</strong> Poor or biased data can produce unreliable predictions or unequal results. Generated content may contain inaccurate claims, and the use of customer data can raise privacy concerns. Relevant data, human review and comparison against a baseline help manage these problems.</p>
+<div class="example"><h3>Example</h3><p>An online bookstore uses browsing and purchase patterns to recommend relevant books. It uses AI to draft follow-up emails, and a marketer checks the prices and availability before sending them. The bookstore compares orders and unsubscribe rates with its regular campaign to see whether the change helped.</p></div>
+<aside class="exam-tip"><strong>Answer structure</strong><p>For 10 marks, give the definition, explain the applications, discuss benefits and limitations, and finish with one example linked to a measurable result.</p></aside>
+<label class="completion"><input type="checkbox" value="impact" data-completion> I can write this answer from memory</label>
+</article><article class="topic" id="social" aria-labelledby="social-title">
+<div class="topic-heading"><span class="eyebrow">5.2 · 10-mark model answer</span>
+<h2 id="social-title">AI and Social Engagement</h2></div>
+<p class="question">Explain how AI helps businesses improve social engagement.</p>
+<h3 class="answer-label">Definition</h3>
+<p class="definition">Social engagement is the interaction between an organisation and its audience on social platforms through actions such as comments, replies, shares and direct messages. AI-assisted social engagement uses AI to understand audience interests, improve content and support timely, appropriate responses.</p>
+<h3 id="social-content">Audience, content and posting decisions</h3>
+<ol><li><strong>Understand audience interests.</strong> AI can review comments, questions and previous post performance to identify topics people care about. Marketers can use those findings to create content that answers real audience needs.</li><li><strong>Prepare relevant content.</strong> AI can suggest post formats, draft captions and adapt the wording of a message for different audiences. A marketer checks the final content for accuracy, tone and accessibility before publishing it.</li><li><strong>Improve posting decisions.</strong> AI can analyse past interactions to suggest formats and posting times that are more likely to reach an active audience. Marketers test these suggestions and update the schedule based on results.</li></ol>
+<h3 id="social-interaction">Chatbots, replies and community moderation</h3>
+<ol start="4"><li><strong>Chatbots for routine questions.</strong> A chatbot is a program that interacts with users through conversation. An AI chatbot can interpret the question and answer from approved information. This enables quicker responses to common requests, such as business hours or product availability, and frees staff to handle more complex problems.</li><li><strong>Prioritize concerns and moderate discussions.</strong> AI can group similar messages, flag likely spam and identify complaints that need attention. Staff review unclear cases, decide when to intervene and handle issues that require care or discretion.</li></ol>
+<h3 id="social-measurement">Measuring engagement</h3>
+<p><strong>Reach</strong> tells you how many people saw the content. <strong>Engagement</strong> tells you how people interacted, for example through comments, shares or messages. To evaluate responses, track both response time and resolved enquiries. Read the comments and questions alongside the numbers so you can tell whether more interaction meant useful discussion or more complaints.</p>
+<p class="diagram"><strong>Exam diagram</strong> · Understand the audience → Prepare content → Publish → Respond → Measure and improve</p>
+<div class="example"><h3>Example</h3><p>A college festival team uses AI to identify repeated questions about deadlines and venue access. It publishes an FAQ and uses a chatbot to answer routine questions from the approved event schedule. Volunteers handle accessibility requests and registration disputes. The team checks response times and whether the same questions keep coming up.</p></div>
+<aside class="exam-tip"><strong>Answer structure</strong><p>For 10 marks, explain how AI helps before publishing, during audience interaction and after the campaign. In the example, show when a staff member takes over.</p></aside>
+<label class="completion"><input type="checkbox" value="social" data-completion> I can write this answer from memory</label>
+</article><article class="topic" id="insights-ethics" aria-labelledby="insights-ethics-title">
+<div class="topic-heading"><span class="eyebrow">5.3 · 10-mark model answer</span>
+<h2 id="insights-ethics-title">Leveraging AI for Social Insights and Ethical Engagement</h2></div>
+<p class="question">Explain how AI produces social insights and how marketers can use those insights ethically.</p>
+<h3 class="answer-label">Definition</h3>
+<p class="definition">A social insight is a finding from social media conversations or activity that helps an organisation make a decision. Ethical engagement means using these insights and interacting with audiences in ways that protect privacy, treat people fairly and maintain trust.</p>
+<h3 id="social-insights">Social listening and analysis</h3>
+<p><strong>Social listening</strong> means tracking and interpreting online conversations about a brand, product or topic. Monitoring can show that mentions increased. Listening investigates what people are discussing and what the organisation can do about it.</p>
+<ol><li><strong>Set the question and collect relevant information.</strong> Decide what the organisation needs to learn. Gather relevant mentions, comments, reviews or engagement data from appropriate sources and remove duplicates and unrelated posts.</li><li><strong>Analyse the conversations.</strong> Sentiment analysis estimates whether comments are favourable, unfavourable or neutral. Topic analysis groups recurring themes. Trend detection highlights changes in the frequency of a topic or complaint.</li><li><strong>Validate the findings.</strong> Check a sample of original posts to interpret sarcasm, slang and context. Compare the finding with records such as support tickets or survey responses when available. People posting online may represent only part of the audience.</li><li><strong>Act and evaluate.</strong> Use confirmed findings to update content, resolve service problems or improve campaign messages. Select an outcome such as repeat enquiries and measure it after the change.</li></ol>
+<h3 id="ethical-engagement">Ethical engagement</h3>
+<ul><li><strong>Privacy.</strong> Use information that is necessary for a defined purpose. Limit access and avoid sharing personal details in public replies.</li><li><strong>Fairness.</strong> Check for different error rates across relevant languages or audience groups. Ask people to review ambiguous cases and correct recurring errors.</li><li><strong>Transparency.</strong> Make automation clear where it affects the interaction, and provide a way for customers to reach a person.</li><li><strong>Accuracy and honesty.</strong> Check facts before publishing AI-generated output. Verify endorsements and offers, and correct misleading statements promptly.</li><li><strong>Accountability.</strong> Assign responsibility for approvals, escalations, complaints and corrections. Keep a record of important decisions and review how well the process works.</li></ul>
+<p class="diagram"><strong>Exam diagram</strong> · Define a question → Collect → Analyse → Verify → Act → Evaluate</p>
+<div class="example"><h3>Example</h3><p>A food delivery company uses AI to group negative comments and identifies complaints about unclear delivery updates. Staff read a sample and confirm the pattern using support tickets. The team fixes the wording of the updates, moves individual order issues to private support and checks whether repeat delivery enquiries decline.</p></div>
+<aside class="exam-tip"><strong>Answer structure</strong><p>For 10 marks, give both parts their own heading. Explain how the insight becomes an action, and pair each ethical concern with a concrete safeguard.</p></aside>
+<label class="completion"><input type="checkbox" value="insights-ethics" data-completion> I can write this answer from memory</label>
+</article>
+    <footer><p><a href="#top">Back to top</a></p></footer>
+  </main>
+</div>
+<script>
+(() => {
+  const key = 'digital-marketing-module-5-exam-notes-v1';
+  const checkboxes = [...document.querySelectorAll('[data-completion]')];
+  const entries = [...document.querySelectorAll('[data-topic]')];
+  const progress = document.querySelector('#progress');
+  const progressLabel = document.querySelector('#progress-label');
+  const nextTopic = document.querySelector('#next-topic');
+  const query = document.querySelector('#query');
+  const hideComplete = document.querySelector('#hide-complete');
+  const filterStatus = document.querySelector('#filter-status');
+  const storageStatus = document.querySelector('#status');
+  const studyOrder = entries.map(entry => entry.dataset.topic);
+  let complete = new Set();
+
+  function showStorageWarning() {
+    storageStatus.textContent = 'This browser blocked local saving. Checkmarks will last for this open tab.';
+  }
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(key) ?? '[]');
+    if (Array.isArray(saved)) {
+      const validTopics = new Set(studyOrder);
+      complete = new Set(saved.filter(topic => validTopics.has(topic)));
+      if (saved.includes('listening') && saved.includes('ethics')) complete.add('insights-ethics');
+    }
+  } catch {
+    showStorageWarning();
+  }
+
+  function filterIndex() {
+    const searchTerms = query.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    let visibleCount = 0;
+    for (const entry of entries) {
+      const article = document.getElementById(entry.dataset.topic);
+      const searchable = article.textContent.toLowerCase();
+      entry.hidden = (hideComplete.checked && complete.has(entry.dataset.topic))
+        || !searchTerms.every(term => searchable.includes(term));
+      if (!entry.hidden) visibleCount++;
+    }
+    filterStatus.textContent = visibleCount === 0
+      ? 'No matching answers.'
+      : `${visibleCount} of ${entries.length} answers shown in the index`;
+  }
+
+  function renderProgress() {
+    progress.value = complete.size;
+    const percentage = Math.round(100 * complete.size / checkboxes.length);
+    progressLabel.textContent = `${complete.size} of ${checkboxes.length} answers completed · ${percentage}%`;
+    for (const entry of entries) {
+      entry.classList.toggle('complete', complete.has(entry.dataset.topic));
+    }
+    const next = studyOrder.find(topic => !complete.has(topic));
+    nextTopic.href = next ? '#' + next : '#topic-index';
+    if (next && complete.size > 0) {
+      nextTopic.textContent = 'Next topic · ' + document.getElementById(next + '-title').textContent;
+    } else {
+      nextTopic.textContent = next ? 'Start with 5.1' : 'All three answers complete';
+    }
+    filterIndex();
+  }
+
+  for (const checkbox of checkboxes) {
+    checkbox.checked = complete.has(checkbox.value);
+    checkbox.addEventListener('change', () => {
+      if (checkbox.checked) complete.add(checkbox.value);
+      else complete.delete(checkbox.value);
+      try {
+        localStorage.setItem(key, JSON.stringify([...complete]));
+      } catch {
+        showStorageWarning();
+      }
+      renderProgress();
+    });
+  }
+
+  query.addEventListener('input', filterIndex);
+  hideComplete.addEventListener('change', filterIndex);
+  renderProgress();
+})();
+</script>
+</body>
+</html>
